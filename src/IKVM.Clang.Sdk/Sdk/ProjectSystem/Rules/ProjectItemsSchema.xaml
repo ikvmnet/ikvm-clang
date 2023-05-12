@@ -2,15 +2,27 @@
     xmlns="http://schemas.microsoft.com/build/2009/properties">
 
     <ContentType
-        Name="C"
-        DisplayName="C file"
+        Name="C Source"
+        DisplayName="C source file"
         ItemType="Compile">
     </ContentType>
 
     <ContentType
-        Name="C++"
-        DisplayName="C++ file"
+        Name="C++ Source"
+        DisplayName="C++ source file"
         ItemType="Compile">
+    </ContentType>
+
+    <ContentType
+        Name="C Header"
+        DisplayName="C header file"
+        ItemType="Header">
+    </ContentType>
+
+    <ContentType
+        Name="C++ Header"
+        DisplayName="C++ header file"
+        ItemType="Header">
     </ContentType>
 
     <ContentType
@@ -19,11 +31,14 @@
         ItemType="None">
     </ContentType>
 
-    <ItemType Name="Compile" DisplayName="Compiled by Clang"/>
+    <ItemType Name="Compile" DisplayName="Source file"/>
+    <ItemType Name="Header" DisplayName="Header file"/>
     <ItemType Name="None" DisplayName="Does not participate in build"/>
 
-    <FileExtension Name=".c" ContentType="C"/>
-    <FileExtension Name=".cpp" ContentType="C++"/>
+    <FileExtension Name=".c" ContentType="C Source"/>
+    <FileExtension Name=".h" ContentType="C Header"/>
+    <FileExtension Name=".cpp" ContentType="C++ Source"/>
+    <FileExtension Name=".hpp" ContentType="C++ Header"/>
     <FileExtension Name=".txt" ContentType="Text"/>
 </ProjectSchemaDefinitions>
     

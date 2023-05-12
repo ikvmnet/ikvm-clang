@@ -42,6 +42,8 @@ jobs:
         useConfigFile: true
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
+    - name: Restore
+      run: dotnet restore IKVM.Clang.sln
     - name: Build
       shell: pwsh
       run: |
