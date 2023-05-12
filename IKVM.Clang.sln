@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dist-tests", "src\dist-test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dist-nuget", "src\dist-nuget\dist-nuget.csproj", "{54CAD12C-8AE2-49DE-BE6A-A4278E28281A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dist-vsix", "src\dist-vsix\dist-vsix.csproj", "{D34AAA19-4604-4065-9749-7A5CBD139E7A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{54CAD12C-8AE2-49DE-BE6A-A4278E28281A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{54CAD12C-8AE2-49DE-BE6A-A4278E28281A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{54CAD12C-8AE2-49DE-BE6A-A4278E28281A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D34AAA19-4604-4065-9749-7A5CBD139E7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D34AAA19-4604-4065-9749-7A5CBD139E7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D34AAA19-4604-4065-9749-7A5CBD139E7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D34AAA19-4604-4065-9749-7A5CBD139E7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,6 +64,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{88B445CD-8E2C-4375-94A2-2A9739881F03} = {7EE3416F-3212-41E6-8239-BDC999AB641B}
 		{54CAD12C-8AE2-49DE-BE6A-A4278E28281A} = {7EE3416F-3212-41E6-8239-BDC999AB641B}
+		{D34AAA19-4604-4065-9749-7A5CBD139E7A} = {7EE3416F-3212-41E6-8239-BDC999AB641B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DFC1C4EF-5295-435E-AB41-0ED24D7E0883}

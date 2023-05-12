@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="IKVM.Core.MSBuild" Version="0.1.28">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <IncludeProjectReference Include="..\IKVM.Clang.Vsix\IKVM.Clang.Vsix.csproj">
+            <SetTargetFramework>TargetFramework=net472</SetTargetFramework>
+            <IncludeTargetPath>.</IncludeTargetPath>
+        </IncludeProjectReference>
+    </ItemGroup>
+
+</Project>
