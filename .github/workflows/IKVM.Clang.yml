@@ -76,11 +76,11 @@ jobs:
       with:
         name: nuget
         path: dist/nuget/
-    - name: Upload VSTS
+    - name: Upload VXIS
       uses: actions/upload-artifact@v3
       with:
-        name: vsts
-        path: dist/vsts/
+        name: vsix
+        path: dist/vsix/
     - name: Upload Tests
       uses: actions/upload-artifact@v3
       with:
@@ -115,11 +115,11 @@ jobs:
       with:
         name: nuget
         path: dist/nuget
-    - name: Restore VSTS
+    - name: Restore VSIX
       uses: actions/download-artifact@v3
       with:
-        name: vsts
-        path: dist/vsts
+        name: vsix
+        path: dist/vsix
     - name: Create Release
       if: github.ref == 'refs/heads/main' || github.event.head_commit.message == '+push'
       uses: ncipollo/release-action@v1.11.2
