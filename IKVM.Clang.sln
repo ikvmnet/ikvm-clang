@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IKVM.Clang.Vsix", "src\IKVM.Clang.Vsix\IKVM.Clang.Vsix.csproj", "{E4C045D0-C23C-443F-B96C-C546B60D93AC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IKVM.Clang.Sdk", "src\IKVM.Clang.Sdk\IKVM.Clang.Sdk.csproj", "{D89C762D-64D1-4E93-B052-53BAC2C13C0D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E4C045D0-C23C-443F-B96C-C546B60D93AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4C045D0-C23C-443F-B96C-C546B60D93AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4C045D0-C23C-443F-B96C-C546B60D93AC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E4C045D0-C23C-443F-B96C-C546B60D93AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4C045D0-C23C-443F-B96C-C546B60D93AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4C045D0-C23C-443F-B96C-C546B60D93AC}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{D89C762D-64D1-4E93-B052-53BAC2C13C0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D89C762D-64D1-4E93-B052-53BAC2C13C0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D89C762D-64D1-4E93-B052-53BAC2C13C0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D89C762D-64D1-4E93-B052-53BAC2C13C0D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DFC1C4EF-5295-435E-AB41-0ED24D7E0883}
+	EndGlobalSection
+EndGlobal

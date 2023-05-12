@@ -1,0 +1,29 @@
+﻿<ProjectSchemaDefinitions
+    xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+    <ContentType
+        Name="C"
+        DisplayName="C file"
+        ItemType="Compile">
+    </ContentType>
+
+    <ContentType
+        Name="C++"
+        DisplayName="C++ file"
+        ItemType="Compile">
+    </ContentType>
+
+    <ContentType
+        Name="Text"
+        DisplayName="Text file"
+        ItemType="None">
+    </ContentType>
+
+    <ItemType Name="Compile" DisplayName="Compiled by Clang"/>
+    <ItemType Name="None" DisplayName="Does not participate in build"/>
+
+    <FileExtension Name=".c" ContentType="C"/>
+    <FileExtension Name=".cpp" ContentType="C++"/>
+    <FileExtension Name=".txt" ContentType="Text"/>
+</ProjectSchemaDefinitions>
+    

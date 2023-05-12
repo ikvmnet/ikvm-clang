@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Description>SDK project type for the Clang compiler</Description>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="Sdk\**\*" Pack="true" PackagePath="Sdk\%(RecursiveDir)%(Filename)%(Extension)" />
+        <None Include="..\..\LICENSE" Pack="true" PackagePath="." />
+        <None Include="README.md" Pack="true" PackagePath="." />
+    </ItemGroup>
+
+    <Target Name="MakeGeneratedPropsFile" Outputs="$(IntermediateOutputPath)generated.props" BeforeTargets="_GetPackageFiles">
+        <ItemGroup>
+            <_GeneratedPropsFileLine Include="&lt;Project&gt;&lt;PropertyGroup&gt;&lt;IkvmClangSdkVersion&gt;$(PackageVersion)&lt;/IkvmClangSdkVersion&gt;&lt;/PropertyGroup&gt;&lt;/Project&gt;" />
+        </ItemGroup>
+        <WriteLinesToFile File="$(IntermediateOutputPath)generated.props" Lines="@(_GeneratedPropsFileLine)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+        <ItemGroup>
+            <_PackageFiles Include="$(IntermediateOutputPath)generated.props" PackagePath="generated.props" />
+        </ItemGroup>
+    </Target>
+
+</Project>

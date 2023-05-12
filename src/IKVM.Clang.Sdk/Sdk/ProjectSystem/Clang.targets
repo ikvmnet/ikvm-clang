@@ -1,0 +1,49 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup Label="ProjectConfigurations">
+        <ProjectConfiguration Include="Debug|AnyCPU">
+            <Configuration>Debug</Configuration>
+            <Platform>AnyCPU</Platform>
+        </ProjectConfiguration>
+        <ProjectConfiguration Include="Release|AnyCPU">
+            <Configuration>Release</Configuration>
+            <Platform>AnyCPU</Platform>
+        </ProjectConfiguration>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectCapability Include="Clang" />
+        <ProjectCapability Include="UseFileGlobs"/>
+        <ProjectCapability Include="OpenProjectFile"/>
+        <ProjectCapability Include="HandlesOwnReload"/>
+        <ProjectCapability Include="ProjectConfigurationsDeclaredAsItems"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\ProjectItemsSchema.xaml;">
+            
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\general.xaml;">
+            <Context>Project</Context>
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\general_file.xaml">
+            <Context>File</Context>
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\folder.xaml;$(MSBuildThisFileDirectory)Rules\none.xaml;">
+            <Context>File;BrowseObject</Context>
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\general.browseobject.xaml">
+            <Context>BrowseObject</Context>
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\compile.xaml;">
+            <Context>File</Context>
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\compile.browseobject.xaml;">
+            <Context>BrowseObject</Context>
+        </PropertyPageSchema>
+    </ItemGroup>
+
+    <Target Name="Run">
+        <Message Text="$(RunCommandArguments)" />
+        <Exec Command='$(RunCommand) "$(MSBuildProjectDirectory)\$(StartItem)" $(RunCommandArguments)' WorkingDirectory="$(RunWorkingDirectory)" />
+    </Target>
+</Project>
