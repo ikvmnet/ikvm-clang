@@ -75,17 +75,17 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: nuget
-        path: dist/nuget
+        path: dist/nuget/
     - name: Upload VSTS
       uses: actions/upload-artifact@v3
       with:
         name: vsts
-        path: dist/vsts
+        path: dist/vsts/
     - name: Upload Tests
       uses: actions/upload-artifact@v3
       with:
         name: tests
-        path: dist/tests
+        path: dist/tests/
   release:
     name: Release
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/hotfix/')

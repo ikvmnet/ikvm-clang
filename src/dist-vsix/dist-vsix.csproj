@@ -28,7 +28,7 @@
             <Output TaskParameter="TargetOutputs" ItemName="VsixItems" />
         </MSBuild>
         <ItemGroup>
-            <ContentWithTargetPath Include="@(VsixItems)">
+            <ContentWithTargetPath Include="@(VsixItems)" Condition=" '%(Extension)' == '.vsix' ">
                 <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
                 <TargetPath>%(FileName)%(Extension)</TargetPath>
             </ContentWithTargetPath>
