@@ -14,6 +14,10 @@
             <Properties>PublishDir=$(DistDir)\nuget</Properties>
         </TargetsForPublish>
         <TargetsForPublish Include="$(SolutionFile)">
+            <Targets>dist%5Cdist-vsix:Publish</Targets>
+            <Properties>PublishDir=$(DistDir)\vsix</Properties>
+        </TargetsForPublish>
+        <TargetsForPublish Include="$(SolutionFile)">
             <Targets>dist%5Cdist-tests:Publish</Targets>
             <Properties>PublishDir=$(DistDir)\tests</Properties>
         </TargetsForPublish>

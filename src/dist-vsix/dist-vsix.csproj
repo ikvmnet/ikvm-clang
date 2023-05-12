@@ -1,4 +1,6 @@
-﻿<Project Sdk="Microsoft.Build.NoTargets/3.7.0">
+﻿<Project>
+    <Import Sdk="Microsoft.Build.NoTargets" Version="3.7.0" Project="Sdk.props"/>
+
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -12,10 +14,25 @@
         </PackageReference>
     </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\IKVM.Clang.Vsix\IKVM.Clang.Vsix.csproj">
-            <SetTargetFramework>TargetFramework=net472</SetTargetFramework>
-        </ProjectReference>
-    </ItemGroup>
+    <Import Sdk="Microsoft.Build.NoTargets" Version="3.7.0" Project="Sdk.targets"/>
+
+    <PropertyGroup>
+        <GetCopyToOutputDirectoryItemsDependsOn>
+            GetVsixItems;
+            $(GetCopyToOutputDirectoryItemsDependsOn);
+        </GetCopyToOutputDirectoryItemsDependsOn>
+    </PropertyGroup>
+
+    <Target Name="GetVsixItems">
+        <MSBuild Projects="..\IKVM.Clang.Vsix\IKVM.Clang.Vsix.csproj" Targets="Build;CreateVsixContainer;VSIXContainerProjectOutputGroup" RebaseOutputs="true">
+            <Output TaskParameter="TargetOutputs" ItemName="VsixItems" />
+        </MSBuild>
+        <ItemGroup>
+            <ContentWithTargetPath Include="@(VsixItems)">
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+                <TargetPath>%(FileName)%(Extension)</TargetPath>
+            </ContentWithTargetPath>
+        </ItemGroup>
+    </Target>
 
 </Project>
