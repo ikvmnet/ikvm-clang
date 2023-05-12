@@ -15,6 +15,7 @@
     <PropertyGroup>
         <TargetFramework>net472</TargetFramework>
         <IsPackable>false</IsPackable>
+        <TargetVsixContainerName>IKVM.Clang.vsix</TargetVsixContainerName>
         <GeneratePkgDefFile>true</GeneratePkgDefFile>
         <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
         <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
