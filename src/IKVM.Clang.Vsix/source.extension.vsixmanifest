@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="IKVM.Clang.175fc96e-c263-4111-8146-43365d6f80e8" Version="0.1.2" Language="en-US" Publisher="IKVM" />
+        <Identity Id="IKVM.Clang.175fc96e-c263-4111-8146-43365d6f80e8" Version="0.1.3" Language="en-US" Publisher="IKVM" />
         <DisplayName>IKVM.Clang</DisplayName>
         <Description>Extension for Visual Studio for working with Clang.</Description>
         <MoreInfo>http://github.com/ikvmnet/ikvm-clang</MoreInfo>
