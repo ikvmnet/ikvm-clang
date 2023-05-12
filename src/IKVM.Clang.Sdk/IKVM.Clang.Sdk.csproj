@@ -18,6 +18,13 @@
         <None Include="README.md" Pack="true" PackagePath="." />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="IKVM.Core.MSBuild" Version="0.1.28">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+
     <Target Name="MakeGeneratedPropsFile" Outputs="$(IntermediateOutputPath)generated.props" BeforeTargets="_GetPackageFiles">
         <ItemGroup>
             <_GeneratedPropsFileLine Include="&lt;Project&gt;&lt;PropertyGroup&gt;&lt;IkvmClangSdkVersion&gt;$(PackageVersion)&lt;/IkvmClangSdkVersion&gt;&lt;/PropertyGroup&gt;&lt;/Project&gt;" />

@@ -7,6 +7,26 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IKVM.Clang.Vsix", "src\IKVM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IKVM.Clang.Sdk", "src\IKVM.Clang.Sdk\IKVM.Clang.Sdk.csproj", "{D89C762D-64D1-4E93-B052-53BAC2C13C0D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{424F3334-A183-4472-B7F6-5589FA8514E3}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		GitVersion.yml = GitVersion.yml
+		global.json = global.json
+		IKVM.Clang.dist.msbuildproj = IKVM.Clang.dist.msbuildproj
+		.github\workflows\IKVM.Clang.yml = .github\workflows\IKVM.Clang.yml
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dist", "dist", "{7EE3416F-3212-41E6-8239-BDC999AB641B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dist-tests", "src\dist-tests\dist-tests.csproj", "{88B445CD-8E2C-4375-94A2-2A9739881F03}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dist-nuget", "src\dist-nuget\dist-nuget.csproj", "{54CAD12C-8AE2-49DE-BE6A-A4278E28281A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,9 +43,21 @@ Global
 		{D89C762D-64D1-4E93-B052-53BAC2C13C0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D89C762D-64D1-4E93-B052-53BAC2C13C0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D89C762D-64D1-4E93-B052-53BAC2C13C0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88B445CD-8E2C-4375-94A2-2A9739881F03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88B445CD-8E2C-4375-94A2-2A9739881F03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88B445CD-8E2C-4375-94A2-2A9739881F03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88B445CD-8E2C-4375-94A2-2A9739881F03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54CAD12C-8AE2-49DE-BE6A-A4278E28281A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54CAD12C-8AE2-49DE-BE6A-A4278E28281A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54CAD12C-8AE2-49DE-BE6A-A4278E28281A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54CAD12C-8AE2-49DE-BE6A-A4278E28281A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{88B445CD-8E2C-4375-94A2-2A9739881F03} = {7EE3416F-3212-41E6-8239-BDC999AB641B}
+		{54CAD12C-8AE2-49DE-BE6A-A4278E28281A} = {7EE3416F-3212-41E6-8239-BDC999AB641B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DFC1C4EF-5295-435E-AB41-0ED24D7E0883}
