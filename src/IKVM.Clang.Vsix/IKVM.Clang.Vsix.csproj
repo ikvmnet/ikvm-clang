@@ -111,7 +111,7 @@
             <AllUsers>false</AllUsers>
             <AllUsers Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</AllUsers>
         </PropertyGroup>
-        <PostUpdateVsixManifest ManifestFile="$(IntermediateVsixManifest)" Version="$(FileVersion)" Experimental="$(Experimental)" AllUsers="true" />
+        <PostUpdateVsixManifest ManifestFile="$(IntermediateVsixManifest)" Version="$(FileVersion)" Experimental="$(Experimental)" AllUsers="$(AllUsers)" />
     </Target>
 
 </Project>
