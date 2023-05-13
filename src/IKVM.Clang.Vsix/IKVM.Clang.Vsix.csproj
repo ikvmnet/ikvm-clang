@@ -46,7 +46,7 @@
     <ItemDefinitionGroup>
         <VSIXSourceItem>
             <InProject>false</InProject>
-            <InstallRoot>MSBuild</InstallRoot>
+            <InstallRoot></InstallRoot>
             <VSIXSubPath>CustomProjectSystems\Clang\%(RelativeDir)</VSIXSubPath>
         </VSIXSourceItem>
     </ItemDefinitionGroup>
