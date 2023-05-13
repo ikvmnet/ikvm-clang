@@ -132,12 +132,12 @@ jobs:
         generateReleaseNotes: true
         prerelease: ${{ github.ref == 'refs/heads/develop' }}
         token: ${{ secrets.GITHUB_TOKEN }}
-    #- name: Push NuGet (GitHub)
-    #  shell: pwsh
-    #  run: dotnet nuget push dist/nuget/*.nupkg --source $env:GITHUB_REPOS --api-key $env:GITHUB_TOKEN --skip-duplicate
-    #  env:
-    #    GITHUB_REPOS: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Push NuGet (GitHub)
+      shell: pwsh
+      run: dotnet nuget push dist/nuget/*.nupkg --source $env:GITHUB_REPOS --api-key $env:GITHUB_TOKEN --skip-duplicate
+      env:
+        GITHUB_REPOS: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Push NuGet
       if: github.ref == 'refs/heads/main' || github.event.head_commit.message == '+push'
       shell: pwsh
@@ -145,3 +145,10 @@ jobs:
       env:
         NUGET_REPOS: https://api.nuget.org/v3/index.json
         NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+    - name: Publish to Visual Studio Marketplace
+      if: github.ref == 'refs/heads/main' || github.event.head_commit.message == '+push'
+      uses: HaaLeo/publish-vscode-extension@v1
+      with:
+        pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+        registryUrl: https://marketplace.visualstudio.com
+        extensionFile: dist/vsix/Ikvm.Clang.vsix
