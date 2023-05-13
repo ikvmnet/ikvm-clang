@@ -6,6 +6,7 @@
         <Description>SDK project type for the Clang compiler</Description>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>
         <IncludeBuildOutput>false</IncludeBuildOutput>
+        <NoWarn>NU5128</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup>
