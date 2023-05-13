@@ -126,7 +126,7 @@ jobs:
         path: dist/vsix
     - name: Create Release
       if: github.ref == 'refs/heads/main' || github.event.head_commit.message == '+push'
-      uses: ncipollo/release-action@v1.12
+      uses: ncipollo/release-action@v1
       with:
         tag: ${{ steps.GitVersion.outputs.semVer }}
         artifacts: dist/nuget/*.nupkg,dist/nuget/*.snupkg
