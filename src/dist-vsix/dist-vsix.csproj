@@ -27,8 +27,11 @@
         <MSBuild Projects="..\IKVM.Clang.Vsix\IKVM.Clang.Vsix.csproj" Targets="Build;CreateVsixContainer;VSIXContainerProjectOutputGroup" RebaseOutputs="true">
             <Output TaskParameter="TargetOutputs" ItemName="VsixItems" />
         </MSBuild>
+        <MSBuild Projects="..\IKVM.Clang.Vsix\IKVM.Clang.Vsix.csproj" Targets="GetCopyToOutputDirectoryItems" RebaseOutputs="true">
+            <Output TaskParameter="TargetOutputs" ItemName="VsixItems" />
+        </MSBuild>
         <ItemGroup>
-            <ContentWithTargetPath Include="@(VsixItems)" Condition=" '%(Extension)' == '.vsix' ">
+            <ContentWithTargetPath Include="@(VsixItems)" Condition=" '%(Extension)' != '.dll' ">
                 <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
                 <TargetPath>%(FileName)%(Extension)</TargetPath>
             </ContentWithTargetPath>

@@ -149,8 +149,8 @@ jobs:
         NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
     - name: Publish to Visual Studio Marketplace
       if: github.ref == 'refs/heads/main' || github.event.head_commit.message == '+push'
-      uses: HaaLeo/publish-vscode-extension@v1
+      uses: CalvinAllen/action-vs-marketplace-publish@v1
       with:
-        pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
-        registryUrl: https://marketplace.visualstudio.com
-        extensionFile: dist/vsix/IKVM.Clang.vsix
+        marketplace-pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+        publish-manifest-path: dist/vsix/IKVM.Clang.manifest.json
+        vsix-path: dist/vsix/IKVM.Clang.vsix

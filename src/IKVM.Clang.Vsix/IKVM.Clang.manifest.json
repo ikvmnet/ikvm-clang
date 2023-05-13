@@ -1,0 +1,13 @@
+﻿{
+    "$schema": "http://json.schemastore.org/vsix-publish",
+    "categories": [ "build", "coding" ],
+    "identity": {
+        "internalName": "clang"
+    },
+    "overview": "overview.md",
+    "priceCategory": "free",
+    "publisher": "IKVM",
+    "private": false,
+    "qna": true,
+    "repo": "https://github.com/ikvmnet/ikvm-clang"
+}
