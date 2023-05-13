@@ -80,8 +80,29 @@
     <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
     <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
 
-    <Target Name="GetVsixContainerItem" DependsOnTargets="CreateVsixContainer" Returns="$(TargetVsixContainer)">
-        
+    <UsingTask TaskName="PostUpdateVsixManifest" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <ManifestFile ParameterType="System.String" Required="true" />
+            <Version ParameterType="System.String" Required="true" />
+        </ParameterGroup>
+        <Task>
+            <Using Namespace="System" />
+            <Using Namespace="System.Xml.Linq" />
+            <Using Namespace="System.IO" />
+            <Code Language="cs" Type="Fragment">
+                <![CDATA[
+                var ns = (XNamespace)"http://schemas.microsoft.com/developer/vsx-schema/2011";
+                var x = XDocument.Load(ManifestFile);
+                var i = x.Root.Element(ns + "Metadata").Element(ns + "Identity");
+                i.SetAttributeValue("Version", Version);
+                x.Save(ManifestFile);
+            ]]>
+            </Code>
+        </Task>
+    </UsingTask>
+
+    <Target Name="PostUpdateVsixManifest" BeforeTargets="ValidateVsixManifest">
+        <PostUpdateVsixManifest ManifestFile="$(IntermediateVsixManifest)" Version="$(FileVersion)" />
     </Target>
 
 </Project>
