@@ -95,7 +95,7 @@ jobs:
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release/') || startsWith(github.ref, 'refs/heads/hotfix/')
     needs:
     - build
-    runs-on: ubuntu-22.04
+    runs-on: windows-2022
     steps:
     - name: Checkout Source
       uses: actions/checkout@v3
@@ -126,7 +126,7 @@ jobs:
         path: dist/vsix
     - name: Create Release
       if: github.ref == 'refs/heads/main' || github.event.head_commit.message == '+push'
-      uses: ncipollo/release-action@v1.11.2
+      uses: ncipollo/release-action@v1.12
       with:
         tag: ${{ steps.GitVersion.outputs.semVer }}
         artifacts: dist/nuget/*.nupkg,dist/nuget/*.snupkg
@@ -136,14 +136,14 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
     - name: Push NuGet (GitHub)
       shell: pwsh
-      run: dotnet nuget push dist/nuget/*.nupkg --source $env:GITHUB_REPOS --api-key $env:GITHUB_TOKEN --skip-duplicate
+      run: dotnet nuget push dist\nuget\*.nupkg --source $env:GITHUB_REPOS --api-key $env:GITHUB_TOKEN --skip-duplicate
       env:
         GITHUB_REPOS: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Push NuGet
       if: github.ref == 'refs/heads/main' || github.event.head_commit.message == '+push'
       shell: pwsh
-      run: dotnet nuget push dist/nuget/*.nupkg --source $env:NUGET_REPOS --api-key $env:NUGET_TOKEN --skip-duplicate
+      run: dotnet nuget push dist\nuget\*.nupkg --source $env:NUGET_REPOS --api-key $env:NUGET_TOKEN --skip-duplicate
       env:
         NUGET_REPOS: https://api.nuget.org/v3/index.json
         NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
