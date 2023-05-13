@@ -8,7 +8,6 @@
     </PropertyGroup>
 
     <Import Project="$(AlternateCommonProps)" Condition="'$(AlternateCommonProps)' != ''" />
-    <Import Project="$(MSBuildThisFileDirectory)ProjectSystem\Clang.props" />
     <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="'$(AlternateCommonProps)' == ''"/>
     <Import Project="$(MSBuildThisFileDirectory)targets\IKVM.Clang.Sdk.props" />
 </Project>

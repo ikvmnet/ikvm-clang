@@ -3,6 +3,14 @@
         <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     </PropertyGroup>
 
+    <Import Project="$(MSBuildThisFileDirectory)..\ProjectSystem\Clang.ProjectSystem.targets" />
+
+    <ItemGroup Condition=" '$(SolutionDir)' != '' ">
+        <_GlobalJsonStartingDir Include="$(SolutionDir)" />
+        <_PotentialContainingGlobalJsonDir Include="@(_GlobalJsonStartingDir->GetPathsOfAllDirectoriesAbove())" />
+        <AdditionalDesignTimeBuildInput Include="@(_PotentialContainingGlobalJsonDir->Combine('global.json'))" ContentSensitive="true" />
+    </ItemGroup>
+
     <Target Name="CompileDesignTime" DependsOnTargets="_CheckCompileDesignTimePrerequisite;Compile">
         <Message Text="CompileDesignTime" />
     </Target>

@@ -1,10 +1,10 @@
 ﻿<Project>
-  <PropertyGroup Label="Globals">
-    <ProjectGuid>0ecadf70-0385-4e8d-ad8a-e07b8f5cde32</ProjectGuid>
-  </PropertyGroup>
-  <Import Project="$(MSBuildThisFileDirectory)..\..\..\src\IKVM.Clang.Sdk\Sdk\Sdk.props" />
-  <Import Project="$(MSBuildThisFileDirectory)..\..\..\src\IKVM.Clang.Sdk\Sdk\Sdk.targets" />
-  <ItemGroup>
-    <Compile Include="test.c" />
-  </ItemGroup>
+	<PropertyGroup Label="Globals">
+		<ProjectGuid>0ecadf70-0385-4e8d-ad8a-e07b8f5cde32</ProjectGuid>
+	</PropertyGroup>
+	<Import Project="$(MSBuildThisFileDirectory)..\..\..\src\IKVM.Clang.Sdk\Sdk\Sdk.props" />
+	<Import Project="$(MSBuildThisFileDirectory)..\..\..\src\IKVM.Clang.Sdk\Sdk\Sdk.targets" />
+	<ItemGroup>
+		<Compile Include="test.c" />
+	</ItemGroup>
 </Project>

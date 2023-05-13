@@ -27,8 +27,8 @@
 
     <ItemGroup>
         <PackageReference Include="IKVM.Core.MSBuild" Version="0.1.28">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.VisualStudio.ProjectSystem" Version="15.8.243" />
         <PackageReference Include="Microsoft.VisualStudio.ProjectSystem.Sdk" Version="15.8.243" />
@@ -84,6 +84,8 @@
         <ParameterGroup>
             <ManifestFile ParameterType="System.String" Required="true" />
             <Version ParameterType="System.String" Required="true" />
+            <Experimental ParameterType="System.String" Required="true" />
+            <AllUsers ParameterType="System.String" Required="true" />
         </ParameterGroup>
         <Task>
             <Using Namespace="System" />
@@ -93,8 +95,9 @@
                 <![CDATA[
                 var ns = (XNamespace)"http://schemas.microsoft.com/developer/vsx-schema/2011";
                 var x = XDocument.Load(ManifestFile);
-                var i = x.Root.Element(ns + "Metadata").Element(ns + "Identity");
-                i.SetAttributeValue("Version", Version);
+                x.Root.Element(ns + "Metadata").Element(ns + "Identity").SetAttributeValue("Version", Version);
+                x.Root.Element(ns + "Installation").SetAttributeValue("Experimental", Experimental);
+                x.Root.Element(ns + "Installation").SetAttributeValue("AllUsers", AllUsers);
                 x.Save(ManifestFile);
             ]]>
             </Code>
@@ -102,7 +105,13 @@
     </UsingTask>
 
     <Target Name="PostUpdateVsixManifest" BeforeTargets="ValidateVsixManifest">
-        <PostUpdateVsixManifest ManifestFile="$(IntermediateVsixManifest)" Version="$(FileVersion)" />
+        <PropertyGroup>
+            <Experimental>false</Experimental>
+            <Experimental Condition=" '$(PreReleaseLabel)' != '' ">true</Experimental>
+            <AllUsers>false</AllUsers>
+            <AllUsers Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</AllUsers>
+        </PropertyGroup>
+        <PostUpdateVsixManifest ManifestFile="$(IntermediateVsixManifest)" Version="$(FileVersion)" Experimental="$(Experimental)" AllUsers="true" />
     </Target>
 
 </Project>

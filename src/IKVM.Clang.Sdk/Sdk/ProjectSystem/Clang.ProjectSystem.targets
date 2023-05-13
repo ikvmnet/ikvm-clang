@@ -10,34 +10,43 @@
         </ProjectConfiguration>
     </ItemGroup>
 
+    <PropertyGroup>
+        <SupportedOutputTypes>Exe;SharedLibrary;StaticLibrary</SupportedOutputTypes>
+    </PropertyGroup>
+
     <ItemGroup>
+        <ProjectCapability Include="OutputGroups;AllTargetOutputGroups;VisualStudioWellKnownOutputGroups" />
         <ProjectCapability Include="Clang" />
         <ProjectCapability Include="UseFileGlobs"/>
         <ProjectCapability Include="OpenProjectFile"/>
         <ProjectCapability Include="HandlesOwnReload"/>
-        <ProjectCapability Include="ProjectConfigurationsDeclaredAsItems"/>
+        <ProjectCapability Include="ProjectImportsTree" />
+        <ProjectCapability Include="native" />
     </ItemGroup>
 
     <ItemGroup>
         <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\ProjectItemsSchema.xaml;">
             
         </PropertyPageSchema>
-        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\general.xaml;">
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\General.xaml">
             <Context>Project</Context>
         </PropertyPageSchema>
-        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\general_file.xaml">
-            <Context>File</Context>
-        </PropertyPageSchema>
-        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\folder.xaml;$(MSBuildThisFileDirectory)Rules\none.xaml;">
-            <Context>File;BrowseObject</Context>
-        </PropertyPageSchema>
-        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\general.browseobject.xaml">
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\General.BrowseObject.xaml">
             <Context>BrowseObject</Context>
         </PropertyPageSchema>
-        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\compile.xaml;">
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\GeneralFile.xaml">
             <Context>File</Context>
         </PropertyPageSchema>
-        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\compile.browseobject.xaml;">
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\Folder.xaml">
+            <Context>File;BrowseObject</Context>
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\None.xaml">
+            <Context>File;BrowseObject</Context>
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\Compile.xaml;">
+            <Context>File</Context>
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\Compile.BrowseObject.xaml;">
             <Context>BrowseObject</Context>
         </PropertyPageSchema>
     </ItemGroup>
@@ -46,4 +55,5 @@
         <Message Text="$(RunCommandArguments)" />
         <Exec Command='$(RunCommand) "$(MSBuildProjectDirectory)\$(StartItem)" $(RunCommandArguments)' WorkingDirectory="$(RunWorkingDirectory)" />
     </Target>
+    
 </Project>
