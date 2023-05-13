@@ -27,7 +27,7 @@
     
     <PropertyGroup>
         <Experimental>false</Experimental>
-        <Experimental Condition=" '$(PreReleaseLabel)' != '' ">true</Experimental>
+        <Experimental Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</Experimental>
         <AllUsers>false</AllUsers>
         <AllUsers Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</AllUsers>
     </PropertyGroup>
@@ -53,7 +53,6 @@
     <ItemDefinitionGroup>
         <VSIXSourceItem>
             <InProject>false</InProject>
-            <InstallRoot></InstallRoot>
             <VSIXSubPath>CustomProjectSystems\Clang\%(RelativeDir)</VSIXSubPath>
         </VSIXSourceItem>
     </ItemDefinitionGroup>
