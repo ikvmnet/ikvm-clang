@@ -24,6 +24,13 @@
         <StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
         <StartArguments>/rootSuffix Exp</StartArguments>
     </PropertyGroup>
+    
+    <PropertyGroup>
+        <Experimental>false</Experimental>
+        <Experimental Condition=" '$(PreReleaseLabel)' != '' ">true</Experimental>
+        <AllUsers>false</AllUsers>
+        <AllUsers Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</AllUsers>
+    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="IKVM.Core.MSBuild" Version="0.1.28">
@@ -80,38 +87,16 @@
     <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
     <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
 
-    <UsingTask TaskName="PostUpdateVsixManifest" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
-        <ParameterGroup>
-            <ManifestFile ParameterType="System.String" Required="true" />
-            <Version ParameterType="System.String" Required="true" />
-            <Experimental ParameterType="System.String" Required="true" />
-            <AllUsers ParameterType="System.String" Required="true" />
-        </ParameterGroup>
-        <Task>
-            <Using Namespace="System" />
-            <Using Namespace="System.Xml.Linq" />
-            <Using Namespace="System.IO" />
-            <Code Language="cs" Type="Fragment">
-                <![CDATA[
-                var ns = (XNamespace)"http://schemas.microsoft.com/developer/vsx-schema/2011";
-                var x = XDocument.Load(ManifestFile);
-                x.Root.Element(ns + "Metadata").Element(ns + "Identity").SetAttributeValue("Version", Version);
-                x.Root.Element(ns + "Installation").SetAttributeValue("Experimental", Experimental);
-                x.Root.Element(ns + "Installation").SetAttributeValue("AllUsers", AllUsers);
-                x.Save(ManifestFile);
-            ]]>
-            </Code>
-        </Task>
-    </UsingTask>
+    <Target Name="GetVsixVersion" Returns="$(FileVersion)">
 
-    <Target Name="PostUpdateVsixManifest" BeforeTargets="ValidateVsixManifest">
-        <PropertyGroup>
-            <Experimental>false</Experimental>
-            <Experimental Condition=" '$(PreReleaseLabel)' != '' ">true</Experimental>
-            <AllUsers>false</AllUsers>
-            <AllUsers Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</AllUsers>
-        </PropertyGroup>
-        <PostUpdateVsixManifest ManifestFile="$(IntermediateVsixManifest)" Version="$(FileVersion)" Experimental="$(Experimental)" AllUsers="$(AllUsers)" />
+    </Target>
+
+    <Target Name="GetVsixExperimental" Returns="$(Experimental)">
+
+    </Target>
+
+    <Target Name="GetVsixAllUsers" Returns="$(AllUsers)">
+
     </Target>
 
 </Project>
