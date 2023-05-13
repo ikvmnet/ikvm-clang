@@ -18,11 +18,13 @@
     </PropertyGroup>
 
     <PropertyGroup Label="Version Info">
+        <PreReleaseLabel Condition=" '$(PreReleaseTag)' == '' ">dev</PreReleaseLabel>
+        <PreReleaseNumber Condition=" '$(PreReleaseTag)' == '' ">0</PreReleaseNumber>
         <DefaultMajorVersion>1</DefaultMajorVersion>
-        <Version Condition=" '$(Version)' == '' ">$(DefaultMajorVersion).0.0-dev</Version>
+        <Version Condition=" '$(Version)' == '' ">$(DefaultMajorVersion).0.0-$(PreReleaseLabel)$(PreReleaseNumber)</Version>
         <AssemblyVersion Condition=" '$(AssemblyVersion)' == '' ">$(DefaultMajorVersion).0.0.0</AssemblyVersion>
-        <FileVersion Condition=" '$(FileVersion)' == '' ">$(DefaultMajorVersion).0.0.0</FileVersion>
-        <InformationalVersion Condition=" '$(InformationalVersion)' == '' ">$(DefaultMajorVersion).0.0.0</InformationalVersion>
+        <FileVersion Condition=" '$(FileVersion)' == '' ">$(DefaultMajorVersion).0.0.$(PreReleaseNumber)</FileVersion>
+        <InformationalVersion Condition=" '$(InformationalVersion)' == '' ">$(DefaultMajorVersion).0.0.$(PreReleaseNumber)</InformationalVersion>
     </PropertyGroup>
 
     <PropertyGroup Label="Package Info">

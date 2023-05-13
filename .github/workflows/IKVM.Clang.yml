@@ -52,6 +52,8 @@ jobs:
         msbuild /m /bl `
           /p:Configuration="Release" `
           /p:Platform="Any CPU" `
+          /p:PreReleaseLabel=${env:PreReleaseLabel} `
+          /p:PreReleaseNumber=${env:WeightedPreReleaseNumber} `
           /p:Version=${env:GitVersion_FullSemVer} `
           /p:AssemblyVersion=${env:GitVersion_AssemblySemVer} `
           /p:InformationalVersion=${env:GitVersion_InformationalVersion} `
