@@ -153,4 +153,4 @@ jobs:
       with:
         pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
         registryUrl: https://marketplace.visualstudio.com
-        extensionFile: dist/vsix/Ikvm.Clang.vsix
+        extensionFile: dist/vsix/IKVM.Clang.vsix
