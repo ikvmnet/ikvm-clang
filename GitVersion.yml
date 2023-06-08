@@ -1,14 +1,9 @@
 assembly-file-versioning-scheme: MajorMinorPatchTag
+mode: Mainline
 major-version-bump-message: '\+semver:\s?(major)'
 minor-version-bump-message: '\+semver:\s?(minor)'
 patch-version-bump-message: '\+semver:\s?(patch)'
 branches:
   develop:
-    regex: ^dev(elop)?(ment)?$
-    tag: develop
-  release:
-    regex: ^release?[/-]
-    tag: prerelease
-  hotfix:
-    regex: ^hotfix?[/-]
+    regex: ^develop$
     tag: prerelease

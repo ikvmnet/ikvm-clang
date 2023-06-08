@@ -32,8 +32,12 @@
         </PropertyGroup>
     </Target>
 
-    <Target Name="Clean" DependsOnTargets="_ComputeTargetFrameworkItems">
-        <MSBuild Projects="@(_InnerBuildProjects)" Condition="'@(_InnerBuildProjects)' != '' " Targets="Clean" BuildInParallel="$(BuildInParallel)" />
+    <Target Name="Clean" DependsOnTargets="_SetCleanInnerTarget;DispatchToInnerBuilds" />
+
+    <Target Name="_SetCleanInnerTarget" Returns="@(InnerOutput)">
+        <PropertyGroup Condition="'$(InnerTargets)' == ''">
+            <InnerTargets>Clean</InnerTargets>
+        </PropertyGroup>
     </Target>
 
     <Target Name="Rebuild" DependsOnTargets="Clean;Build" />
