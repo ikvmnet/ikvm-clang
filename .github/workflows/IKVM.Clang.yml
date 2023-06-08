@@ -90,7 +90,7 @@ jobs:
         path: dist/tests/
   release:
     name: Release
-    if: github.event_name != "pull_request"
+    if: github.event_name != 'pull_request'
     needs:
     - build
     runs-on: windows-2022
