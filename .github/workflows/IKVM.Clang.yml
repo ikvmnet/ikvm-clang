@@ -9,6 +9,9 @@ on:
     branches:
     - main
     - develop
+  release:
+    types:
+    - created
 
 jobs:
   build:
@@ -127,8 +130,8 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         tag: ${{ steps.GitVersion.outputs.semVer }}
-        allowUpdates: true
         artifacts: dist/nuget/*.nupkg,dist/nuget/*.snupkg
+        allowUpdates: true
         draft: false
         makeLatest: true
         token: ${{ secrets.GITHUB_TOKEN }}
