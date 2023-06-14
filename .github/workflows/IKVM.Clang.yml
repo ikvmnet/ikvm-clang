@@ -20,10 +20,8 @@ jobs:
     steps:
     - name: Checkout Source
       uses: actions/checkout@v3
-    - name: Setup .NET 5.0
-      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 5.0.x
+        fetch-depth: 0
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v3
       with:
