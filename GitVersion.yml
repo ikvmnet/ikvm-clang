@@ -6,6 +6,6 @@ branches:
   main:
     regex: ^main$
     tag: pre
-  main:
+  develop:
     regex: ^develop$
     tag: dev
