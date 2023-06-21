@@ -4,6 +4,10 @@
     </PropertyGroup>
 
     <PropertyGroup>
+        <PackageOutputPath Condition=" '$(PackageOutputPath)' == '' ">$(OutputPath)</PackageOutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <IsCrossTargetingBuild Condition=" '$(TargetMachines)' != '' And '$(TargetMachine)' == '' ">true</IsCrossTargetingBuild>
     </PropertyGroup>
 

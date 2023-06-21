@@ -3,6 +3,33 @@
         <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     </PropertyGroup>
 
+    <!-- Override paths before including Common targets -->
+    <PropertyGroup Condition=" '$(TargetMachine)' != '' ">
+        <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
+        <PlatformName Condition="'$(PlatformName)' == ''">$(Platform)</PlatformName>
+        <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+        <ConfigurationName Condition="'$(ConfigurationName)' == ''">$(Configuration)</ConfigurationName>
+
+        <BaseOutputPath Condition="'$(BaseOutputPath)' == ''">bin\</BaseOutputPath>
+        <BaseOutputPath Condition="!HasTrailingSlash('$(BaseOutputPath)')">$(BaseOutputPath)\</BaseOutputPath>
+        <OutputPath Condition="'$(OutputPath)' == '' and '$(PlatformName)' == 'AnyCPU'">$(BaseOutputPath)$(Configuration)\$(TargetMachine.ToLowerInvariant())\</OutputPath>
+        <OutputPath Condition="'$(OutputPath)' == '' and '$(PlatformName)' != 'AnyCPU'">$(BaseOutputPath)$(PlatformName)\$(Configuration)\$(TargetMachine.ToLowerInvariant())\</OutputPath>
+        <OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</OutputPath>
+
+        <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">obj\</BaseIntermediateOutputPath>
+        <BaseIntermediateOutputPath Condition="!HasTrailingSlash('$(BaseIntermediateOutputPath)')">$(BaseIntermediateOutputPath)\</BaseIntermediateOutputPath>
+        <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == '' and '$(PlatformName)' == 'AnyCPU'">$(BaseIntermediateOutputPath)$(Configuration)\$(TargetMachine.ToLowerInvariant())\</IntermediateOutputPath>
+        <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == '' and '$(PlatformName)' != 'AnyCPU'">$(BaseIntermediateOutputPath)$(PlatformName)\$(Configuration)\$(TargetMachine.ToLowerInvariant())\</IntermediateOutputPath>
+        <IntermediateOutputPath Condition="!HasTrailingSlash('$(IntermediateOutputPath)')">$(IntermediateOutputPath)\</IntermediateOutputPath>
+
+        <IntermediateOutputPath Condition=" '$(IntermediateOutputPath)' == '' ">$(IntermediateOutputPath)\</IntermediateOutputPath>
+        <OutputPath Condition=" '$(OutputPath)' == '' ">$(OutputPath)$(TargetMachine.ToLowerInvariant())\</OutputPath>
+
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+
     <Import Project="$(CustomBeforeIkvmClangTargets)" Condition=" '$(CustomBeforeIkvmClangTargets)' != '' And Exists('$(CustomBeforeIkvmClangTargets)') " />
 
     <PropertyGroup>
@@ -16,5 +43,9 @@
     <Import Project="$(ClangDesignTimeTargetsPath)"  />
 
     <Import Project="$(CustomAfterIkvmClangTargets)" Condition="'$(CustomAfterIkvmClangTargets)' != '' and Exists('$(CustomAfterIkvmClangTargets)')" />
+
+    <PropertyGroup>
+        <CreateManifestResourceNamesDependsOn></CreateManifestResourceNamesDependsOn>
+    </PropertyGroup>
 
 </Project>

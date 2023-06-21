@@ -3,4 +3,19 @@
         <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <ManagedAssembly>false</ManagedAssembly>
+        <TargetRuntime>Native</TargetRuntime>
+
+        <ProjectName Condition=" '$(ProjectName)' == '' ">$(MSBuildProjectName)</ProjectName>
+        <ProjectFileName Condition=" '$(ProjectFileName)' == '' ">$(MSBuildProjectFile)</ProjectFileName>
+        <ProjectExt Condition=" '$(ProjectExt)' == '' ">$(MSBuildProjectExtension)</ProjectExt>
+        <ProjectDir Condition=" '$(ProjectDir)' == '' ">$(MSBuildProjectDirectory)\</ProjectDir>
+        <ProjectPath Condition=" '$(ProjectPath)' == '' ">$(ProjectDir)$(ProjectFileName)</ProjectPath>
+        <PlatformName Condition=" '$(PlatformName)' == '' ">$(Platform)</PlatformName>
+        <SolutionExt>.sln</SolutionExt>
+        <SolutionDir Condition="'$(SolutionDir)' == '' ">$(ProjectDir)</SolutionDir>
+    </PropertyGroup>
+
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="'$(AlternateCommonProps)' == ''"/>
 </Project>

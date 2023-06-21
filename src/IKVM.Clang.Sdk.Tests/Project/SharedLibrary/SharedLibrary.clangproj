@@ -1,0 +1,14 @@
+﻿<Project>
+    <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.props" />
+
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetMachines>x86_64-pc-windows-msvc;i686-pc-windows-msvc;aarch64-pc-windows-msvc</TargetMachines>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="hello.c" />
+    </ItemGroup>
+
+    <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.targets" />
+</Project>

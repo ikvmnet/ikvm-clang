@@ -20,10 +20,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="IKVM.Core.MSBuild" Version="0.1.28">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
+        <PublishProjectReference Include="..\IKVM.Clang.Sdk.Tasks\IKVM.Clang.Sdk.Tasks.csproj">
+            <SetTargetFramework>TargetFramework=net472</SetTargetFramework>
+            <ProjectPackagePath>tasks\net472</ProjectPackagePath>
+        </PublishProjectReference>
+        <PublishProjectReference Include="..\IKVM.Clang.Sdk.Tasks\IKVM.Clang.Sdk.Tasks.csproj">
+            <SetTargetFramework>TargetFramework=netcoreapp3.1</SetTargetFramework>
+            <ProjectPackagePath>tasks\netcoreapp3.1</ProjectPackagePath>
+        </PublishProjectReference>
     </ItemGroup>
 
     <Target Name="MakeGeneratedPropsFile" Outputs="$(IntermediateOutputPath)generated.props" BeforeTargets="_GetPackageFiles">

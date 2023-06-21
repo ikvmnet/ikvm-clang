@@ -2,12 +2,15 @@
     <PropertyGroup>
         <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     </PropertyGroup>
-    
+
+    <PropertyGroup>
+        <UsingIkvmClangSdk>true</UsingIkvmClangSdk>
+    </PropertyGroup>
+
     <PropertyGroup Condition=" '$(MSBuildProjectFullPath)' == '$(ProjectToOverrideProjectExtensionsPath)' ">
         <MSBuildProjectExtensionsPath>$(ProjectExtensionsPathForSpecifiedProject)</MSBuildProjectExtensionsPath>
     </PropertyGroup>
 
     <Import Project="$(AlternateCommonProps)" Condition="'$(AlternateCommonProps)' != ''" />
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="'$(AlternateCommonProps)' == ''"/>
     <Import Project="$(MSBuildThisFileDirectory)targets\IKVM.Clang.Sdk.props" />
 </Project>

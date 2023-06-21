@@ -29,6 +29,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dist-nuget", "src\dist-nuge
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dist-vsix", "src\dist-vsix\dist-vsix.csproj", "{D34AAA19-4604-4065-9749-7A5CBD139E7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IKVM.Clang.Sdk.Tests", "src\IKVM.Clang.Sdk.Tests\IKVM.Clang.Sdk.Tests.csproj", "{C2ED8CD9-CAD8-4F58-B5A6-2F7C5CF810E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IKVM.Clang.Sdk.Tasks", "src\IKVM.Clang.Sdk.Tasks\IKVM.Clang.Sdk.Tasks.csproj", "{0C061CC8-1BBA-45BA-A3AF-2FC6AF3E4391}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,14 @@ Global
 		{D34AAA19-4604-4065-9749-7A5CBD139E7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D34AAA19-4604-4065-9749-7A5CBD139E7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D34AAA19-4604-4065-9749-7A5CBD139E7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2ED8CD9-CAD8-4F58-B5A6-2F7C5CF810E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2ED8CD9-CAD8-4F58-B5A6-2F7C5CF810E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2ED8CD9-CAD8-4F58-B5A6-2F7C5CF810E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2ED8CD9-CAD8-4F58-B5A6-2F7C5CF810E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C061CC8-1BBA-45BA-A3AF-2FC6AF3E4391}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C061CC8-1BBA-45BA-A3AF-2FC6AF3E4391}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C061CC8-1BBA-45BA-A3AF-2FC6AF3E4391}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C061CC8-1BBA-45BA-A3AF-2FC6AF3E4391}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

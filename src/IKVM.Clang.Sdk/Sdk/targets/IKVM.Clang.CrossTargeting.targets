@@ -24,7 +24,7 @@
         </MSBuild>
     </Target>
 
-    <Target Name="Build" DependsOnTargets="_SetBuildInnerTarget;DispatchToInnerBuilds" />
+    <Target Name="Restore" />
 
     <Target Name="_SetBuildInnerTarget" Returns="@(InnerOutput)">
         <PropertyGroup Condition="'$(InnerTargets)' == ''">
@@ -32,7 +32,7 @@
         </PropertyGroup>
     </Target>
 
-    <Target Name="Clean" DependsOnTargets="_SetCleanInnerTarget;DispatchToInnerBuilds" />
+    <Target Name="Build" DependsOnTargets="_SetBuildInnerTarget;DispatchToInnerBuilds" />
 
     <Target Name="_SetCleanInnerTarget" Returns="@(InnerOutput)">
         <PropertyGroup Condition="'$(InnerTargets)' == ''">
@@ -40,19 +40,9 @@
         </PropertyGroup>
     </Target>
 
+    <Target Name="Clean" DependsOnTargets="_SetCleanInnerTarget;DispatchToInnerBuilds" />
+
     <Target Name="Rebuild" DependsOnTargets="Clean;Build" />
 
     <Import Project="$(CustomAfterIkvmClangCrossTargetingTargets)" Condition="'$(CustomAfterIkvmClangCrossTargetingTargets)' != '' and Exists('$(CustomAfterIkvmClangCrossTargetingTargets)')"/>
-
-    <PropertyGroup>
-        <ImportDirectoryBuildTargets Condition="'$(ImportDirectoryBuildTargets)' == ''">true</ImportDirectoryBuildTargets>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(ImportDirectoryBuildTargets)' == 'true' and '$(DirectoryBuildTargetsPath)' == ''">
-        <_DirectoryBuildTargetsFile Condition="'$(_DirectoryBuildTargetsFile)' == ''">Directory.Build.targets</_DirectoryBuildTargetsFile>
-        <_DirectoryBuildTargetsBasePath Condition="'$(_DirectoryBuildTargetsBasePath)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), '$(_DirectoryBuildTargetsFile)'))</_DirectoryBuildTargetsBasePath>
-        <DirectoryBuildTargetsPath Condition="'$(_DirectoryBuildTargetsBasePath)' != '' and '$(_DirectoryBuildTargetsFile)' != ''">$([System.IO.Path]::Combine('$(_DirectoryBuildTargetsBasePath)', '$(_DirectoryBuildTargetsFile)'))</DirectoryBuildTargetsPath>
-    </PropertyGroup>
-
-    <Import Project="$(DirectoryBuildTargetsPath)" Condition="'$(ImportDirectoryBuildTargets)' == 'true' and exists('$(DirectoryBuildTargetsPath)')"/>
 </Project>

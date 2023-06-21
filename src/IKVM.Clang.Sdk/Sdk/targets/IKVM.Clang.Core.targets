@@ -4,54 +4,46 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <OutputType Condition=" '$(OutputType)' == '' ">SharedLibrary</OutputType>
-        <OutputType>$(OutputType.ToLower())</OutputType>
+        <OutputType Condition=" '$(OutputType)' == '' ">Library</OutputType>
         <UseLld Condition=" '$(UseLld)' == '' ">true</UseLld>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <PlatformName Condition=" '$(PlatformName)' == '' ">$(Platform)</PlatformName>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <ConfigurationName Condition=" '$(ConfigurationName)' == '' ">$(Configuration)</ConfigurationName>
-
-        <BaseOutputPath Condition=" '$(BaseOutputPath)' == '' ">bin\</BaseOutputPath>
-        <BaseOutputPath Condition="!HasTrailingSlash('$(BaseOutputPath)')">$(BaseOutputPath)\</BaseOutputPath>
-        <OutputPath Condition=" '$(OutputPath)' == '' ">$(BaseOutputPath)$(Configuration)\$(TargetMachine)\</OutputPath>
-        <OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</OutputPath>
-
-        <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">obj\</BaseIntermediateOutputPath>
-        <BaseIntermediateOutputPath Condition="!HasTrailingSlash('$(BaseIntermediateOutputPath)')">$(BaseIntermediateOutputPath)\</BaseIntermediateOutputPath>
-        <IntermediateOutputPath Condition=" '$(IntermediateOutputPath)' == '' ">$(BaseIntermediateOutputPath)$(Configuration)\$(TargetMachine)</IntermediateOutputPath>
-        <IntermediateOutputPath Condition="!HasTrailingSlash('$(IntermediateOutputPath)')">$(IntermediateOutputPath)\</IntermediateOutputPath>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <DebugSymbols Condition=" '$(ConfigurationName)' == 'Debug' And '$(DebugSymbols)' == '' ">true</DebugSymbols>
-    </PropertyGroup>
-
-    <PropertyGroup>
+    <PropertyGroup Condition=" '$(OutputType)' == 'exe' ">
         <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And '$(OutputType)' == 'sharedlibrary' And $(TargetMachine.Contains('-linux-')) ">lib</TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And '$(OutputType)' == 'sharedlibrary' And $(TargetMachine.Contains('-apple-')) ">lib</TargetPrefix>
-
-        <TargetExt Condition=" '$(TargetPrefix)' == '' "></TargetExt>
         <TargetExt Condition=" '$(TargetExt)' == '' And '$(OutputType)' == 'exe' And $(TargetMachine.Contains('-windows-'))">.exe</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And '$(OutputType)' == 'sharedlibrary' And $(TargetMachine.Contains('-windows-')) ">.dll</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And '$(OutputType)' == 'sharedlibrary' And $(TargetMachine.Contains('-linux-')) ">.so</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And '$(OutputType)' == 'sharedlibrary' And $(TargetMachine.Contains('-apple-')) ">.dylib</TargetExt>
+        <Subsystem Condition=" '$(Subsystem)' == '' And $(TargetMachine.Contains('-windows-')) ">console</Subsystem>
+    </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(OutputType)' == 'library' ">
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetMachine.Contains('-linux-')) ">lib</TargetPrefix>
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetMachine.Contains('-apple-')) ">lib</TargetPrefix>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-windows-')) ">.dll</TargetExt>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-linux-')) ">.so</TargetExt>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-apple-')) ">.dylib</TargetExt>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(OutputType)' == 'staticlibrary' ">
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetMachine.Contains('-linux-')) ">lib</TargetPrefix>
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetMachine.Contains('-apple-')) ">lib</TargetPrefix>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-windows-')) ">.dll</TargetExt>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-linux-')) ">.so</TargetExt>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-apple-')) ">.dylib</TargetExt>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <ObjectExt Condition=" '$(ObjectExt)' == '' ">.obj</ObjectExt>
+    </PropertyGroup>
+
+    <PropertyGroup>
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetMachine.Contains('-windows-')) ">.pdb</DebugSymbolsExt>
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetMachine.Contains('-linux-')) ">.g</DebugSymbolsExt>
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetMachine.Contains('-apple-')) ">.dsym</DebugSymbolsExt>
     </PropertyGroup>
 
     <PropertyGroup>
-        <ProjectName Condition=" '$(ProjectName)' == '' ">$(MSBuildProjectName)</ProjectName>
         <TargetName Condition=" '$(TargetName)' == '' ">$(ProjectName)</TargetName>
-        <ProjectFileName Condition=" '$(ProjectFileName)' == '' ">$(MSBuildProjectFile)</ProjectFileName>
-        <ProjectExt Condition=" '$(ProjectExt)' == '' ">$(MSBuildProjectExtension)</ProjectExt>
-
         <TargetFileName Condition=" '$(TargetFileName)' == '' ">$(TargetPrefix)$(TargetName)$(TargetExt)</TargetFileName>
         <DebugSymbolsFileName Condition=" '$(DebugSymbolsFileName)' == '' ">$(TargetPrefix)$(TargetName)$(DebugSymbolsExt)</DebugSymbolsFileName>
 
@@ -60,9 +52,6 @@
 
         <IntermediateDebugSymbolsPath Condition=" '$(IntermediateDebugSymbolsPath)' == '' ">$(IntermediateOutputPath)$(DebugSymbolsFileName)</IntermediateDebugSymbolsPath>
         <DebugSymbolsPath Condition=" '$(DebugSymbolsPath)' == '' ">$(OutputPath)$(DebugSymbolsFileName)</DebugSymbolsPath>
-
-        <ClangResponseFileName Condition=" '$(ClangResponseFileName)' == '' ">$(TargetName).clang.rsp</ClangResponseFileName>
-        <ClangResponseFile Condition=" '$(ClangResponseFile)' == '' ">$(IntermediateOutputPath)$(ClangResponseFileName)</ClangResponseFile>
     </PropertyGroup>
 
     <!--
@@ -89,95 +78,6 @@
             </TargetItem>
         </ItemGroup>
     </Target>
-
-    <PropertyGroup>
-        <PreBuildEventDependsOn></PreBuildEventDependsOn>
-        <PostBuildEventDependsOn></PostBuildEventDependsOn>
-    </PropertyGroup>
-
-    <Target
-        Name="PreBuildEvent"
-        Condition="'$(PreBuildEvent)'!=''"
-        DependsOnTargets="$(PreBuildEventDependsOn)">
-
-        <Exec WorkingDirectory="$(OutDir)" Command="$(PreBuildEvent)" />
-    </Target>
-
-    <Target
-        Name="PostBuildEvent"
-        Condition="'$(PostBuildEvent)'!=''"
-        DependsOnTargets="$(PostBuildEventDependsOn)">
-
-        <Exec WorkingDirectory="$(OutDir)" Command="$(PostBuildEvent)" />
-    </Target>
-
-    <PropertyGroup>
-        <BuildDependsOn>
-            BeforeBuild;
-            CoreBuild;
-            AfterBuild
-        </BuildDependsOn>
-    </PropertyGroup>
-
-    <Target Name="Build" Condition=" '$(_InvalidConfigurationWarning)' != 'true' " DependsOnTargets="$(BuildDependsOn)" Returns="@(TargetPath)" />
-
-    <Target Name="BeforeBuild"/>
-
-    <Target Name="AfterBuild"/>
-
-    <PropertyGroup>
-        <CoreBuildDependsOn>
-            PreBuildEvent;
-            Compile;
-            GetTargetItem;
-            PrepareForRun;
-            PostBuildEvent
-        </CoreBuildDependsOn>
-    </PropertyGroup>
-
-    <Target Name="CoreBuild" DependsOnTargets="$(CoreBuildDependsOn)">
-        <OnError ExecuteTargets="_TimeStampAfterCompile;PostBuildEvent" Condition="'$(RunPostBuildEvent)'=='Always' or '$(RunPostBuildEvent)'=='OnOutputUpdated'"/>
-    </Target>
-
-    <PropertyGroup>
-        <_ProjectDefaultTargets Condition="'$(MSBuildProjectDefaultTargets)' != ''">$(MSBuildProjectDefaultTargets)</_ProjectDefaultTargets>
-        <_ProjectDefaultTargets Condition="'$(MSBuildProjectDefaultTargets)' == ''">Build</_ProjectDefaultTargets>
-
-        <RebuildDependsOn>
-            BeforeRebuild;
-            Clean;
-            $(_ProjectDefaultTargets);
-            AfterRebuild;
-        </RebuildDependsOn>
-
-        <RebuildDependsOn Condition=" '$(MSBuildProjectDefaultTargets)' == 'Rebuild' " >
-            BeforeRebuild;
-            Clean;
-            Build;
-            AfterRebuild;
-        </RebuildDependsOn>
-    </PropertyGroup>
-
-    <Target Name="Rebuild" Condition=" '$(_InvalidConfigurationWarning)' != 'true' " DependsOnTargets="$(RebuildDependsOn)" Returns="$(TargetPath)"/>
-
-    <Target Name="BeforeRebuild"/>
-
-    <Target Name="AfterRebuild"/>
-
-    <PropertyGroup>
-        <CompileDependsOn>
-            BeforeCompile;
-            PrepareCompile;
-            CoreCompile;
-            AfterCompile;
-        </CompileDependsOn>
-    </PropertyGroup>
-
-    <Target Name="Compile" DependsOnTargets="$(CompileDependsOn)"/>
-
-    <Target Name="BeforeCompile" />
-
-    <Target Name="AfterCompile" />
 
     <UsingTask TaskName="IkvmClangSdkGenerateUniqueFileName" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
         <ParameterGroup>
@@ -209,7 +109,7 @@
         </Task>
     </UsingTask>
 
-    <Target Name="PrepareCompile">
+    <Target Name="PrepareCompile" Condition=" '@(Compile)' != '' ">
         <MakeDir Directories="$(IntermediateOutputPath)" />
 
         <!-- ensure members of the Compile group have necessary metadata -->
@@ -225,9 +125,11 @@
             <Compile Remove="@(Compile)" />
         </ItemGroup>
 
-        <IkvmClangSdkGenerateUniqueFileName Items="@(_Compile)" MetadataName="ObjectFilePath" Extension=".obj" Directory="$(IntermediateOutputPath)">
+        <IkvmClangSdkGenerateUniqueFileName Items="@(_Compile)" MetadataName="OutputPath" Extension="$(ObjectExt)" Directory="$(IntermediateOutputPath)">
             <Output TaskParameter="Items" ItemName="Compile" />
         </IkvmClangSdkGenerateUniqueFileName>
+
+        <Message Text="OutputPath: @(Compile->'%(OutputPath)')" Importance="high" />
     </Target>
 
     <PropertyGroup>
@@ -237,9 +139,9 @@
         </CoreCompileDependsOn>
     </PropertyGroup>
 
-    <Target Name="CoreCompile" DependsOnTargets="PrepareCompile" Inputs="@(Compile)" Outputs="%(ObjectFilePath)">
+    <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)" Inputs="@(Compile)" Outputs="%(OutputPath)">
         <PropertyGroup>
-            <_ObjectFilePath>%(Compile.ObjectFilePath)</_ObjectFilePath>
+            <_OutputPath>%(Compile.OutputPath)</_OutputPath>
         </PropertyGroup>
 
         <ItemGroup>
@@ -277,7 +179,7 @@
 
             <_Args Include="&quot;%(Compile.Identity)&quot;" />
 
-            <_Args Include="-o;&quot;$(_ObjectFilePath)&quot;" />
+            <_Args Include="-o;&quot;$(_OutputPath)&quot;" />
         </ItemGroup>
 
         <Exec Command="clang @(_Args, ' ')" />
@@ -285,7 +187,7 @@
 
     <PropertyGroup>
         <LinkDependsOn>
-            Compile;
+            CoreCompile;
             BeforeLink;
             PrepareLink;
             CoreLink;
@@ -301,80 +203,61 @@
 
     <Target Name="PrepareLink">
         <MakeDir Directories="$(IntermediateOutputPath)" />
-
-        <ItemGroup>
-            <Link Include="@(Compile->'%(ObjectFilePath)')">
-                <OutputType>$(OutputType)</OutputType>
-                <IntermediateTargetPath>$(IntermediateTargetPath)</IntermediateTargetPath>
-                <TargetFilePath>$(TargetPath)</TargetFilePath>
-            </Link>
-        </ItemGroup>
     </Target>
 
     <PropertyGroup>
         <CoreLinkDependsOn>
+            CoreCompile;
             PrepareLink;
             $(CoreLinkDependsOn);
         </CoreLinkDependsOn>
     </PropertyGroup>
 
-    <Target Name="CoreLink" DependsOnTargets="Compile;$(CoreLinkDependsOn)" Inputs="@(Link)" Outputs="%(TargetFilePath)">
-        <PropertyGroup>
-            <_TargetFilePath>%(Link.TargetFilePath)</_TargetFilePath>
-            <_IntermediateTargetPath>%(Link.IntermediateTargetPath)</_IntermediateTargetPath>
-        </PropertyGroup>
-
+    <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(OutputPath)')" Outputs="$(IntermediateTargetPath);$(IntermediateDebugSymbolsPath)">
         <ItemGroup>
             <_Args Remove="@(_Args)" />
-            <_Args Include="-shared" Condition=" '%(Link.OutputType)' == 'sharedlibrary' " />
-            <_Args Include="-static" Condition=" '%(Link.OutputType)' == 'staticlibrary' " />
+            <_Args Include="-shared" Condition=" '$(OutputType)' == 'library' " />
+            <_Args Include="-static" Condition=" '$(OutputType)' == 'staticlibrary' " />
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
             <_Args Include="--target=$(TargetMachine)" />
             <_Args Include="-fuse-ld=lld" Condition=" '$(UseLld)' == 'true' " />
-            <_Args Include="-g" Condition=" '%(Link.DebugSymbols)' == 'true' " />
+            <_Args Include="-g" Condition=" '$(DebugSymbols)' == 'true' " />
 
-            <_SystemRootDirectories Include="%(Link.SystemRootDirectories)" />
+            <_SystemRootDirectories Include="$(SystemRootDirectories)" />
             <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;')" Condition=" '@(_SystemRootDirectories)' != '' " />
 
-            <_IncludeSystemRootDirectories Include="%(Link.IncludeSystemRootDirectories)" />
+            <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
             <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;')" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
 
-            <_LibraryDirectories Include="%(Link.LibraryDirectories)" />
+            <_LibraryDirectories Include="$(LibraryDirectories)" />
             <_Args Include="@(_LibraryDirectories->'-L &quot;%(Identity)&quot;')" Condition=" '@(_LibraryDirectories)' != '' " />
 
-            <_Dependencies Include="%(Link.Dependencies)" />
+            <_Dependencies Include="$(Dependencies)" />
             <_Args Include="@(_Dependencies->'-l &quot;%(Identity)&quot;')" Condition=" '@(_Dependencies)' != '' " />
 
-            <_AdditionalOptions Include="%(Link.AdditionalOptions)" />
+            <_AdditionalOptions Include="$(AdditionalOptions)" />
             <_Args Include="@(_AdditionalOptions)" />
 
-            <_Args Include="&quot;%(Link.Identity)&quot;" />
+            <_Args Include="@(Compile->'&quot;%(OutputPath)&quot;')" />
 
-            <_Args Include="-o;&quot;$(_IntermediateTargetPath)&quot;" />
+            <_Args Include="-o;&quot;$(IntermediateTargetPath)&quot;" />
         </ItemGroup>
 
         <Exec Command="clang @(_Args, ' ')" />
     </Target>
 
     <PropertyGroup>
-        <CopyFilesToOutputDirectoryDependsOn>
-            Compile;
+        <CompileDependsOn>
+            $(CompileDependsOn);
             Link;
-        </CopyFilesToOutputDirectoryDependsOn>
+        </CompileDependsOn>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
     </PropertyGroup>
 
-    <Target Name="CopyFilesToOutputDirectory" DependsOnTargets="$(CopyFilesToOutputDirectoryDependsOn)">
-        <PropertyGroup>
-            <CreateHardLinksForCopyFilesToOutputDirectoryIfPossible Condition="'$(BuildingInsideVisualStudio)' == 'true' or '$(CreateHardLinksForCopyFilesToOutputDirectoryIfPossible)' == ''">false</CreateHardLinksForCopyFilesToOutputDirectoryIfPossible>
-            <CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible Condition="'$(BuildingInsideVisualStudio)' == 'true' or '$(CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible)' == ''">false</CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible>
-            <ErrorIfLinkFailsForCopyFilesToOutputDirectory Condition="'$(BuildingInsideVisualStudio)' == 'true' or '$(ErrorIfLinkFailsForCopyFilesToOutputDirectory)' == ''">false</ErrorIfLinkFailsForCopyFilesToOutputDirectory>
-        </PropertyGroup>
-
-        <PropertyGroup>
-            <CopyTargetToOutputDirectory Condition=" '$(CopyTargetToOutputDirectory)' == '' ">true</CopyTargetToOutputDirectory>
-            <CopyDebugSymbolsToOutputDirectory Condition=" '$(CopyDebugSymbolsToOutputDirectory)' == '' ">true</CopyDebugSymbolsToOutputDirectory>
-        </PropertyGroup>
-
+    <Target Name="CopyBuildOutputToOutputDirectory" AfterTargets="CopyFilesToOutputDirectory">
         <Copy
             SourceFiles="$(IntermediateTargetPath)"
             DestinationFiles="$(TargetPath)"
@@ -385,14 +268,12 @@
             UseHardlinksIfPossible="$(CreateHardLinksForCopyFilesToOutputDirectoryIfPossible)"
             UseSymboliclinksIfPossible="$(CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible)"
             ErrorIfLinkFails="$(ErrorIfLinkFailsForCopyFilesToOutputDirectory)"
-            Condition="'$(CopyTargetToOutputDirectory)' == 'true' and '$(SkipCopyBuildProduct)' != 'true'">
-            <Output TaskParameter="DestinationFiles" ItemName="MainAssembly"/>
+            Condition=" '$(CopyBuildOutputToOutputDirectory)' == 'true' And '$(SkipCopyBuildProduct)' != 'true' ">
             <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
         </Copy>
-
         <Copy
-            SourceFiles="$(IntermediateDebugSymbolsPath)"
-            DestinationFiles="$(DebugSymbolsPath)"
+            SourceFiles="@(IntermediateDebugSymbolsPath)"
+            DestinationFiles="@(DebugSymbolsPath)"
             SkipUnchangedFiles="$(SkipCopyUnchangedFiles)"
             OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
             Retries="$(CopyRetryCount)"
@@ -400,21 +281,15 @@
             UseHardlinksIfPossible="$(CreateHardLinksForCopyFilesToOutputDirectoryIfPossible)"
             UseSymboliclinksIfPossible="$(CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible)"
             ErrorIfLinkFails="$(ErrorIfLinkFailsForCopyFilesToOutputDirectory)"
-            Condition="Exists('$(IntermediateDebugSymbolsPath)') And '$(CopyDebugSymbolsToOutputDirectory)' == 'true' and '$(SkipCopyBuildProduct)' != 'true'">
-            <Output TaskParameter="DestinationFiles" ItemName="MainAssembly"/>
+            Condition=" '$(CopyOutputSymbolsToOutputDirectory)' == 'true' And '$(SkipCopyingSymbolsToOutputDirectory)' != 'true' ">
             <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
         </Copy>
-
     </Target>
 
-    <PropertyGroup>
-        <PrepareForRunDependsOn>
-            CopyFilesToOutputDirectory
-        </PrepareForRunDependsOn>
-    </PropertyGroup>
-
-    <Target Name="PrepareForRun" DependsOnTargets="$(PrepareForRunDependsOn)">
-
+    <Target Name="CreateManifestResourceNames" Condition=" '@(EmbeddedResource)' != '' " DependsOnTargets="$(CreateManifestResourceNamesDependsOn)">
+        <ItemGroup>
+            <_Temporary Remove="@(_Temporary)" />
+        </ItemGroup>
     </Target>
 
 </Project>
