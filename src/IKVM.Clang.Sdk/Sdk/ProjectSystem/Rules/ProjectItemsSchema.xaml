@@ -36,7 +36,7 @@
     <ContentType
         Name="CppHeader"
         DisplayName="C/C++ Header"
-        ItemType="ClInclude">
+        ItemType="Include">
     </ContentType>
 
     <ContentType

@@ -76,7 +76,7 @@ namespace IKVM.Clang.Sdk.Tests
                 .Save(Path.Combine(@"Project", "nuget.config"));
 
             var manager = new AnalyzerManager();
-            var analyzer = manager.GetProject(Path.Combine(@"Project", "SharedLibrary", "SharedLibrary.clangproj"));
+            var analyzer = manager.GetProject(Path.Combine(@"Project", "Executable", "Executable.clangproj"));
             analyzer.AddBuildLogger(new TargetLogger(TestContext) { Verbosity = LoggerVerbosity.Detailed });
             analyzer.AddBinaryLogger("msbuild.binlog");
 
@@ -116,11 +116,11 @@ namespace IKVM.Clang.Sdk.Tests
 
             foreach (var target in targets)
             {
-                TestContext.WriteLine("Building with TargetMachines {0}.", target);
+                TestContext.WriteLine("Building with TargetIdentifier {0}.", target);
                 var options = new EnvironmentOptions();
                 options.DesignTime = false;
                 options.Restore = false;
-                options.GlobalProperties["TargetMachine"] = target;
+                options.GlobalProperties["TargetIdentifier"] = target;
                 options.TargetsToBuild.Clear();
                 options.TargetsToBuild.Add("Build");
                 analyzer.Build(o).OverallSuccess.Should().Be(true);

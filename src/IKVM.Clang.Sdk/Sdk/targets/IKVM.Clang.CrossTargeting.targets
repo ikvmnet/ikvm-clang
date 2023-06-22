@@ -10,10 +10,10 @@
 
     <Target Name="_ComputeInnerBuildProjects">
         <ItemGroup>
-            <_TargetMachine Include="$(TargetMachines)" />
-            <_TargetMachineNormalized Include="@(_TargetMachine->Trim()->Distinct())" />
+            <_TargetIdentifier Include="$(TargetIdentifiers)" />
+            <_TargetIdentifierNormalized Include="@(_TargetIdentifier->Trim()->Distinct())" />
             <_InnerBuildProjects Include="$(MSBuildProjectFile)">
-                <AdditionalProperties>TargetMachine=%(_TargetMachineNormalized.Identity)</AdditionalProperties>
+                <AdditionalProperties>TargetIdentifier=%(_TargetIdentifierNormalized.Identity)</AdditionalProperties>
             </_InnerBuildProjects>
         </ItemGroup>
     </Target>

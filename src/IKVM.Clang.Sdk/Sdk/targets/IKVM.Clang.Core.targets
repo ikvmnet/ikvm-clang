@@ -5,31 +5,32 @@
 
     <PropertyGroup>
         <OutputType Condition=" '$(OutputType)' == '' ">Library</OutputType>
+        <TargetTriplet Condition=" '$(TargetTriplet)' == '' ">$(TargetIdentifier)</TargetTriplet>
         <UseLld Condition=" '$(UseLld)' == '' ">true</UseLld>
     </PropertyGroup>
-
+    
     <PropertyGroup Condition=" '$(OutputType)' == 'exe' ">
         <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
-        <TargetExt Condition=" '$(TargetExt)' == '' And '$(OutputType)' == 'exe' And $(TargetMachine.Contains('-windows-'))">.exe</TargetExt>
-        <Subsystem Condition=" '$(Subsystem)' == '' And $(TargetMachine.Contains('-windows-')) ">console</Subsystem>
+        <TargetExt Condition=" '$(TargetExt)' == '' And '$(OutputType)' == 'exe' And $(TargetTriplet.Contains('-windows-'))">.exe</TargetExt>
+        <Subsystem Condition=" '$(Subsystem)' == '' And $(TargetTriplet.Contains('-windows-')) ">console</Subsystem>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(OutputType)' == 'library' ">
         <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetMachine.Contains('-linux-')) ">lib</TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetMachine.Contains('-apple-')) ">lib</TargetPrefix>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-windows-')) ">.dll</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-linux-')) ">.so</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-apple-')) ">.dylib</TargetExt>
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriplet.Contains('-linux-')) ">lib</TargetPrefix>
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriplet.Contains('-apple-')) ">lib</TargetPrefix>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-windows-')) ">.dll</TargetExt>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-linux-')) ">.so</TargetExt>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-apple-')) ">.dylib</TargetExt>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(OutputType)' == 'staticlibrary' ">
         <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetMachine.Contains('-linux-')) ">lib</TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetMachine.Contains('-apple-')) ">lib</TargetPrefix>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-windows-')) ">.dll</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-linux-')) ">.so</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetMachine.Contains('-apple-')) ">.dylib</TargetExt>
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriplet.Contains('-linux-')) ">lib</TargetPrefix>
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriplet.Contains('-apple-')) ">lib</TargetPrefix>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-windows-')) ">.dll</TargetExt>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-linux-')) ">.so</TargetExt>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-apple-')) ">.dylib</TargetExt>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -37,9 +38,9 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetMachine.Contains('-windows-')) ">.pdb</DebugSymbolsExt>
-        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetMachine.Contains('-linux-')) ">.g</DebugSymbolsExt>
-        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetMachine.Contains('-apple-')) ">.dsym</DebugSymbolsExt>
+        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriplet.Contains('-windows-')) ">.pdb</DebugSymbolsExt>
+        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriplet.Contains('-linux-')) ">.g</DebugSymbolsExt>
+        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriplet.Contains('-apple-')) ">.dsym</DebugSymbolsExt>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -148,7 +149,7 @@
             <_Args Remove="@(_Args)" />
             <_Args Include="-c" />
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
-            <_Args Include="--target=$(TargetMachine)" />
+            <_Args Include="--target=$(TargetTriplet)" />
             <_Args Include="-g" Condition=" '%(Compile.DebugSymbols)' == 'true' " />
 
             <_Args Include="-std=%(Compile.LanguageStandard)" Condition=" '%(Compile.LanguageStandard)' != '' " />
@@ -219,9 +220,11 @@
             <_Args Include="-shared" Condition=" '$(OutputType)' == 'library' " />
             <_Args Include="-static" Condition=" '$(OutputType)' == 'staticlibrary' " />
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
-            <_Args Include="--target=$(TargetMachine)" />
+            <_Args Include="--target=$(TargetTriplet)" />
             <_Args Include="-fuse-ld=lld" Condition=" '$(UseLld)' == 'true' " />
             <_Args Include="-g" Condition=" '$(DebugSymbols)' == 'true' " />
+
+            <_Args Include="-Xlinker /subsystem:$(Subsystem)" Condition=" '$(Subsystem)' != '' " />
 
             <_SystemRootDirectories Include="$(SystemRootDirectories)" />
             <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;')" Condition=" '@(_SystemRootDirectories)' != '' " />

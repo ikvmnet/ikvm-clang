@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <IsCrossTargetingBuild Condition=" '$(TargetMachines)' != '' And '$(TargetMachine)' == '' ">true</IsCrossTargetingBuild>
+        <IsCrossTargetingBuild Condition=" '$(TargetIdentifiers)' != '' And '$(TargetIdentifier)' == '' ">true</IsCrossTargetingBuild>
     </PropertyGroup>
 
     <Choose>

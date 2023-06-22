@@ -2,12 +2,21 @@
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.props" />
 
     <PropertyGroup>
-        <OutputType>Library</OutputType>
+        <OutputType>Exe</OutputType>
         <TargetIdentifiers>x86_64-pc-windows-msvc;i686-pc-windows-msvc;aarch64-pc-windows-msvc</TargetIdentifiers>
+        <UseLld>true</UseLld>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="$(TargetIdentifier.Contains('-windows-'))">
+        <Subsystem>console</Subsystem>
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="hello.c" />
+        <ProjectReference Include="..\Executable\Executable.clangproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Compile Include="main.c" />
     </ItemGroup>
 
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.targets" />
