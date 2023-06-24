@@ -8,8 +8,8 @@
         <TargetIdentifiers>x86_64-pc-windows-msvc;i686-pc-windows-msvc;aarch64-pc-windows-msvc</TargetIdentifiers>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="hello.c" />
-        <Header Include="hello.h" />
+        <Compile Include="hello2.c" />
+        <Header Include="hello2.h" />
     </ItemGroup>
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.targets" />
 </Project>

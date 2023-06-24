@@ -17,6 +17,7 @@
     <ItemDefinitionGroup>
         <Header>
             <CopyToIncludeDirectory>true</CopyToIncludeDirectory>
+            <IncludePath>%(RecursiveDir)%(Filename)%(Extension)</IncludePath>
         </Header>
     </ItemDefinitionGroup>
 
