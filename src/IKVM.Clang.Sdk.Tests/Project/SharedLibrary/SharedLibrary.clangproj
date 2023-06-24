@@ -1,14 +1,15 @@
 ﻿<Project>
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.props" />
-
+    <PropertyGroup Label="Globals">
+        <ProjectGuid>f511e617-3e18-4dc6-9936-8746f3060663</ProjectGuid>
+    </PropertyGroup>
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <TargetIdentifiers>x86_64-pc-windows-msvc;i686-pc-windows-msvc;aarch64-pc-windows-msvc</TargetIdentifiers>
     </PropertyGroup>
-
     <ItemGroup>
         <Compile Include="hello.c" />
+        <Header Include="hello.h" />
     </ItemGroup>
-
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.targets" />
 </Project>

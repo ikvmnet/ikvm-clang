@@ -8,7 +8,7 @@
         <TargetTriplet Condition=" '$(TargetTriplet)' == '' ">$(TargetIdentifier)</TargetTriplet>
         <UseLld Condition=" '$(UseLld)' == '' ">true</UseLld>
     </PropertyGroup>
-    
+
     <PropertyGroup Condition=" '$(OutputType)' == 'exe' ">
         <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
         <TargetExt Condition=" '$(TargetExt)' == '' And '$(OutputType)' == 'exe' And $(TargetTriplet.Contains('-windows-'))">.exe</TargetExt>
@@ -16,15 +16,6 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(OutputType)' == 'library' ">
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriplet.Contains('-linux-')) ">lib</TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriplet.Contains('-apple-')) ">lib</TargetPrefix>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-windows-')) ">.dll</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-linux-')) ">.so</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-apple-')) ">.dylib</TargetExt>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(OutputType)' == 'staticlibrary' ">
         <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
         <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriplet.Contains('-linux-')) ">lib</TargetPrefix>
         <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriplet.Contains('-apple-')) ">lib</TargetPrefix>
@@ -48,18 +39,31 @@
         <TargetFileName Condition=" '$(TargetFileName)' == '' ">$(TargetPrefix)$(TargetName)$(TargetExt)</TargetFileName>
         <DebugSymbolsFileName Condition=" '$(DebugSymbolsFileName)' == '' ">$(TargetPrefix)$(TargetName)$(DebugSymbolsExt)</DebugSymbolsFileName>
 
-        <IntermediateTargetPath Condition=" '$(IntermediateTargetPath)' == '' ">$(IntermediateOutputPath)$(TargetFileName)</IntermediateTargetPath>
-        <TargetPath Condition=" '$(TargetPath)' == '' ">$(OutputPath)$(TargetFileName)</TargetPath>
+        <!-- output libraries and binaries to different directories -->
+        <LibraryPathName Condition=" '$(LibraryPathName)' == '' ">lib\</LibraryPathName>
+        <BinaryPathName Condition=" '$(BinaryPathName)' == '' ">bin\</BinaryPathName>
 
-        <IntermediateDebugSymbolsPath Condition=" '$(IntermediateDebugSymbolsPath)' == '' ">$(IntermediateOutputPath)$(DebugSymbolsFileName)</IntermediateDebugSymbolsPath>
-        <DebugSymbolsPath Condition=" '$(DebugSymbolsPath)' == '' ">$(OutputPath)$(DebugSymbolsFileName)</DebugSymbolsPath>
+        <!-- target directory for output -->
+        <TargetPathName Condition=" '$(OutputType)' == 'library' ">$(LibraryPathName)</TargetPathName>
+        <TargetPathName Condition=" '$(OutputType)' == 'exe' ">$(BinaryPathName)</TargetPathName>
+
+        <!-- target output paths -->
+        <IntermediateTargetPath>$(IntermediateOutputPath)$(TargetPathName)$(TargetFileName)</IntermediateTargetPath>
+        <TargetPath>$(OutputPath)$(TargetPathName)$(TargetFileName)</TargetPath>
+        <IntermediateDebugSymbolsPath>$(IntermediateOutputPath)$(TargetPathName)$(DebugSymbolsFileName)</IntermediateDebugSymbolsPath>
+        <DebugSymbolsPath>$(OutputPath)$(TargetPathName)$(DebugSymbolsFileName)</DebugSymbolsPath>
+
+        <!-- output into /include directory -->
+        <IntermediateIncludePath Condition=" '$(IntermediateIncludePath)' == '' ">$(IntermediateOutputPath)\include\</IntermediateIncludePath>
+        <IncludePath Condition=" '$(IncludePath)' == '' ">$(OutputPath)\include\</IncludePath>
+        <LibraryPath Condition=" '$(LibraryPath)' == '' ">$(OutputPath)\$(LibraryPathName)</LibraryPath>
     </PropertyGroup>
 
     <!--
     
     GetTargetItem
     
-    Externally callable target that returns information about the target being built.
+    Externally callable target that returns information about the native target being built.
     
     -->
 
@@ -69,14 +73,148 @@
         </GetTargetItemDependsOn>
     </PropertyGroup>
 
-    <Target Name="GetTargetItem" DependsOnTargets="$(GetTargetItemDependsOn)" Returns="@(TargetItem)">
+    <Target Name="GetTargetItem" DependsOnTargets="$(GetTargetItemDependsOn)" Returns="@(GetTargetItem)">
         <ItemGroup>
-            <TargetItem Include="$(IntermediateTargetPath)">
+            <GetTargetItem Include="$(TargetPath)">
+                <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
                 <TargetName>$(TargetName)</TargetName>
+                <TargetPath>$([System.IO.Path]::GetFullPath('$(TargetPath)'))</TargetPath>
                 <TargetFileName>$(TargetFileName)</TargetFileName>
                 <DebugSymbolsFileName>$(DebugSymbolsFileName)</DebugSymbolsFileName>
+                <DebugSymbolsPath>$([System.IO.Path]::GetFullPath('$(DebugSymbolsPath)'))</DebugSymbolsPath>
+                <IncludePath>$([System.IO.Path]::GetFullPath('$(IncludePath)'))</IncludePath>
+                <LibraryPath>$([System.IO.Path]::GetFullPath('$(LibraryPath)'))</LibraryPath>
                 <Version>$(Version)</Version>
-            </TargetItem>
+                <CopyUpToDateMarker>@(CopyUpToDateMarker)</CopyUpToDateMarker>
+            </GetTargetItem>
+        </ItemGroup>
+    </Target>
+
+    <!--
+    
+    AssignProjectConfiguration
+    
+    Assigns the appropriate configuration to each project in the list of project references passed in.
+    Adds to the project references passed in any project references implied by dependencies expressed in the solution file, if any.
+    
+    -->
+    
+    <Target Name="AssignProjectConfiguration" Condition="'$(CurrentSolutionConfigurationContents)' != '' or '@(ProjectReference)'!=''">
+        <PropertyGroup>
+            <OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration Condition="'$(OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration)' == ''">true</OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration>
+            <ShouldUnsetParentConfigurationAndPlatform Condition="'$(ShouldUnsetParentConfigurationAndPlatform)' == '' and ('$(BuildingInsideVisualStudio)' == 'true' or '$(BuildingSolutionFile)' == 'true')">true</ShouldUnsetParentConfigurationAndPlatform>
+            <ShouldUnsetParentConfigurationAndPlatform Condition="'$(ShouldUnsetParentConfigurationAndPlatform)' == ''">false</ShouldUnsetParentConfigurationAndPlatform>
+            <AddSyntheticProjectReferencesForSolutionDependencies Condition="'$(AddSyntheticProjectReferencesForSolutionDependencies)' == '' and '$(BuildingInsideVisualStudio)' != 'true'">true</AddSyntheticProjectReferencesForSolutionDependencies>
+        </PropertyGroup>
+
+        <AssignProjectConfiguration ProjectReferences="@(ProjectReference)" CurrentProject="$(MSBuildProjectFullPath)" CurrentProjectConfiguration="$(Configuration)" CurrentProjectPlatform="$(Platform)" DefaultToVcxPlatformMapping="$(DefaultToVcxPlatformMapping)" VcxToDefaultPlatformMapping="$(VcxToDefaultPlatformMapping)" OutputType="$(OutputType)" ResolveConfigurationPlatformUsingMappings="false" SolutionConfigurationContents="$(CurrentSolutionConfigurationContents)" AddSyntheticProjectReferencesForSolutionDependencies="$(AddSyntheticProjectReferencesForSolutionDependencies)" OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration="$(OnlyReferenceAndBuildProjectsEnabledInSolutionConfiguration)" ShouldUnsetParentConfigurationAndPlatform="$(ShouldUnsetParentConfigurationAndPlatform)">
+            <Output TaskParameter="AssignedProjects" ItemName="ProjectReferenceWithConfiguration"/>
+            <Output TaskParameter="UnassignedProjects" ItemName="ProjectReferenceWithConfiguration"/>
+        </AssignProjectConfiguration>
+
+        <ItemGroup>
+            <ProjectReferenceWithConfiguration>
+                <BuildReference Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == ''">true</BuildReference>
+                <ReferenceOutputAssembly Condition="'%(ProjectReferenceWithConfiguration.ReferenceOutputAssembly)' == ''">true</ReferenceOutputAssembly>
+            </ProjectReferenceWithConfiguration>
+        </ItemGroup>
+    </Target>
+
+    <!--
+    
+    ResolveProjectReferences
+    
+    We query any ProjectReferences for native libraries and collect the results.
+    
+    -->
+
+    <ItemDefinitionGroup>
+        <ProjectReference>
+            <Targets>$(ProjectReferenceBuildTargets)</Targets>
+            <OutputItemType/>
+            <ReferenceSourceTarget>ProjectReference</ReferenceSourceTarget>
+        </ProjectReference>
+    </ItemDefinitionGroup>
+    
+    <PropertyGroup>
+        <ResolveProjectReferencesDependsOn>
+            $(ResolveProjectReferencesDependsOn);
+        </ResolveProjectReferencesDependsOn>
+    </PropertyGroup>
+
+    <Target Name="ResolveProjectReferences" DependsOnTargets="$(ResolveProjectReferencesDependsOn)" Returns="@(_ResolvedNativeItemProjectReferences)">
+        <MSBuild
+            Projects="@(_MSBuildProjectReferenceExistent)"
+            Targets="GetTargetItem"
+            BuildInParallel="$(BuildInParallel)"
+            Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration);%(_MSBuildProjectReferenceExistent.SetPlatform);%(_MSBuildProjectReferenceExistent.SetTargetIdentifier);"
+            Condition="'%(_MSBuildProjectReferenceExistent.BuildReference)' == 'true' and '@(ProjectReferenceWithConfiguration)' != '' and ('$(BuildingInsideVisualStudio)' == 'true' or '$(BuildProjectReferences)' != 'true') and '$(VisualStudioVersion)' != '10.0' and '@(_MSBuildProjectReferenceExistent)' != ''"
+            ContinueOnError="!$(BuildingProject)"
+            RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
+            RebaseOutputs="true">
+            <Output TaskParameter="TargetOutputs" ItemName="_ResolvedProjectReferences" Condition=" '%(_MSBuildProjectReferenceExistent.ReferenceLibrary)' == 'true' "/>
+        </MSBuild>
+        <MSBuild
+            Projects="@(_MSBuildProjectReferenceExistent)"
+            Targets="%(_MSBuildProjectReferenceExistent.Targets)"
+            BuildInParallel="$(BuildInParallel)"
+            Properties="%(_MSBuildProjectReferenceExistent.SetConfiguration);%(_MSBuildProjectReferenceExistent.SetPlatform);%(_MSBuildProjectReferenceExistent.SetTargetIdentifier);"
+            Condition="'%(_MSBuildProjectReferenceExistent.BuildReference)' == 'true' and '@(ProjectReferenceWithConfiguration)' != '' and ('$(BuildingInsideVisualStudio)' == 'true' or '$(BuildProjectReferences)' != 'true') and '$(VisualStudioVersion)' != '10.0' and '@(_MSBuildProjectReferenceExistent)' != ''"
+            ContinueOnError="!$(BuildingProject)"
+            RemoveProperties="%(_MSBuildProjectReferenceExistent.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
+            RebaseOutputs="true">
+        </MSBuild>
+
+        <Warning Text="The referenced project '%(_MSBuildProjectReferenceNonexistent.Identity)' does not exist." Condition="'@(ProjectReferenceWithConfiguration)' != '' and '@(_MSBuildProjectReferenceNonexistent)' != ''"/>
+    </Target>
+
+    <Target Name="ResolveProjectReferencesDesignTime" Returns="@(_ProjectReferencesFromRAR);@(_ResolvedNativeProjectReferencePaths)" DependsOnTargets="ResolveProjectReferences">
+        
+    </Target>
+
+    <!--
+    
+    AssignNativeItems
+    
+    Collect any native items resolved from ProjectReferences and configure locally.
+    
+    -->
+    <PropertyGroup>
+        <AssignNativeItemsDependsOn>
+            $(AssignNativeItemsDependsOn);
+            ResolveNativeItemProjectReferences;
+        </AssignNativeItemsDependsOn>
+    </PropertyGroup>
+
+    <Target Name="AssignNativeItems" DependsOnTargets="$(AssignNativeItemsDependsOn)">
+        <ItemGroup>
+            <IncludeDirectories Include="@(_ResolvedNativeItemProjectReferences->'%(IncludePath)')" />
+        </ItemGroup>
+        <ItemGroup>
+            <Dependencies Include="@(_ResolvedNativeItemProjectReferences->'%(TargetName)')" />
+            <LibraryDirectories Include="@(_ResolvedNativeItemProjectReferences->'%(LibraryPath)')" />
+        </ItemGroup>
+    </Target>
+
+    <!--
+    
+    GetCopyToIncludeDirectoryItems
+    
+    Collect any items that need to be copied to the output include directory for other projects.
+    
+    -->
+    <PropertyGroup>
+        <GetCopyToIncludeDirectoryItemsDependsOn>
+            $(GetCopyToIncludeDirectoryItemsDependsOn);
+            ResolveNativeItemProjectReferences;
+        </GetCopyToIncludeDirectoryItemsDependsOn>
+    </PropertyGroup>
+
+    <Target Name="GetCopyToIncludeDirectoryItems" DependsOnTargets="$(GetCopyToIncludeDirectoryItems)" Returns="@(IncludeItemsWithIncludePath)">
+        <ItemGroup>
+            <IncludeItemsWithIncludePath Include="@(Header)" Condition=" '%(CopyToIncludeDirectory)' == 'true' ">
+                <IncludePath Condition=" '%(Header.IncludePath)' == ''">%(RecursiveDir)%(Filename)%(Extension)</IncludePath>
+            </IncludeItemsWithIncludePath>
         </ItemGroup>
     </Target>
 
@@ -110,9 +248,24 @@
         </Task>
     </UsingTask>
 
-    <Target Name="PrepareCompile" Condition=" '@(Compile)' != '' ">
-        <MakeDir Directories="$(IntermediateOutputPath)" />
+    <PropertyGroup>
+        <CompileDependsOn>
+            BeforeCompile;
+            $(CompileDependsOn);
+            PrepareCompile;
+            AssignNativeItems;
+            CoreCompile;
+            AfterCompile;
+        </CompileDependsOn>
+    </PropertyGroup>
 
+    <Target Name="Compile" DependsOnTargets="$(CompileDependsOn)"/>
+
+    <Target Name="BeforeCompile" />
+
+    <Target Name="AfterCompile" />
+
+    <Target Name="PrepareCompile" DependsOnTargets="AssignNativeItems" Condition=" '@(Compile)' != '' ">
         <!-- ensure members of the Compile group have necessary metadata -->
         <ItemGroup>
             <_Compile Include="@(Compile)">
@@ -129,18 +282,19 @@
         <IkvmClangSdkGenerateUniqueFileName Items="@(_Compile)" MetadataName="OutputPath" Extension="$(ObjectExt)" Directory="$(IntermediateOutputPath)">
             <Output TaskParameter="Items" ItemName="Compile" />
         </IkvmClangSdkGenerateUniqueFileName>
-
-        <Message Text="OutputPath: @(Compile->'%(OutputPath)')" Importance="high" />
     </Target>
 
     <PropertyGroup>
         <CoreCompileDependsOn>
+            AssignNativeItems;
             PrepareCompile;
             $(CoreCompileDependsOn);
         </CoreCompileDependsOn>
     </PropertyGroup>
 
     <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)" Inputs="@(Compile)" Outputs="%(OutputPath)">
+        <MakeDir Directories="$([System.IO.Path]::GetDirectoryname('%(Compile.OutputPath)'))" />
+
         <PropertyGroup>
             <_OutputPath>%(Compile.OutputPath)</_OutputPath>
         </PropertyGroup>
@@ -167,6 +321,7 @@
             <_Args Include="@(_SystemIncludeDirectories->'-isystem &quot;%(Identity)&quot;')" Condition=" '@(_SystemIncludeDirectories)' != '' " />
 
             <_IncludeDirectories Include="%(Compile.IncludeDirectories)" />
+            <_IncludeDirectories Include="@(IncludeDirectories)" />
             <_Args Include="@(_IncludeDirectories->'-I &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_IncludeDirectories)' != '' " />
 
             <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />
@@ -188,7 +343,8 @@
 
     <PropertyGroup>
         <LinkDependsOn>
-            CoreCompile;
+            AssignNativeItems;
+            Compile;
             BeforeLink;
             PrepareLink;
             CoreLink;
@@ -204,17 +360,22 @@
 
     <Target Name="PrepareLink">
         <MakeDir Directories="$(IntermediateOutputPath)" />
+        <MakeDir Directories="$(IntermediateLibraryPath)" />
+        <MakeDir Directories="$(IntermediateIncludePath)" />
     </Target>
 
     <PropertyGroup>
         <CoreLinkDependsOn>
-            CoreCompile;
+            Compile;
             PrepareLink;
             $(CoreLinkDependsOn);
         </CoreLinkDependsOn>
     </PropertyGroup>
 
     <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(OutputPath)')" Outputs="$(IntermediateTargetPath);$(IntermediateDebugSymbolsPath)">
+        <MakeDir Directories="$([System.IO.Path]::GetDirectoryname('$(IntermediateTargetPath)'))" />
+        <MakeDir Directories="$([System.IO.Path]::GetDirectoryname('$(IntermediateDebugSymbolsPath)'))" />
+
         <ItemGroup>
             <_Args Remove="@(_Args)" />
             <_Args Include="-shared" Condition=" '$(OutputType)' == 'library' " />
@@ -232,10 +393,12 @@
             <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
             <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;')" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
 
+            <_LibraryDirectories Include="@(LibraryDirectories)" />
             <_LibraryDirectories Include="$(LibraryDirectories)" />
             <_Args Include="@(_LibraryDirectories->'-L &quot;%(Identity)&quot;')" Condition=" '@(_LibraryDirectories)' != '' " />
 
             <_Dependencies Include="$(Dependencies)" />
+            <_Dependencies Include="@(Dependencies)" />
             <_Args Include="@(_Dependencies->'-l &quot;%(Identity)&quot;')" Condition=" '@(_Dependencies)' != '' " />
 
             <_AdditionalOptions Include="$(AdditionalOptions)" />
@@ -250,17 +413,22 @@
     </Target>
 
     <PropertyGroup>
-        <CompileDependsOn>
-            $(CompileDependsOn);
-            Link;
-        </CompileDependsOn>
-    </PropertyGroup>
-    
-    <PropertyGroup>
-        <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
+        <CopyBuildOutputToOutputDirectory Condition=" '$(CopyBuildOutputToOutputDirectory)' == '' ">true</CopyBuildOutputToOutputDirectory>
     </PropertyGroup>
 
-    <Target Name="CopyBuildOutputToOutputDirectory" AfterTargets="CopyFilesToOutputDirectory">
+    <PropertyGroup>
+        <CopyOutputToOutputDirectoryDependsOn>
+            BeforeCopyOutputToOutputDirectory;
+            $(CopyOutputToOutputDirectoryDependsOn);
+            AfterCopyOutputToOutputDirectory;
+        </CopyOutputToOutputDirectoryDependsOn>
+    </PropertyGroup>
+
+    <Target Name="CopyOutputToOutputDirectory" DependsOn="$(CopyOutputToOutputDirectoryDependsOn)">
+        <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(TargetPath)'))" />
+        <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(DebugSymbolsPath)'))" />
+        <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(IncludePath)'))" />
+
         <Copy
             SourceFiles="$(IntermediateTargetPath)"
             DestinationFiles="$(TargetPath)"
@@ -271,9 +439,10 @@
             UseHardlinksIfPossible="$(CreateHardLinksForCopyFilesToOutputDirectoryIfPossible)"
             UseSymboliclinksIfPossible="$(CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible)"
             ErrorIfLinkFails="$(ErrorIfLinkFailsForCopyFilesToOutputDirectory)"
-            Condition=" '$(CopyBuildOutputToOutputDirectory)' == 'true' And '$(SkipCopyBuildProduct)' != 'true' ">
+            Condition=" '$(CopyBuildOutputToOutputDirectory)' == 'true' And '$(SkipCopyTarget)' != 'true' ">
             <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
         </Copy>
+        
         <Copy
             SourceFiles="@(IntermediateDebugSymbolsPath)"
             DestinationFiles="@(DebugSymbolsPath)"
@@ -284,15 +453,54 @@
             UseHardlinksIfPossible="$(CreateHardLinksForCopyFilesToOutputDirectoryIfPossible)"
             UseSymboliclinksIfPossible="$(CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible)"
             ErrorIfLinkFails="$(ErrorIfLinkFailsForCopyFilesToOutputDirectory)"
-            Condition=" '$(CopyOutputSymbolsToOutputDirectory)' == 'true' And '$(SkipCopyingSymbolsToOutputDirectory)' != 'true' ">
+            Condition=" '$(CopyBuildOutputToOutputDirectory)' == 'true' And '$(SkipCopyingDebugSymbols)' != 'true' ">
             <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
         </Copy>
+        
+        <Copy
+            SourceFiles="@(IncludeItemsWithIncludePath)"
+            DestinationFolder="$(IncludePath)"
+            SkipUnchangedFiles="$(SkipCopyUnchangedFiles)"
+            OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
+            Retries="$(CopyRetryCount)"
+            RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)"
+            UseHardlinksIfPossible="$(CreateHardLinksForCopyFilesToOutputDirectoryIfPossible)"
+            UseSymboliclinksIfPossible="$(CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible)"
+            ErrorIfLinkFails="$(ErrorIfLinkFailsForCopyFilesToOutputDirectory)"
+            Condition=" '$(CopyBuildOutputToOutputDirectory)' == 'true' And '$(SkipCopyBuildProduct)' != 'true' ">
+            <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
+        </Copy>
+        
     </Target>
 
-    <Target Name="CreateManifestResourceNames" Condition=" '@(EmbeddedResource)' != '' " DependsOnTargets="$(CreateManifestResourceNamesDependsOn)">
-        <ItemGroup>
-            <_Temporary Remove="@(_Temporary)" />
-        </ItemGroup>
+    <PropertyGroup>
+        <BuildDependsOn>
+            BeforeBuild;
+            $(BuildDependsOn);
+            Compile;
+            Link;
+            CopyOutputToOutputDirectory;
+            AfterBuild;
+        </BuildDependsOn>
+    </PropertyGroup>
+
+    <Target Name="Build" DependsOnTargets="$(BuildDependsOn)">
+        
+    </Target>
+
+    <PropertyGroup>
+        <CleanDependsOn>
+            $(CleanDependsOn);
+            CoreClean;
+        </CleanDependsOn>
+    </PropertyGroup>
+
+    <Target Name="Clean" DependsOnTargets="$(CleanDependsOn)" />
+
+    <Target Name="CoreClean">
+        <RemoveDir Directories="$([System.IO.Path]::GetDirectoryName('$(TargetPath)'))" />
+        <RemoveDir Directories="$([System.IO.Path]::GetDirectoryName('$(DebugSymbolsPath)'))" />
+        <RemoveDir Directories="$([System.IO.Path]::GetDirectoryName('$(IncludePath)'))" />
     </Target>
 
 </Project>

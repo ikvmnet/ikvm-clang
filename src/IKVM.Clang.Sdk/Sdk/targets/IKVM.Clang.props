@@ -4,9 +4,6 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <ManagedAssembly>false</ManagedAssembly>
-        <TargetRuntime>Native</TargetRuntime>
-
         <ProjectName Condition=" '$(ProjectName)' == '' ">$(MSBuildProjectName)</ProjectName>
         <ProjectFileName Condition=" '$(ProjectFileName)' == '' ">$(MSBuildProjectFile)</ProjectFileName>
         <ProjectExt Condition=" '$(ProjectExt)' == '' ">$(MSBuildProjectExtension)</ProjectExt>
@@ -17,5 +14,10 @@
         <SolutionDir Condition="'$(SolutionDir)' == '' ">$(ProjectDir)</SolutionDir>
     </PropertyGroup>
 
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="'$(AlternateCommonProps)' == ''"/>
+    <ItemDefinitionGroup>
+        <Header>
+            <CopyToIncludeDirectory>true</CopyToIncludeDirectory>
+        </Header>
+    </ItemDefinitionGroup>
+
 </Project>

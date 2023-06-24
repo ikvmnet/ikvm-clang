@@ -1,23 +1,22 @@
 ﻿<Project>
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.props" />
-
+    <PropertyGroup Label="Globals">
+        <ProjectGuid>25bf59da-b011-4eaf-9abd-3653bd9b21b9</ProjectGuid>
+    </PropertyGroup>
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetIdentifiers>x86_64-pc-windows-msvc;i686-pc-windows-msvc;aarch64-pc-windows-msvc</TargetIdentifiers>
-        <UseLld>true</UseLld>
     </PropertyGroup>
-
     <PropertyGroup Condition="$(TargetIdentifier.Contains('-windows-'))">
         <Subsystem>console</Subsystem>
     </PropertyGroup>
-
     <ItemGroup>
-        <ProjectReference Include="..\Executable\Executable.clangproj" />
+        <ProjectReference Include="..\SharedLibrary\SharedLibrary.clangproj">
+            <BuildReference>true</BuildReference>
+        </ProjectReference>
     </ItemGroup>
-    
     <ItemGroup>
         <Compile Include="main.c" />
     </ItemGroup>
-
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.targets" />
 </Project>

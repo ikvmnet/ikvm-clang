@@ -10,13 +10,13 @@
         <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
         <ConfigurationName Condition="'$(ConfigurationName)' == ''">$(Configuration)</ConfigurationName>
 
-        <BaseOutputPath Condition="'$(BaseOutputPath)' == ''">bin\</BaseOutputPath>
+        <BaseOutputPath Condition="'$(BaseOutputPath)' == ''">dist\</BaseOutputPath>
         <BaseOutputPath Condition="!HasTrailingSlash('$(BaseOutputPath)')">$(BaseOutputPath)\</BaseOutputPath>
         <OutputPath Condition="'$(OutputPath)' == '' and '$(PlatformName)' == 'AnyCPU'">$(BaseOutputPath)$(Configuration)\$(TargetIdentifier.ToLowerInvariant())\</OutputPath>
         <OutputPath Condition="'$(OutputPath)' == '' and '$(PlatformName)' != 'AnyCPU'">$(BaseOutputPath)$(PlatformName)\$(Configuration)\$(TargetIdentifier.ToLowerInvariant())\</OutputPath>
         <OutputPath Condition="!HasTrailingSlash('$(OutputPath)')">$(OutputPath)\</OutputPath>
 
-        <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">obj\</BaseIntermediateOutputPath>
+        <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)' == ''">temp\</BaseIntermediateOutputPath>
         <BaseIntermediateOutputPath Condition="!HasTrailingSlash('$(BaseIntermediateOutputPath)')">$(BaseIntermediateOutputPath)\</BaseIntermediateOutputPath>
         <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == '' and '$(PlatformName)' == 'AnyCPU'">$(BaseIntermediateOutputPath)$(Configuration)\$(TargetIdentifier.ToLowerInvariant())\</IntermediateOutputPath>
         <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == '' and '$(PlatformName)' != 'AnyCPU'">$(BaseIntermediateOutputPath)$(PlatformName)\$(Configuration)\$(TargetIdentifier.ToLowerInvariant())\</IntermediateOutputPath>
@@ -24,11 +24,7 @@
 
         <IntermediateOutputPath Condition=" '$(IntermediateOutputPath)' == '' ">$(IntermediateOutputPath)\</IntermediateOutputPath>
         <OutputPath Condition=" '$(OutputPath)' == '' ">$(OutputPath)$(TargetIdentifier.ToLowerInvariant())\</OutputPath>
-
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     </PropertyGroup>
-
-    <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 
     <Import Project="$(CustomBeforeIkvmClangTargets)" Condition=" '$(CustomBeforeIkvmClangTargets)' != '' And Exists('$(CustomBeforeIkvmClangTargets)') " />
 
@@ -43,9 +39,5 @@
     <Import Project="$(ClangDesignTimeTargetsPath)"  />
 
     <Import Project="$(CustomAfterIkvmClangTargets)" Condition="'$(CustomAfterIkvmClangTargets)' != '' and Exists('$(CustomAfterIkvmClangTargets)')" />
-
-    <PropertyGroup>
-        <CreateManifestResourceNamesDependsOn></CreateManifestResourceNamesDependsOn>
-    </PropertyGroup>
 
 </Project>
