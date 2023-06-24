@@ -71,21 +71,24 @@ jobs:
       with:
         name: msbuild.binlog
         path: msbuild.binlog
-    - name: Upload NuGet
+    - name: Upload NuGet Packages
       uses: actions/upload-artifact@v3
       with:
         name: nuget
-        path: dist/nuget/
+        path: dist/nuget
     - name: Upload VXIS
       uses: actions/upload-artifact@v3
       with:
         name: vsix
         path: dist/vsix/
+    - name: Package Tests
+      run: tar czvf tests.tar.gz tests
+      working-directory: dist
     - name: Upload Tests
       uses: actions/upload-artifact@v3
       with:
         name: tests
-        path: dist/tests/
+        path: dist/tests.tar.gz
   test:
     strategy:
       matrix:
@@ -96,40 +99,13 @@ jobs:
         sys:
         - windows
         - linux
+        - macosx
     name: Test (${{ matrix.run }}:${{ matrix.tfm }}:${{ matrix.sys }})
     needs:
     - build
     timeout-minutes: 240
-    runs-on: ${{ fromJSON('{"windows":["windows-2022"],"linux":["ubuntu-22.04"]}')[matrix.sys] }}
+    runs-on: ${{ fromJSON('{"windows":["windows-2022"],"linux":["ubuntu-22.04"],"macosx":["macosx-latest"]}')[matrix.sys] }}
     steps:
-    - name: Set Paths (Windows)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        $dir="C:\w"
-        mkdir $dir
-        mkdir $dir\temp
-        mkdir $dir\dotnet
-        mkdir $dir\work
-        Add-Content $env:GITHUB_ENV "`nWORKPATH=$dir\work"
-        Add-Content $env:GITHUB_ENV "`nTMP=$dir\temp`nTEMP=$dir\temp`nTMPDIR=$dir\temp"
-        Add-Content $env:GITHUB_ENV "`nDOTNET_INSTALL_DIR=$dir\dotnet"
-    - name: Set Paths (Linux)
-      if: runner.os == 'Linux'
-      shell: pwsh
-      run: |
-        $dir="${{ runner.temp }}/w"
-        mkdir $dir
-        mkdir $dir/temp
-        mkdir $dir/dotnet
-        mkdir $dir/work
-        Add-Content $env:GITHUB_ENV "`nWORKPATH=$dir/work"
-        Add-Content $env:GITHUB_ENV "`nTMP=$dir/temp`nTEMP=$dir/temp`nTMPDIR=$dir/temp"
-        Add-Content $env:GITHUB_ENV "`nDOTNET_INSTALL_DIR=$dir/dotnet"
-    - name: Setup .NET 3.1
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 3.1.x
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v3
       with:
@@ -138,14 +114,12 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.x
-    - name: Setup WSL
-      if: matrix.sys == 'windows'
-      uses: Vampire/setup-wsl@v2
     - name: Download Tests
       uses: actions/download-artifact@v3
       with:
         name: tests
-        path: ${{ env.WORKPATH }}
+    - name: Restore Tests
+      run: tar xzvf tests.tar.gz
     - name: Execute Tests
       timeout-minutes: 120
       shell: pwsh
@@ -177,17 +151,16 @@ jobs:
                 dotnet test -f $tfm --blame -v 2 --results-directory "TestResults" --logger:"console;verbosity=detailed" --logger:trx --collect "Code Coverage" $tests
             }
         }
-      working-directory: ${{ env.WORKPATH }}
     - name: Archive Test Results
       if: always() && startsWith(env.RET, 'TestResults--')
-      run: tar czvf ${{ env.TMPDIR }}/TestResults.tar.gz TestResults
+      run: tar czvf TestResults.tar.gz TestResults
       working-directory: ${{ env.WORKPATH }}
     - name: Upload Test Results
       if: always() && startsWith(env.RET, 'TestResults--')
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.RET }}
-        path: ${{ env.TMPDIR }}/TestResults.tar.gz
+        path: TestResults.tar.gz
   release:
     name: Release
     if: github.event_name != 'pull_request'
