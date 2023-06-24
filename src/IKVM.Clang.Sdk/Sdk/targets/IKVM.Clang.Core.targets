@@ -5,40 +5,40 @@
 
     <PropertyGroup>
         <OutputType Condition=" '$(OutputType)' == '' ">Library</OutputType>
-        <TargetTriplet Condition=" '$(TargetTriplet)' == '' ">$(TargetIdentifier)</TargetTriplet>
+        <TargetTriple Condition=" '$(TargetTriple)' == '' ">$(TargetIdentifier)</TargetTriple>
         <UseLld Condition=" '$(UseLld)' == '' ">true</UseLld>
         <DebugSymbols Condition=" '$(DebugSymbols)' == '' And '$(Configuration)' == 'Debug' ">true</DebugSymbols>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(OutputType)' == 'exe' ">
         <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
-        <TargetExt Condition=" '$(TargetExt)' == '' And '$(OutputType)' == 'exe' And $(TargetTriplet.Contains('-windows-'))">.exe</TargetExt>
-        <Subsystem Condition=" '$(Subsystem)' == '' And $(TargetTriplet.Contains('-windows-')) ">console</Subsystem>
+        <TargetExt Condition=" '$(TargetExt)' == '' And '$(OutputType)' == 'exe' And $(TargetTriple.Contains('-windows-'))">.exe</TargetExt>
+        <Subsystem Condition=" '$(Subsystem)' == '' And $(TargetTriple.Contains('-windows-')) ">console</Subsystem>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(OutputType)' == 'library' ">
         <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriplet.Contains('-linux-')) ">lib</TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriplet.Contains('-apple-')) ">lib</TargetPrefix>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-windows-')) ">.dll</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-linux-')) ">.so</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriplet.Contains('-apple-')) ">.dylib</TargetExt>
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</TargetPrefix>
+        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</TargetPrefix>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.dll</TargetExt>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.so</TargetExt>
+        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.dylib</TargetExt>
     </PropertyGroup>
 
     <PropertyGroup>
-        <ObjectExt Condition=" '$(ObjectExt)' == '' And $(TargetTriplet.Contains('-windows-')) ">.obj</ObjectExt>
+        <ObjectExt Condition=" '$(ObjectExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.obj</ObjectExt>
         <ObjectExt Condition=" '$(ObjectExt)' == '' ">.o</ObjectExt>
     </PropertyGroup>
 
     <PropertyGroup>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriplet.Contains('-windows-')) ">.lib</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.lib</LibraryExt>
         <LibraryExt Condition=" '$(LibraryExt)' == '' ">.a</LibraryExt>
     </PropertyGroup>
 
     <PropertyGroup>
-        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriplet.Contains('-windows-')) ">.pdb</DebugSymbolsExt>
-        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriplet.Contains('-linux-')) ">.g</DebugSymbolsExt>
-        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriplet.Contains('-apple-')) ">.dsym</DebugSymbolsExt>
+        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.pdb</DebugSymbolsExt>
+        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.g</DebugSymbolsExt>
+        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.dsym</DebugSymbolsExt>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -374,7 +374,7 @@
             <_Args Remove="@(_Args)" />
             <_Args Include="-c" />
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
-            <_Args Include="--target=$(TargetTriplet)" />
+            <_Args Include="--target=$(TargetTriple)" />
             <_Args Include="-g" Condition=" '%(Compile.DebugSymbols)' == 'true' " />
 
             <_Args Include="-std=%(Compile.LanguageStandard)" Condition=" '%(Compile.LanguageStandard)' != '' " />
@@ -429,7 +429,7 @@
             <_Args Include="-shared" Condition=" '$(OutputType)' == 'library' " />
             <_Args Include="-static" Condition=" '$(OutputType)' == 'staticlibrary' " />
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
-            <_Args Include="--target=$(TargetTriplet)" />
+            <_Args Include="--target=$(TargetTriple)" />
             <_Args Include="-fuse-ld=lld" Condition=" '$(UseLld)' == 'true' " />
             <_Args Include="-g" Condition=" '$(DebugSymbols)' == 'true' " />
 
