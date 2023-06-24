@@ -280,12 +280,12 @@ jobs:
       with:
         dotnet-version: 7.0.x
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.15
+      uses: gittools/actions/gitversion/setup@v0.9
       with:
         versionSpec: 5.11
     - name: Execute GitVersion
       id: GitVersion
-      uses: gittools/actions/gitversion/execute@v0.9.15
+      uses: gittools/actions/gitversion/execute@v0.9
       with:
         useConfigFile: true
     - name: Restore NuGet
