@@ -140,11 +140,11 @@
 
     <Target Name="GetTargetItem" Returns="@(GetTargetItem)">
         <ItemGroup>
-            <GetTargetItem Include="$(IntermediateOutputPath)$(TargetFileName)">
+            <GetTargetItem Include="$(OutputPath)$(TargetPathName)$(TargetFileName)">
                 <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
                 <TargetName>$(TargetName)</TargetName>
-                <LibraryPath>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)$(LibraryFileName)'))</LibraryPath>
-                <DebugSymbolsPath>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)$(DebugSymbolsFileName)'))</DebugSymbolsPath>
+                <LibraryPath>$([System.IO.Path]::GetFullPath('$(OutputPath)$(LibraryPathName)$(LibraryFileName)'))</LibraryPath>
+                <DebugSymbolsPath>$([System.IO.Path]::GetFullPath('$(OutputPath)$(TargetPathName)$(DebugSymbolsFileName)'))</DebugSymbolsPath>
                 <IncludePath>$([System.IO.Path]::GetFullPath('$(OutputPath)$(IncludePathName)'))</IncludePath>
                 <Version>$(Version)</Version>
                 <CopyUpToDateMarker>@(CopyUpToDateMarker)</CopyUpToDateMarker>
@@ -166,7 +166,7 @@
             Targets="GetTargetItem;GetTransitiveTargetItems"
             BuildInParallel="$(BuildInParallel)"
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
-            Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' and '@(ProjectReferenceWithConfiguration)' != '' and ('$(BuildingInsideVisualStudio)' == 'true' or '$(BuildProjectReferences)' != 'true') and '$(VisualStudioVersion)' != '10.0' and '@(ProjectReferenceWithConfiguration)' != ''"
+            Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
             ContinueOnError="false"
             RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
             RebaseOutputs="true">
@@ -198,7 +198,7 @@
             Targets="GetIncludeDirectories;GetTransitiveIncludeDirectories"
             BuildInParallel="$(BuildInParallel)"
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
-            Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' and '@(ProjectReferenceWithConfiguration)' != '' and ('$(BuildingInsideVisualStudio)' == 'true' or '$(BuildProjectReferences)' != 'true') and '$(VisualStudioVersion)' != '10.0' and '@(ProjectReferenceWithConfiguration)' != ''"
+            Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
             ContinueOnError="false"
             RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
             RebaseOutputs="true">
@@ -230,7 +230,7 @@
             Targets="GetLibraryDirectories;GetTransitiveLibraryDirectories"
             BuildInParallel="$(BuildInParallel)"
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
-            Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' and '@(ProjectReferenceWithConfiguration)' != '' and ('$(BuildingInsideVisualStudio)' == 'true' or '$(BuildProjectReferences)' != 'true') and '$(VisualStudioVersion)' != '10.0' and '@(ProjectReferenceWithConfiguration)' != ''"
+            Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
             ContinueOnError="false"
             RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
             RebaseOutputs="true">
@@ -262,7 +262,7 @@
             Targets="GetDependencies;GetTransitiveDependencies"
             BuildInParallel="$(BuildInParallel)"
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
-            Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' and '@(ProjectReferenceWithConfiguration)' != '' and ('$(BuildingInsideVisualStudio)' == 'true' or '$(BuildProjectReferences)' != 'true') and '$(VisualStudioVersion)' != '10.0' and '@(ProjectReferenceWithConfiguration)' != ''"
+            Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
             ContinueOnError="false"
             RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
             RebaseOutputs="false">
