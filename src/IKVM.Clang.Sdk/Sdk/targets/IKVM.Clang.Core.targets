@@ -430,8 +430,8 @@
             <_Args Include="@(_IncludeDirectories->'-I &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_IncludeDirectories)' != '' " />
 
             <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />
-            <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
+            <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
             <_Args Include="@(_PreprocessorDefinitions->'-D &quot;%(Identity)&quot;')" Condition=" '@(_PreprocessorDefinitions)' != '' " />
 
             <_AdditionalOptions Include="%(Compile.AdditionalCompileOptions)" />
