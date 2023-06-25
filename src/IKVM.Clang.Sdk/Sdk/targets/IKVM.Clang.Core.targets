@@ -142,7 +142,7 @@
 
     <Target Name="GetTargetItem" Returns="@(GetTargetItem)">
         <ItemGroup>
-            <GetTargetItem Include="$(OutputPath)$(TargetPathName)$(TargetFileName)">
+            <GetTargetItem Include="$([System.IO.Path]::GetFullPath('$(OutputPath)$(TargetPathName)$(TargetFileName)'))">
                 <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
                 <TargetName>$(TargetName)</TargetName>
                 <LibraryPath>$([System.IO.Path]::GetFullPath('$(OutputPath)$(LibraryPathName)$(LibraryFileName)'))</LibraryPath>
@@ -171,7 +171,7 @@
             Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
             ContinueOnError="false"
             RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
-            RebaseOutputs="true">
+            RebaseOutputs="false">
             <Output TaskParameter="TargetOutputs" ItemName="_GetTransitiveTargetItems" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceTargetItems)' == 'true' "/>
         </MSBuild>
         <RemoveDuplicates Inputs="@(_GetTransitiveTargetItems)">
