@@ -383,6 +383,8 @@
             <_Language Condition=" '$(_Language)' == '' ">$(Language)</_Language>
             <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.c' ">C</_Language>
             <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.cpp' ">C++</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.m' ">objective-c</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.mm' ">objective-c++</_Language>
             <_LanguageStandard>%(Compile.LanguageStandard)</_LanguageStandard>
             <_LanguageStandard Condition=" '$(_LanguageStandard)' == '' ">$(LanguageStandard)</_LanguageStandard>
             <_PositionIndependentCode>%(Compile.PositionIndependentCode)</_PositionIndependentCode>
