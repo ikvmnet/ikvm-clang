@@ -334,15 +334,14 @@
             </Code>
         </Task>
     </UsingTask>
-
-    <PropertyGroup>
-        <CoreCompileDependsOn>
-            $(CoreCompileDependsOn);
-            ResolveProjectReferences;
-            ImportTransitiveProjectReferenceItems;
-            PrepareCompile;
-        </CoreCompileDependsOn>
-    </PropertyGroup>
+    
+    <!--
+    
+    PrepareCompile
+    
+    Generates the ObjectPath metadata for each input Compile item by selecting a unique identifying name.
+    
+    -->
 
     <Target Name="PrepareCompile" DependsOnTargets="ImportTransitiveProjectReferenceItems" Condition=" '@(Compile)' != '' ">
         <IkvmClangSdkGenerateUniqueFileName Items="@(Compile)" MetadataName="ObjectPath" Extension="$(ObjectExt)" Directory="$(IntermediateOutputPath)">
@@ -354,6 +353,23 @@
             <Compile Include="@(_Compile)" />
         </ItemGroup>
     </Target>
+    
+    <!--
+    
+    CoreCompile
+    
+    Invokes the Clang compiler for each Compile item to generate the output object file.
+    
+    -->
+
+    <PropertyGroup>
+        <CoreCompileDependsOn>
+            $(CoreCompileDependsOn);
+            ResolveProjectReferences;
+            ImportTransitiveProjectReferenceItems;
+            PrepareCompile;
+        </CoreCompileDependsOn>
+    </PropertyGroup>
 
     <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)" Inputs="@(Compile)" Outputs="%(ObjectPath)">
         <MakeDir Directories="$([System.IO.Path]::GetDirectoryname('%(Compile.ObjectPath)'))" />
@@ -430,6 +446,14 @@
 
         <Exec Command="clang @(_Args, ' ')" />
     </Target>
+
+    <!--
+    
+    CoreLink
+    
+    Invokes the Clang compiler for the set of all object files to produce the final taraget, library and debug symbols.
+    
+    -->
 
     <PropertyGroup>
         <CoreLinkDependsOn>
