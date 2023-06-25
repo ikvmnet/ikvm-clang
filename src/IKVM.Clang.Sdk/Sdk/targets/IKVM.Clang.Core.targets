@@ -14,6 +14,7 @@
         <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
         <TargetExt Condition=" '$(TargetExt)' == '' And '$(OutputType)' == 'exe' And $(TargetTriple.Contains('-windows-'))">.exe</TargetExt>
         <Subsystem Condition=" '$(Subsystem)' == '' And $(TargetTriple.Contains('-windows-')) ">console</Subsystem>
+        <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">true</CopyProjectReferenceOutputToOutput>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(OutputType)' == 'library' ">
@@ -23,6 +24,7 @@
         <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.dll</TargetExt>
         <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.so</TargetExt>
         <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.dylib</TargetExt>
+        <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">false</CopyProjectReferenceOutputToOutput>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -550,11 +552,11 @@
             <OutputItemsWithTargetPath Include="@(Header)" Condition=" '%(Header.CopyToIncludeDirectory)' == 'true' And '%(Header.IncludePath)' != '' ">
                 <TargetPath>$(IncludePathName)%(Header.IncludePath)</TargetPath>
             </OutputItemsWithTargetPath>
-            <OutputItemsWithTargetPath Include="@(GetTransitiveTargetItems)">
+            <OutputItemsWithTargetPath Include="@(GetTransitiveTargetItems)" Condition=" '$(CopyProjectReferenceOutputToOutput)' == 'true' ">
                 <TargetPath>$(TargetPathName)%(Filename)%(Extension)</TargetPath>
             </OutputItemsWithTargetPath>
             <_DebugSymbolsPathOutputItems Include="@(GetTransitiveTargetItems->'%(DebugSymbolsPath)')" Condition="Exists('%(DebugSymbolsPath)')" />
-            <OutputItemsWithTargetPath Include="@(_DebugSymbolsPathOutputItems)" Condition=" '@(_DebugSymbolsPathOutputItems)' != '' ">
+            <OutputItemsWithTargetPath Include="@(_DebugSymbolsPathOutputItems)" Condition=" '$(CopyProjectReferenceOutputToOutput)' == 'true' And '@(_DebugSymbolsPathOutputItems)' != '' ">
                 <TargetPath>$(TargetPathName)%(Filename)%(Extension)</TargetPath>
             </OutputItemsWithTargetPath>
         </ItemGroup>
