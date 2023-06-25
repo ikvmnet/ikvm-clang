@@ -345,7 +345,7 @@
     </PropertyGroup>
 
     <Target Name="PrepareCompile" DependsOnTargets="ImportTransitiveProjectReferenceItems" Condition=" '@(Compile)' != '' ">
-        <IkvmClangSdkGenerateUniqueFileName Items="@(Compile)" MetadataName="OutputPath" Extension="$(ObjectExt)" Directory="$(IntermediateOutputPath)">
+        <IkvmClangSdkGenerateUniqueFileName Items="@(Compile)" MetadataName="ObjectPath" Extension="$(ObjectExt)" Directory="$(IntermediateOutputPath)">
             <Output TaskParameter="Items" ItemName="_Compile" />
         </IkvmClangSdkGenerateUniqueFileName>
 
@@ -355,12 +355,12 @@
         </ItemGroup>
     </Target>
 
-    <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)" Inputs="@(Compile)" Outputs="%(OutputPath)">
-        <MakeDir Directories="$([System.IO.Path]::GetDirectoryname('%(Compile.OutputPath)'))" />
+    <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)" Inputs="@(Compile)" Outputs="%(ObjectPath)">
+        <MakeDir Directories="$([System.IO.Path]::GetDirectoryname('%(Compile.ObjectPath)'))" />
 
         <PropertyGroup>
             <_SourcePath>%(Compile.Identity)</_SourcePath>
-            <_OutputPath>%(Compile.OutputPath)</_OutputPath>
+            <_ObjectPath>%(Compile.ObjectPath)</_ObjectPath>
             <_DebugSymbols>%(Compile.DebugSymbols)</_DebugSymbols>
             <_DebugSymbols Condition=" '$(_DebugSymbols)' == '' ">$(DebugSymbols)</_DebugSymbols>
             <_Language>%(Compile.Language)</_Language>
@@ -400,12 +400,12 @@
             <_IncludeSystemRootDirectories Include="%(Compile.IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="@(IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
-            <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;')" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
+            <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
 
             <_SystemIncludeDirectories Include="%(Compile.SystemIncludeDirectories)" />
             <_SystemIncludeDirectories Include="@(SystemIncludeDirectories)" />
             <_SystemIncludeDirectories Include="$(SystemIncludeDirectories)" />
-            <_Args Include="@(_SystemIncludeDirectories->'-isystem &quot;%(Identity)&quot;')" Condition=" '@(_SystemIncludeDirectories)' != '' " />
+            <_Args Include="@(_SystemIncludeDirectories->'-isystem &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_SystemIncludeDirectories)' != '' " />
 
             <_IncludeDirectories Include="%(Compile.IncludeDirectories)" />
             <_IncludeDirectories Include="@(IncludeDirectories)" />
@@ -425,7 +425,7 @@
 
             <_Args Include="&quot;$(_SourcePath)&quot;" />
 
-            <_Args Include="-o;&quot;$(_OutputPath)&quot;" />
+            <_Args Include="-o;&quot;$(_ObjectPath)&quot;" />
         </ItemGroup>
 
         <Exec Command="clang @(_Args, ' ')" />
@@ -439,7 +439,7 @@
         </CoreLinkDependsOn>
     </PropertyGroup>
 
-    <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(OutputPath)')" Outputs="$(IntermediateOutputPath)$(TargetFileName);$(IntermediateOutputPath)$(LibraryFileName);$(IntermediateOutputPath)$(DebugSymbolsFileName)">
+    <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(IntermediateOutputPath)$(TargetFileName);$(IntermediateOutputPath)$(LibraryFileName);$(IntermediateOutputPath)$(DebugSymbolsFileName)">
         <MakeDir Directories="$(IntermediateOutputPath)" />
 
         <ItemGroup>
@@ -455,11 +455,11 @@
 
             <_SystemRootDirectories Include="@(SystemRootDirectories)" />
             <_SystemRootDirectories Include="$(SystemRootDirectories)" />
-            <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;')" Condition=" '@(_SystemRootDirectories)' != '' " />
+            <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_SystemRootDirectories)' != '' " />
 
             <_IncludeSystemRootDirectories Include="@(IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
-            <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;')" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
+            <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
 
             <_LibraryDirectories Include="@(LibraryDirectories)" />
             <_LibraryDirectories Include="$(LibraryDirectories)" />
@@ -475,7 +475,7 @@
             <_AdditionalOptions Include="$(AdditionalLinkOptions)" />
             <_Args Include="@(_AdditionalOptions)" />
 
-            <_Args Include="@(Compile->'&quot;%(OutputPath)&quot;')" />
+            <_Args Include="@(Compile->'&quot;%(ObjectPath)&quot;')" />
 
             <_Args Include="-o;&quot;$(IntermediateOutputPath)$(TargetFileName)&quot;" />
         </ItemGroup>
