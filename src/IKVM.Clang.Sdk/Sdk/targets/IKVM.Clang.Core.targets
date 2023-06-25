@@ -172,8 +172,11 @@
             RebaseOutputs="true">
             <Output TaskParameter="TargetOutputs" ItemName="_GetTransitiveTargetItems" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceTargetItems)' == 'true' "/>
         </MSBuild>
+        <RemoveDuplicates Inputs="@(_GetTransitiveTargetItems)">
+            <Output TaskParameter="Filtered" ItemName="__GetTransitiveTargetItems"/>
+        </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveTargetItems Include="@(_GetTransitiveTargetItems)" />
+            <GetTransitiveTargetItems Include="@(__GetTransitiveTargetItems)" />
         </ItemGroup>
     </Target>
 
@@ -204,8 +207,11 @@
             RebaseOutputs="true">
             <Output TaskParameter="TargetOutputs" ItemName="_GetTransitiveIncludeDirectories" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceIncludeDirectories)' == 'true' "/>
         </MSBuild>
+        <RemoveDuplicates Inputs="@(_GetTransitiveIncludeDirectories)">
+            <Output TaskParameter="Filtered" ItemName="__GetTransitiveIncludeDirectories"/>
+        </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveIncludeDirectories Include="@(_GetTransitiveIncludeDirectories)" />
+            <GetTransitiveIncludeDirectories Include="@(__GetTransitiveIncludeDirectories)" />
         </ItemGroup>
     </Target>
 
@@ -236,8 +242,11 @@
             RebaseOutputs="true">
             <Output TaskParameter="TargetOutputs" ItemName="_GetTransitiveLibraryDirectories" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceLibraryDirectories)' == 'true' "/>
         </MSBuild>
+        <RemoveDuplicates Inputs="@(_GetTransitiveLibraryDirectories)">
+            <Output TaskParameter="Filtered" ItemName="__GetTransitiveLibraryDirectories"/>
+        </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveLibraryDirectories Include="@(_GetTransitiveLibraryDirectories)" />
+            <GetTransitiveLibraryDirectories Include="@(__GetTransitiveLibraryDirectories)" />
         </ItemGroup>
     </Target>
 
@@ -268,8 +277,11 @@
             RebaseOutputs="false">
             <Output TaskParameter="TargetOutputs" ItemName="_GetTransitiveDependencies" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceDependencies)' == 'true' "/>
         </MSBuild>
+        <RemoveDuplicates Inputs="@(_GetTransitiveDependencies)">
+            <Output TaskParameter="Filtered" ItemName="__GetTransitiveDependencies"/>
+        </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveDependencies Include="@(_GetTransitiveDependencies)" />
+            <GetTransitiveDependencies Include="@(__GetTransitiveDependencies)" />
         </ItemGroup>
     </Target>
 
@@ -334,7 +346,7 @@
             </Code>
         </Task>
     </UsingTask>
-    
+
     <!--
     
     PrepareCompile
@@ -353,7 +365,7 @@
             <Compile Include="@(_Compile)" />
         </ItemGroup>
     </Target>
-    
+
     <!--
     
     CoreCompile
