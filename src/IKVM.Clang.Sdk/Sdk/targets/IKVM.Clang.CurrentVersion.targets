@@ -99,6 +99,49 @@
 
     <Target Name="AfterLink" />
 
+    <!--
+    
+    CopyFilesToOutputDirectory
+    
+    Copies any files that need to be copied to the output directories.
+    
+    -->
+
+    <PropertyGroup>
+        <CopyFilesToOutputDirectory Condition=" '$(CopyFilesToOutputDirectory)' == '' ">true</CopyFilesToOutputDirectory>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <CopyFilesToOutputDirectoryDependsOn>
+            $(CopyFilesToOutputDirectoryDependsOn);
+            Compile;
+            Link;
+            BeforeCopyFilesToOutputDirectory;
+            GetCopyToOutputDirectoryItems;
+            AfterCopyFilesToOutputDirectory;
+        </CopyFilesToOutputDirectoryDependsOn>
+    </PropertyGroup>
+
+    <Target Name="BeforeCopyFilesToOutputDirectory" />
+
+    <Target Name="AfterCopyFilesToOutputDirectory" />
+
+    <Target Name="CopyFilesToOutputDirectory" DependsOnTargets="$(CopyFilesToOutputDirectoryDependsOn)">
+        <Copy
+            SourceFiles="@(OutputItemsWithTargetPath)"
+            DestinationFiles="$(OutputPath)%(TargetPath)"
+            SkipUnchangedFiles="$(SkipCopyUnchangedFiles)"
+            OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
+            Retries="$(CopyRetryCount)"
+            RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)"
+            UseHardlinksIfPossible="$(CreateHardLinksForCopyFilesToOutputDirectoryIfPossible)"
+            UseSymboliclinksIfPossible="$(CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible)"
+            ErrorIfLinkFails="$(ErrorIfLinkFailsForCopyFilesToOutputDirectory)"
+            Condition=" '$(CopyFilesToOutputDirectory)' == 'true' And '$(SkipCopyTarget)' != 'true' ">
+            <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
+        </Copy>
+    </Target>
+
     <PropertyGroup>
         <CleanDependsOn>
             $(CleanDependsOn);

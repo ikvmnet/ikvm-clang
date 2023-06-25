@@ -509,9 +509,9 @@
 
     <!--
     
-    GetCopyToOutputDirectoryItemsDependsOn
+    GetCopyToOutputDirectoryItems
     
-    Collect any items that need to be copied to the output target directory (bin/lib).
+    Collect any items that need to be copied to the output target directory (bin/lib/include).
     
     -->
 
@@ -539,55 +539,11 @@
             <OutputItemsWithTargetPath Include="@(GetTransitiveTargetItems)">
                 <TargetPath>$(TargetPathName)%(Filename)%(Extension)</TargetPath>
             </OutputItemsWithTargetPath>
-            <_DebugSymbolsPathOutputItems Include="@(GetTransitiveTargetItems->'%(DebugSymbolsPath)')" />
+            <_DebugSymbolsPathOutputItems Include="@(GetTransitiveTargetItems->'%(DebugSymbolsPath)')" Condition="Exists('%(DebugSymbolsPath)')" />
             <OutputItemsWithTargetPath Include="@(_DebugSymbolsPathOutputItems)" Condition=" '@(_DebugSymbolsPathOutputItems)' != '' ">
                 <TargetPath>$(TargetPathName)%(Filename)%(Extension)</TargetPath>
             </OutputItemsWithTargetPath>
         </ItemGroup>
-    </Target>
-
-    <!--
-    
-    CopyFilesToOutputDirectory
-    
-    Copies any files that need to be copied to the output directories.
-    
-    -->
-
-    <PropertyGroup>
-        <CopyFilesToOutputDirectory Condition=" '$(CopyFilesToOutputDirectory)' == '' ">true</CopyFilesToOutputDirectory>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <CopyFilesToOutputDirectoryDependsOn>
-            $(CopyFilesToOutputDirectoryDependsOn);
-            Compile;
-            Link;
-            BeforeCopyFilesToOutputDirectory;
-            GetCopyToOutputDirectoryItems;
-            AfterCopyFilesToOutputDirectory;
-        </CopyFilesToOutputDirectoryDependsOn>
-    </PropertyGroup>
-
-    <Target Name="BeforeCopyFilesToOutputDirectory" />
-
-    <Target Name="AfterCopyFilesToOutputDirectory" />
-
-    <Target Name="CopyFilesToOutputDirectory" DependsOnTargets="$(CopyFilesToOutputDirectoryDependsOn)">
-        <Message Text="OutputItemsWithTargetPath: @(OutputItemsWithTargetPath)" />
-        <Copy
-            SourceFiles="@(OutputItemsWithTargetPath)"
-            DestinationFiles="$(OutputPath)%(TargetPath)"
-            SkipUnchangedFiles="$(SkipCopyUnchangedFiles)"
-            OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
-            Retries="$(CopyRetryCount)"
-            RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)"
-            UseHardlinksIfPossible="$(CreateHardLinksForCopyFilesToOutputDirectoryIfPossible)"
-            UseSymboliclinksIfPossible="$(CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible)"
-            ErrorIfLinkFails="$(ErrorIfLinkFailsForCopyFilesToOutputDirectory)"
-            Condition=" '$(CopyFilesToOutputDirectory)' == 'true' And '$(SkipCopyTarget)' != 'true' ">
-            <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
-        </Copy>
     </Target>
 
     <PropertyGroup>
