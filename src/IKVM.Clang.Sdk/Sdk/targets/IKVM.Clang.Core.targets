@@ -344,30 +344,37 @@
         </CoreCompileDependsOn>
     </PropertyGroup>
 
-    <Target Name="PrepareCompile" Condition=" '@(Compile)' != '' ">
-        <!-- ensure members of the Compile group have necessary metadata -->
-        <ItemGroup>
-            <_Compile Include="@(Compile)">
-                <Language Condition=" '%(Compile.Language)' == '' And '%(Extension)' == '.c' ">C</Language>
-                <Language Condition=" '%(Compile.Language)' == '' And '%(Extension)' == '.cpp' ">C++</Language>
-                <LanguageStandard Condition=" '%(Compile.LanguageStandard)' == '' "></LanguageStandard>
-            </_Compile>
-        </ItemGroup>
+    <Target Name="PrepareCompile" DependsOnTargets="ImportTransitiveProjectReferenceItems" Condition=" '@(Compile)' != '' ">
+        <IkvmClangSdkGenerateUniqueFileName Items="@(Compile)" MetadataName="OutputPath" Extension="$(ObjectExt)" Directory="$(IntermediateOutputPath)">
+            <Output TaskParameter="Items" ItemName="_Compile" />
+        </IkvmClangSdkGenerateUniqueFileName>
 
         <ItemGroup>
             <Compile Remove="@(Compile)" />
+            <Compile Include="@(_Compile)" />
         </ItemGroup>
-
-        <IkvmClangSdkGenerateUniqueFileName Items="@(_Compile)" MetadataName="OutputPath" Extension="$(ObjectExt)" Directory="$(IntermediateOutputPath)">
-            <Output TaskParameter="Items" ItemName="Compile" />
-        </IkvmClangSdkGenerateUniqueFileName>
     </Target>
 
     <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)" Inputs="@(Compile)" Outputs="%(OutputPath)">
         <MakeDir Directories="$([System.IO.Path]::GetDirectoryname('%(Compile.OutputPath)'))" />
 
         <PropertyGroup>
+            <_SourcePath>%(Compile.Identity)</_SourcePath>
             <_OutputPath>%(Compile.OutputPath)</_OutputPath>
+            <_DebugSymbols>%(Compile.DebugSymbols)</_DebugSymbols>
+            <_DebugSymbols Condition=" '$(_DebugSymbols)' == '' ">$(DebugSymbols)</_DebugSymbols>
+            <_Language>%(Compile.Language)</_Language>
+            <_Language Condition=" '$(_Language)' == '' ">$(Language)</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.c' ">C</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.cpp' ">C++</_Language>
+            <_LanguageStandard>%(Compile.LanguageStandard)</_LanguageStandard>
+            <_LanguageStandard Condition=" '$(_LanguageStandard)' == '' ">$(LanguageStandard)</_LanguageStandard>
+            <_PositionIndependentCode>%(Compile.PositionIndependentCode)</_PositionIndependentCode>
+            <_PositionIndependentCode Condition=" '$(_PositionIndependentCode)' == '' ">$(PositionIndependentCode)</_PositionIndependentCode>
+            <_MsCompatibility>%(Compile.MsCompatibility)</_MsCompatibility>
+            <_MsCompatibility Condition=" '$(_MsCompatibility)' == '' ">$(MsCompatibility)</_MsCompatibility>
+            <_MsCompatibilityVersion>%(Compile.MsCompatibilityVersion)</_MsCompatibilityVersion>
+            <_MsCompatibilityVersion Condition=" '$(_MsCompatibilityVersion)' == '' ">$(MsCompatibilityVersion)</_MsCompatibilityVersion>
         </PropertyGroup>
 
         <ItemGroup>
@@ -375,37 +382,48 @@
             <_Args Include="-c" />
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
             <_Args Include="--target=$(TargetTriple)" />
-            <_Args Include="-g" Condition=" '%(Compile.DebugSymbols)' == 'true' " />
+            <_Args Include="-g" Condition=" '$(_DebugSymbols)' == 'true' " />
 
-            <_Args Include="-std=%(Compile.LanguageStandard)" Condition=" '%(Compile.LanguageStandard)' != '' " />
-            <_Args Include="-fPIC" Condition=" '%(Compile.PositionIndependentCode)' == 'true' " />
-            <_Args Include="-fms-compatibility" Condition=" '%(Compile.MsCompatibility)' == 'true' " />
-            <_Args Include="-fms-compatibility-version=%(Compile.MsCompatibilityVersion)" Condition=" '%(Compile.MsCompatibilityVersion)' != '' " />
+            <_Args Include="-std=$(_LanguageStandard)" Condition=" '$(_LanguageStandard)' != '' " />
+            <_Args Include="-fPIC" Condition=" '$(_PositionIndependentCode)' == 'true' " />
+            <_Args Include="-fms-compatibility" Condition=" '$(_MsCompatibility)' == 'true' " />
+            <_Args Include="-fms-compatibility-version=$(_MsCompatibilityVersion)" Condition=" '$(_MsCompatibilityVersion)' != '' " />
+
+            <_Args Include="-x;c" Condition=" '$(_Language)' == 'C' " />
+            <_Args Include="-x;c++" Condition=" '$(_Language)' == 'C++' " />
 
             <_SystemRootDirectories Include="%(Compile.SystemRootDirectories)" />
+            <_SystemRootDirectories Include="@(SystemRootDirectories)" />
+            <_SystemRootDirectories Include="$(SystemRootDirectories)" />
             <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;')" Condition=" '@(_SystemRootDirectories)' != '' " />
 
             <_IncludeSystemRootDirectories Include="%(Compile.IncludeSystemRootDirectories)" />
+            <_IncludeSystemRootDirectories Include="@(IncludeSystemRootDirectories)" />
+            <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
             <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;')" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
 
             <_SystemIncludeDirectories Include="%(Compile.SystemIncludeDirectories)" />
+            <_SystemIncludeDirectories Include="@(SystemIncludeDirectories)" />
+            <_SystemIncludeDirectories Include="$(SystemIncludeDirectories)" />
             <_Args Include="@(_SystemIncludeDirectories->'-isystem &quot;%(Identity)&quot;')" Condition=" '@(_SystemIncludeDirectories)' != '' " />
 
             <_IncludeDirectories Include="%(Compile.IncludeDirectories)" />
             <_IncludeDirectories Include="@(IncludeDirectories)" />
+            <_IncludeDirectories Include="$(IncludeDirectories)" />
             <_IncludeDirectories Include="@(ImportedIncludeDirectories)" />
             <_Args Include="@(_IncludeDirectories->'-I &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_IncludeDirectories)' != '' " />
 
             <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />
+            <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
+            <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
             <_Args Include="@(_PreprocessorDefinitions->'-D &quot;%(Identity)&quot;')" Condition=" '@(_PreprocessorDefinitions)' != '' " />
 
-            <_AdditionalOptions Include="%(Compile.AdditionalOptions)" />
+            <_AdditionalOptions Include="%(Compile.AdditionalCompileOptions)" />
+            <_AdditionalOptions Include="@(AdditionalCompileOptions)" />
+            <_AdditionalOptions Include="$(AdditionalCompileOptions)" />
             <_Args Include="@(_AdditionalOptions)" />
 
-            <_Args Include="-x;c" Condition=" '%(Compile.Language)' == 'C' " />
-            <_Args Include="-x;c++" Condition=" '%(Compile.Language)' == 'C++' " />
-
-            <_Args Include="&quot;%(Compile.Identity)&quot;" />
+            <_Args Include="&quot;$(_SourcePath)&quot;" />
 
             <_Args Include="-o;&quot;$(_OutputPath)&quot;" />
         </ItemGroup>
@@ -421,7 +439,7 @@
         </CoreLinkDependsOn>
     </PropertyGroup>
 
-    <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(OutputPath)')" Outputs="$(IntermediateOutputPath)$(TargetFileName);$(IntermediateOutputPath)$(DebugSymbolsFileName)">
+    <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(OutputPath)')" Outputs="$(IntermediateOutputPath)$(TargetFileName);$(IntermediateOutputPath)$(LibraryFileName);$(IntermediateOutputPath)$(DebugSymbolsFileName)">
         <MakeDir Directories="$(IntermediateOutputPath)" />
 
         <ItemGroup>
@@ -435,23 +453,19 @@
 
             <_Args Include="-Xlinker /subsystem:$(Subsystem)" Condition=" '$(Subsystem)' != '' " />
 
-            <_SystemRootDirectories Include="$(SystemRootDirectories)" />
+            <_SystemRootDirectories Include="@(SystemRootDirectories);$(SystemRootDirectories)" />
             <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;')" Condition=" '@(_SystemRootDirectories)' != '' " />
 
-            <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
+            <_IncludeSystemRootDirectories Include="@(IncludeSystemRootDirectories);$(IncludeSystemRootDirectories)" />
             <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;')" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
 
-            <_LibraryDirectories Include="@(LibraryDirectories)" />
-            <_LibraryDirectories Include="$(LibraryDirectories)" />
-            <_LibraryDirectories Include="@(ImportedLibraryDirectories)" />
+            <_LibraryDirectories Include="@(LibraryDirectories);$(LibraryDirectories);@(ImportedLibraryDirectories)" />
             <_Args Include="@(_LibraryDirectories->'-L &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_LibraryDirectories)' != '' " />
 
-            <_Dependencies Include="$(Dependencies)" />
-            <_Dependencies Include="@(Dependencies)" />
-            <_Dependencies Include="@(ImportedDependencies)" />
+            <_Dependencies Include="@(Dependencies);$(Dependencies);@(ImportedDependencies)" />
             <_Args Include="@(_Dependencies->'-l &quot;%(Identity)&quot;')" Condition=" '@(_Dependencies)' != '' " />
 
-            <_AdditionalOptions Include="$(AdditionalOptions)" />
+            <_AdditionalOptions Include="@(AdditionalLinkOptions);$(AdditionalLinkOptions)" />
             <_Args Include="@(_AdditionalOptions)" />
 
             <_Args Include="@(Compile->'&quot;%(OutputPath)&quot;')" />
