@@ -233,7 +233,7 @@
             Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' and '@(ProjectReferenceWithConfiguration)' != '' and ('$(BuildingInsideVisualStudio)' == 'true' or '$(BuildProjectReferences)' != 'true') and '$(VisualStudioVersion)' != '10.0' and '@(ProjectReferenceWithConfiguration)' != ''"
             ContinueOnError="false"
             RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
-            RebaseOutputs="true">
+            RebaseOutputs="false">
             <Output TaskParameter="TargetOutputs" ItemName="_GetTransitiveLibraryDirectories" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceLibraryDirectories)' == 'true' "/>
         </MSBuild>
         <ItemGroup>
@@ -265,7 +265,7 @@
             Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' and '@(ProjectReferenceWithConfiguration)' != '' and ('$(BuildingInsideVisualStudio)' == 'true' or '$(BuildProjectReferences)' != 'true') and '$(VisualStudioVersion)' != '10.0' and '@(ProjectReferenceWithConfiguration)' != ''"
             ContinueOnError="false"
             RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
-            RebaseOutputs="true">
+            RebaseOutputs="false">
             <Output TaskParameter="TargetOutputs" ItemName="_GetTransitiveDependencies" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceDependencies)' == 'true' "/>
         </MSBuild>
         <ItemGroup>
