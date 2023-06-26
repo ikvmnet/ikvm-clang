@@ -14,6 +14,10 @@
         <SolutionDir Condition="'$(SolutionDir)' == '' ">$(ProjectDir)</SolutionDir>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <SkipCopyUnchangedFiles Condition=" '$(SkipCopyUnchangedFiles)' == '' ">true</SkipCopyUnchangedFiles>
+    </PropertyGroup>
+
     <ItemDefinitionGroup>
         <Header>
             <CopyToIncludeDirectory>true</CopyToIncludeDirectory>
