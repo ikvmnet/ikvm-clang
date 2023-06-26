@@ -145,6 +145,7 @@
             <GetTargetItem Include="$([System.IO.Path]::GetFullPath('$(OutputPath)$(TargetPathName)$(TargetFileName)'))">
                 <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
                 <TargetName>$(TargetName)</TargetName>
+                <TargetTriple>$(TargetTriple)</TargetTriple>
                 <LibraryPath>$([System.IO.Path]::GetFullPath('$(OutputPath)$(LibraryPathName)$(LibraryFileName)'))</LibraryPath>
                 <DebugSymbolsPath>$([System.IO.Path]::GetFullPath('$(OutputPath)$(TargetPathName)$(DebugSymbolsFileName)'))</DebugSymbolsPath>
                 <IncludePath>$([System.IO.Path]::GetFullPath('$(OutputPath)$(IncludePathName)'))</IncludePath>
