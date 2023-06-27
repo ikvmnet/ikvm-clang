@@ -90,8 +90,6 @@
                 <ReferenceDependencies Condition="'%(ProjectReferenceWithConfiguration.ReferenceDependencies)' == ''">true</ReferenceDependencies>
             </ProjectReferenceWithConfiguration>
         </ItemGroup>
-
-        <Message Text="ProjectReferenceWithConfiguration: @(ProjectReferenceWithConfiguration->'%(BuildReference)')" Importance="high" />
     </Target>
 
     <!--
@@ -425,32 +423,38 @@
             <_Args Include="-x;c" Condition=" '$(_Language)' == 'C' " />
             <_Args Include="-x;c++" Condition=" '$(_Language)' == 'C++' " />
 
+            <_SystemRootDirectories Remove="@(_SystemRootDirectories)" />
             <_SystemRootDirectories Include="%(Compile.SystemRootDirectories)" />
             <_SystemRootDirectories Include="@(SystemRootDirectories)" />
             <_SystemRootDirectories Include="$(SystemRootDirectories)" />
             <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;')" Condition=" '@(_SystemRootDirectories)' != '' " />
 
+            <_IncludeSystemRootDirectories Remove="@(_IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="%(Compile.IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="@(IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
             <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
 
+            <_SystemIncludeDirectories Remove="@(_SystemIncludeDirectories)" />
             <_SystemIncludeDirectories Include="%(Compile.SystemIncludeDirectories)" />
             <_SystemIncludeDirectories Include="@(SystemIncludeDirectories)" />
             <_SystemIncludeDirectories Include="$(SystemIncludeDirectories)" />
             <_Args Include="@(_SystemIncludeDirectories->'-isystem &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_SystemIncludeDirectories)' != '' " />
 
+            <_IncludeDirectories Remove="@(_IncludeDirectories)" />
             <_IncludeDirectories Include="%(Compile.IncludeDirectories)" />
             <_IncludeDirectories Include="@(IncludeDirectories)" />
             <_IncludeDirectories Include="$(IncludeDirectories)" />
             <_IncludeDirectories Include="@(ImportedIncludeDirectories)" />
             <_Args Include="@(_IncludeDirectories->'-I &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_IncludeDirectories)' != '' " />
 
+            <_PreprocessorDefinitions Remove="@(_PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
             <_Args Include="@(_PreprocessorDefinitions->'-D &quot;%(Identity)&quot;')" Condition=" '@(_PreprocessorDefinitions)' != '' " />
 
+            <_AdditionalOptions Remove="@(_AdditionalOptions)" />
             <_AdditionalOptions Include="%(Compile.AdditionalCompileOptions)" />
             <_AdditionalOptions Include="@(AdditionalCompileOptions)" />
             <_AdditionalOptions Include="$(AdditionalCompileOptions)" />
