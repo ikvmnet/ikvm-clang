@@ -46,8 +46,8 @@
     <PropertyGroup>
         <TargetName Condition=" '$(TargetName)' == '' ">$(ProjectName)</TargetName>
         <TargetFileName Condition=" '$(TargetFileName)' == '' ">$(TargetPrefix)$(TargetName)$(TargetExt)</TargetFileName>
-        <LibraryFileName Condition=" '$(LibraryFileName)' == '' ">$(TargetPrefix)$(TargetName)$(LibraryExt)</LibraryFileName>
-        <DebugSymbolsFileName Condition=" '$(DebugSymbolsFileName)' == '' ">$(TargetPrefix)$(TargetName)$(DebugSymbolsExt)</DebugSymbolsFileName>
+        <LibraryFileName Condition=" '$(LibraryFileName)' == '' And '$(LibraryExt)' != '' ">$(TargetPrefix)$(TargetName)$(LibraryExt)</LibraryFileName>
+        <DebugSymbolsFileName Condition=" '$(DebugSymbolsFileName)' == '' And '$(DebugSymbolsExt)' != '' ">$(TargetPrefix)$(TargetName)$(DebugSymbolsExt)</DebugSymbolsFileName>
 
         <!-- output libraries and binaries to different directories -->
         <LibraryPathName Condition=" '$(LibraryPathName)' == '' ">lib\</LibraryPathName>
@@ -484,7 +484,7 @@
         </CoreLinkDependsOn>
     </PropertyGroup>
 
-    <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(IntermediateOutputPath)$(TargetFileName);$(IntermediateOutputPath)$(LibraryFileName);$(IntermediateOutputPath)$(DebugSymbolsFileName)">
+    <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(IntermediateOutputPath)$(TargetFileName);$(IntermediateOutputPath)$(LibraryFileName)">
         <MakeDir Directories="$(IntermediateOutputPath)" />
 
         <ItemGroup>
@@ -553,10 +553,10 @@
             <OutputItemsWithTargetPath Include="$(IntermediateOutputPath)$(TargetFileName)">
                 <TargetPath>$(TargetPathName)$(TargetFileName)</TargetPath>
             </OutputItemsWithTargetPath>
-            <OutputItemsWithTargetPath Include="$(IntermediateOutputPath)$(LibraryFileName)" Condition="Exists('$(IntermediateOutputPath)$(LibraryFileName)')">
+            <OutputItemsWithTargetPath Include="$(IntermediateOutputPath)$(LibraryFileName)" Condition=" '$(LibraryFileName)' != '' And Exists('$(IntermediateOutputPath)$(LibraryFileName)')">
                 <TargetPath>$(LibraryPathName)$(LibraryFileName)</TargetPath>
             </OutputItemsWithTargetPath>
-            <OutputItemsWithTargetPath Include="$(IntermediateOutputPath)$(DebugSymbolsFileName)" Condition="Exists('$(IntermediateOutputPath)$(DebugSymbolsFileName)')">
+            <OutputItemsWithTargetPath Include="$(IntermediateOutputPath)$(DebugSymbolsFileName)" Condition=" '$(DebugSymbolsFileName)' != '' ANd Exists('$(IntermediateOutputPath)$(DebugSymbolsFileName)')">
                 <TargetPath>$(TargetPathName)$(DebugSymbolsFileName)</TargetPath>
             </OutputItemsWithTargetPath>
             <OutputItemsWithTargetPath Include="@(Header)" Condition=" '%(Header.CopyToIncludeDirectory)' == 'true' And '%(Header.IncludePath)' != '' ">
@@ -565,7 +565,7 @@
             <OutputItemsWithTargetPath Include="@(GetTransitiveTargetItems)" Condition=" '$(CopyProjectReferenceOutputToOutput)' == 'true' ">
                 <TargetPath>$(TargetPathName)%(Filename)%(Extension)</TargetPath>
             </OutputItemsWithTargetPath>
-            <_DebugSymbolsPathOutputItems Include="@(GetTransitiveTargetItems->'%(DebugSymbolsPath)')" Condition="Exists('%(DebugSymbolsPath)')" />
+            <_DebugSymbolsPathOutputItems Include="@(GetTransitiveTargetItems->'%(DebugSymbolsPath)')" Condition=" '%(DebugSymbolsPath)' != '' And Exists('%(DebugSymbolsPath)')" />
             <OutputItemsWithTargetPath Include="@(_DebugSymbolsPathOutputItems)" Condition=" '$(CopyProjectReferenceOutputToOutput)' == 'true' And '@(_DebugSymbolsPathOutputItems)' != '' ">
                 <TargetPath>$(TargetPathName)%(Filename)%(Extension)</TargetPath>
             </OutputItemsWithTargetPath>
