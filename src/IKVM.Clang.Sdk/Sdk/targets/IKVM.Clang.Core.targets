@@ -466,6 +466,10 @@
         </ItemGroup>
 
         <Exec Command="clang @(_Args, ' ')" />
+        
+        <ItemGroup>
+            <FileWrites Include="$(_ObjectPath)" />
+        </ItemGroup>
     </Target>
 
     <!--
@@ -531,6 +535,12 @@
         </ItemGroup>
 
         <Exec Command="clang @(_Args, ' ')" />
+        
+        <ItemGroup>
+            <FileWrites Include="$(IntermediateOutputPath)$(TargetFileName)" />
+            <FileWrites Include="$(IntermediateOutputPath)$(LibraryFileName)" />
+            <FileWrites Include="$(IntermediateOutputPath)$(DebugSymbolsFileName)" />
+        </ItemGroup>
     </Target>
 
     <!--
