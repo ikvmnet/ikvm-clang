@@ -27,16 +27,16 @@
     <Target Name="Restore" />
 
     <Target Name="_SetBuildInnerTarget" Returns="@(InnerOutput)">
-        <PropertyGroup Condition="'$(InnerTargets)' == ''">
-            <InnerTargets>Build</InnerTargets>
+        <PropertyGroup>
+            <InnerTargets>$(InnerTargets);Build</InnerTargets>
         </PropertyGroup>
     </Target>
 
     <Target Name="Build" DependsOnTargets="_SetBuildInnerTarget;DispatchToInnerBuilds" />
 
     <Target Name="_SetCleanInnerTarget" Returns="@(InnerOutput)">
-        <PropertyGroup Condition="'$(InnerTargets)' == ''">
-            <InnerTargets>Clean</InnerTargets>
+        <PropertyGroup>
+            <InnerTargets>$(InnerTargets);Clean</InnerTargets>
         </PropertyGroup>
     </Target>
 
