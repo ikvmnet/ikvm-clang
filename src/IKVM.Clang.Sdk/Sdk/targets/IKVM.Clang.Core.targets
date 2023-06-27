@@ -498,24 +498,29 @@
 
             <_Args Include="-Xlinker /subsystem:$(Subsystem)" Condition=" '$(Subsystem)' != '' " />
 
+            <_SystemRootDirectories Remove="@(_SystemRootDirectories)" />
             <_SystemRootDirectories Include="@(SystemRootDirectories)" />
             <_SystemRootDirectories Include="$(SystemRootDirectories)" />
             <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_SystemRootDirectories)' != '' " />
 
+            <_IncludeSystemRootDirectories Remove="@(_IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="@(IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
             <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
 
+            <_LibraryDirectories Remove="@(_LibraryDirectories)" />
             <_LibraryDirectories Include="@(LibraryDirectories)" />
             <_LibraryDirectories Include="$(LibraryDirectories)" />
             <_LibraryDirectories Include="@(ImportedLibraryDirectories)" />
             <_Args Include="@(_LibraryDirectories->'-L &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_LibraryDirectories)' != '' " />
 
+            <_Dependencies Remove="@(_Dependencies)" />
             <_Dependencies Include="@(Dependencies)" />
             <_Dependencies Include="$(Dependencies)" />
             <_Dependencies Include="@(ImportedDependencies)" />
             <_Args Include="@(_Dependencies->'-l &quot;%(Identity)&quot;')" Condition=" '@(_Dependencies)' != '' " />
 
+            <_AdditionalOptions Remove="@(_AdditionalOptions)" />
             <_AdditionalOptions Include="@(AdditionalLinkOptions)" />
             <_AdditionalOptions Include="$(AdditionalLinkOptions)" />
             <_Args Include="@(_AdditionalOptions)" />
