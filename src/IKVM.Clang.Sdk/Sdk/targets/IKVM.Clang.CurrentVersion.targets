@@ -165,7 +165,7 @@
         </FindUnderPath>
 
         <!-- Find all files in the intermediate output directory. -->
-        <FindUnderPath Path="$(IntermediateOutputPath)"    Files="@(_CleanPriorFileWrites)">
+        <FindUnderPath Path="$(IntermediateOutputPath)" Files="@(_CleanPriorFileWrites)">
             <Output TaskParameter="InPath" ItemName="_CleanPriorFileWritesInIntermediate"/>
         </FindUnderPath>
 
