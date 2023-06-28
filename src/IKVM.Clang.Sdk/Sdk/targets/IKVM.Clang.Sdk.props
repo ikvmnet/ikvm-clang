@@ -12,8 +12,8 @@
     </PropertyGroup>
 
     <!--
-        Determine the path to the directory build props file if the user did not disable $(ImportDirectoryBuildProps) and
-        they did not already specify an absolute path to use via $(DirectoryBuildPropsPath)
+    Determine the path to the directory build props file if the user did not disable $(ImportDirectoryBuildProps) and
+    they did not already specify an absolute path to use via $(DirectoryBuildPropsPath)
     -->
     <PropertyGroup Condition="'$(ImportDirectoryBuildProps)' == 'true' and '$(DirectoryBuildPropsPath)' == ''">
         <_DirectoryBuildPropsFile Condition="'$(_DirectoryBuildPropsFile)' == ''">Directory.Build.props</_DirectoryBuildPropsFile>
@@ -31,5 +31,18 @@
 
     <Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.props" />
 
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.VisualStudioVersion.v*.Common.props" Condition="'$(VisualStudioVersion)' == ''" />
+
     <Import Project="$(CustomAfterIkvmClangSdkProps)" Condition=" '$(CustomAfterIkvmClangSdkProps)' != '' And Exists('$(CustomAfterIkvmClangSdkProps)') " />
+    
+    <!--
+    Import NuGet.props file.
+    -->
+    <PropertyGroup>
+        <MSBuildUseVisualStudioDirectoryLayout Condition="'$(MSBuildUseVisualStudioDirectoryLayout)'==''">$([MSBuild]::IsRunningFromVisualStudio())</MSBuildUseVisualStudioDirectoryLayout>
+        <NuGetPropsFile Condition="'$(NuGetPropsFile)'=='' and '$(MSBuildUseVisualStudioDirectoryLayout)'=='true'">$([MSBuild]::GetToolsDirectory32())\..\..\..\Common7\IDE\CommonExtensions\Microsoft\NuGet\NuGet.props</NuGetPropsFile>
+        <NuGetPropsFile Condition="'$(NuGetPropsFile)'==''">$(MSBuildToolsPath)\NuGet.props</NuGetPropsFile>
+    </PropertyGroup>
+
+    <Import Condition="Exists('$(NuGetPropsFile)')" Project="$(NuGetPropsFile)" />
 </Project>

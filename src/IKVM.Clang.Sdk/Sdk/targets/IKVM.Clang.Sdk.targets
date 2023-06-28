@@ -5,13 +5,24 @@
 
     <Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.targets" />
 
+    <!--
+    Prepare to import project extensions which usually come from packages.  Package management systems will create a file at: $(MSBuildProjectExtensionsPath)\$(MSBuildProjectFile).<SomethingUnique>.targets
+    Each package management system should use a unique moniker to avoid collisions.  It is a wild-card import so the package
+    management system can write out multiple files but the order of the import is alphabetic because MSBuild sorts the list.
+    -->
+    <PropertyGroup>
+        <ImportProjectExtensionTargets Condition="'$(ImportProjectExtensionTargets)' == ''">true</ImportProjectExtensionTargets>
+    </PropertyGroup>
+
+    <Import Project="$(MSBuildProjectExtensionsPath)$(MSBuildProjectFile).*.targets" Condition="'$(ImportProjectExtensionTargets)' == 'true' and exists('$(MSBuildProjectExtensionsPath)')" />
+
     <PropertyGroup>
         <ImportDirectoryBuildTargets Condition="'$(ImportDirectoryBuildTargets)' == ''">true</ImportDirectoryBuildTargets>
     </PropertyGroup>
 
     <!--
-        Determine the path to the directory build targets file if the user did not disable $(ImportDirectoryBuildTargets) and
-        they did not already specify an absolute path to use via $(DirectoryBuildTargetsPath)
+    Determine the path to the directory build targets file if the user did not disable $(ImportDirectoryBuildTargets) and
+    they did not already specify an absolute path to use via $(DirectoryBuildTargetsPath)
     -->
     <PropertyGroup Condition="'$(ImportDirectoryBuildTargets)' == 'true' and '$(DirectoryBuildTargetsPath)' == ''">
         <_DirectoryBuildTargetsFile Condition="'$(_DirectoryBuildTargetsFile)' == ''">Directory.Build.targets</_DirectoryBuildTargetsFile>
