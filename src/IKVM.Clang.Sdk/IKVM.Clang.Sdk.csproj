@@ -25,8 +25,8 @@
             <ProjectPackagePath>tasks\net472</ProjectPackagePath>
         </PublishProjectReference>
         <PublishProjectReference Include="..\IKVM.Clang.Sdk.Tasks\IKVM.Clang.Sdk.Tasks.csproj">
-            <SetTargetFramework>TargetFramework=netcoreapp3.1</SetTargetFramework>
-            <ProjectPackagePath>tasks\netcoreapp3.1</ProjectPackagePath>
+            <SetTargetFramework>TargetFramework=net6.0</SetTargetFramework>
+            <ProjectPackagePath>tasks\net6.0</ProjectPackagePath>
         </PublishProjectReference>
     </ItemGroup>
 
