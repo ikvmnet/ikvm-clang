@@ -178,7 +178,7 @@
             <Output TaskParameter="Filtered" ItemName="__GetTransitiveTargetItems"/>
         </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveClangTargetItems Include="@(__GetTransitiveTargetItems)" />
+            <GetTransitiveTargetItems Include="@(__GetTransitiveTargetItems)" />
         </ItemGroup>
     </Target>
 
@@ -214,7 +214,7 @@
             <Output TaskParameter="Filtered" ItemName="__GetTransitiveIncludeDirectories"/>
         </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveClangIncludeDirectories Include="@(__GetTransitiveIncludeDirectories)" />
+            <GetTransitiveIncludeDirectories Include="@(__GetTransitiveIncludeDirectories)" />
         </ItemGroup>
     </Target>
 
@@ -250,7 +250,7 @@
             <Output TaskParameter="Filtered" ItemName="__GetTransitiveLibraryDirectories"/>
         </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveClangLibraryDirectories Include="@(__GetTransitiveLibraryDirectories)" />
+            <GetTransitiveLibraryDirectories Include="@(__GetTransitiveLibraryDirectories)" />
         </ItemGroup>
     </Target>
 
@@ -286,7 +286,7 @@
             <Output TaskParameter="Filtered" ItemName="__GetTransitiveDependencies"/>
         </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveClangDependencies Include="@(__GetTransitiveDependencies)" />
+            <GetTransitiveDependencies Include="@(__GetTransitiveDependencies)" />
         </ItemGroup>
     </Target>
 
@@ -310,15 +310,15 @@
 
     <Target Name="ImportTransitiveProjectReferenceItems" DependsOnTargets="$(ImportTransitiveProjectReferenceItemsDependsOn)">
         <ItemGroup>
-            <ImportedIncludeDirectories Include="@(GetTransitiveClangTargetItems->'%(IncludePath)')" />
-            <ImportedIncludeDirectories Include="@(GetTransitiveClangIncludeDirectories)" />
+            <ImportedIncludeDirectories Include="@(GetTransitiveTargetItems->'%(IncludePath)')" />
+            <ImportedIncludeDirectories Include="@(GetTransitiveIncludeDirectories)" />
         </ItemGroup>
         <ItemGroup>
-            <_GetTransitiveTargetItems Include="@(GetTransitiveClangTargetItems->'%(LibraryPath)')" />
+            <_GetTransitiveTargetItems Include="@(GetTransitiveTargetItems->'%(LibraryPath)')" />
             <ImportedLibraryDirectories Include="@(_GetTransitiveTargetItems->'%(RootDir)%(Directory)')" />
-            <ImportedLibraryDirectories Include="@(GetTransitiveClangLibraryDirectories)" />
-            <ImportedDependencies Include="@(GetTransitiveClangTargetItems->'%(TargetName)')" />
-            <ImportedDependencies Include="@(GetTransitiveClangDependencies)" />
+            <ImportedLibraryDirectories Include="@(GetTransitiveLibraryDirectories)" />
+            <ImportedDependencies Include="@(GetTransitiveTargetItems->'%(TargetName)')" />
+            <ImportedDependencies Include="@(GetTransitiveDependencies)" />
         </ItemGroup>
     </Target>
 
