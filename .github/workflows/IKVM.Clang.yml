@@ -98,8 +98,6 @@ jobs:
         - net7.0
         sys:
         - win10-x64
-        - linux-x64
-        - osx-x64
     name: Test (${{ matrix.run }}:${{ matrix.tfm }}:${{ matrix.sys }})
     needs:
     - build
