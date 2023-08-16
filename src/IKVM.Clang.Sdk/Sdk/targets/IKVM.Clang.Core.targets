@@ -132,15 +132,15 @@
 
     <!--
     
-    GetTargetItem
+    GetClangTargetItem
     
     Externally callable target that returns information about the native target being built.
     
     -->
 
-    <Target Name="GetTargetItem" Returns="@(GetTargetItem)">
+    <Target Name="GetClangTargetItem" Returns="@(GetClangTargetItem)">
         <ItemGroup>
-            <GetTargetItem Include="$([System.IO.Path]::GetFullPath('$(OutputPath)$(TargetPathName)$(TargetFileName)'))">
+            <GetClangTargetItem Include="$([System.IO.Path]::GetFullPath('$(OutputPath)$(TargetPathName)$(TargetFileName)'))">
                 <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
                 <TargetName>$(TargetName)</TargetName>
                 <TargetTriple>$(TargetTriple)</TargetTriple>
@@ -149,22 +149,23 @@
                 <IncludePath>$([System.IO.Path]::GetFullPath('$(OutputPath)$(IncludePathName)'))</IncludePath>
                 <Version>$(Version)</Version>
                 <CopyUpToDateMarker>@(CopyUpToDateMarker)</CopyUpToDateMarker>
-            </GetTargetItem>
+            </GetClangTargetItem>
         </ItemGroup>
     </Target>
 
     <!--
     
-    GetTransitiveTargetItems
+    GetTransitiveClangTargetItems
     
     Externally callable target that returns information about the native target being built and the same for any dependent project references.
     
     -->
 
-    <Target Name="GetTransitiveTargetItems" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveTargetItems)">
+    <Target Name="GetTransitiveClangTargetItems" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveClangTargetItems)">
         <MSBuild
             Projects="@(ProjectReferenceWithConfiguration)"
-            Targets="GetTargetItem;GetTransitiveTargetItems"
+            Targets="GetClangTargetItem;GetTransitiveClangTargetItems"
+            SkipNonexistentTargets="true"
             BuildInParallel="$(BuildInParallel)"
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
             Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
@@ -177,29 +178,30 @@
             <Output TaskParameter="Filtered" ItemName="__GetTransitiveTargetItems"/>
         </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveTargetItems Include="@(__GetTransitiveTargetItems)" />
+            <GetTransitiveClangTargetItems Include="@(__GetTransitiveTargetItems)" />
         </ItemGroup>
     </Target>
 
     <!--
     
-    GetIncludeDirectories
+    GetClangIncludeDirectories
     
     Externally callable target that returns the include directory information about the target being built and the same for any dependent project references.
     
     -->
 
-    <Target Name="GetIncludeDirectories" Returns="@(GetIncludeDirectories)">
+    <Target Name="GetClangIncludeDirectories" Returns="@(GetClangIncludeDirectories)">
         <ItemGroup>
-            <GetIncludeDirectories Include="$(IncludeDirectories)" />
-            <GetIncludeDirectories Include="@(IncludeDirectories)" />
+            <GetClangIncludeDirectories Include="$(IncludeDirectories)" />
+            <GetClangIncludeDirectories Include="@(IncludeDirectories)" />
         </ItemGroup>
     </Target>
 
-    <Target Name="GetTransitiveIncludeDirectories" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveIncludeDirectories)">
+    <Target Name="GetTransitiveClangIncludeDirectories" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveClangIncludeDirectories)">
         <MSBuild
             Projects="@(ProjectReferenceWithConfiguration)"
-            Targets="GetIncludeDirectories;GetTransitiveIncludeDirectories"
+            Targets="GetClangIncludeDirectories;GetTransitiveClangIncludeDirectories"
+            SkipNonexistentTargets="true"
             BuildInParallel="$(BuildInParallel)"
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
             Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
@@ -212,29 +214,30 @@
             <Output TaskParameter="Filtered" ItemName="__GetTransitiveIncludeDirectories"/>
         </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveIncludeDirectories Include="@(__GetTransitiveIncludeDirectories)" />
+            <GetTransitiveClangIncludeDirectories Include="@(__GetTransitiveIncludeDirectories)" />
         </ItemGroup>
     </Target>
 
     <!--
     
-    GetTransitiveLibraryDirectories
+    GetTransitiveClangLibraryDirectories
     
     Externally callable target that returns the library directory information about the target being built and the same for any dependent project references.
     
     -->
 
-    <Target Name="GetLibraryDirectories" Returns="@(GetLibraryDirectories)">
+    <Target Name="GetClangLibraryDirectories" Returns="@(GetClangLibraryDirectories)">
         <ItemGroup>
-            <GetLibraryDirectories Include="$(LibraryDirectories)" />
-            <GetLibraryDirectories Include="@(LibraryDirectories)" />
+            <GetClangLibraryDirectories Include="$(LibraryDirectories)" />
+            <GetClangLibraryDirectories Include="@(LibraryDirectories)" />
         </ItemGroup>
     </Target>
 
-    <Target Name="GetTransitiveLibraryDirectories" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveLibraryDirectories)">
+    <Target Name="GetTransitiveClangLibraryDirectories" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveClangLibraryDirectories)">
         <MSBuild
             Projects="@(ProjectReferenceWithConfiguration)"
-            Targets="GetLibraryDirectories;GetTransitiveLibraryDirectories"
+            Targets="GetClangLibraryDirectories;GetTransitiveClangLibraryDirectories"
+            SkipNonexistentTargets="true"
             BuildInParallel="$(BuildInParallel)"
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
             Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
@@ -247,29 +250,30 @@
             <Output TaskParameter="Filtered" ItemName="__GetTransitiveLibraryDirectories"/>
         </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveLibraryDirectories Include="@(__GetTransitiveLibraryDirectories)" />
+            <GetTransitiveClangLibraryDirectories Include="@(__GetTransitiveLibraryDirectories)" />
         </ItemGroup>
     </Target>
 
     <!--
     
-    GetTransitiveDependencies
+    GetTransitiveClangDependencies
     
     Externally callable target that returns the dependency information about the target being built and the same for any dependent project references.
     
     -->
 
-    <Target Name="GetDependencies" Returns="@(GetDependencies)">
+    <Target Name="GetClangDependencies" Returns="@(GetClangDependencies)">
         <ItemGroup>
-            <GetDependencies Include="$(Dependencies)" />
-            <GetDependencies Include="@(Dependencies)" />
+            <GetClangDependencies Include="$(Dependencies)" />
+            <GetClangDependencies Include="@(Dependencies)" />
         </ItemGroup>
     </Target>
 
-    <Target Name="GetTransitiveDependencies" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveDependencies)">
+    <Target Name="GetTransitiveClangDependencies" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveClangDependencies)">
         <MSBuild
             Projects="@(ProjectReferenceWithConfiguration)"
-            Targets="GetDependencies;GetTransitiveDependencies"
+            Targets="GetClangDependencies;GetTransitiveClangDependencies"
+            SkipNonexistentTargets="true"
             BuildInParallel="$(BuildInParallel)"
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
             Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
@@ -282,7 +286,7 @@
             <Output TaskParameter="Filtered" ItemName="__GetTransitiveDependencies"/>
         </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveDependencies Include="@(__GetTransitiveDependencies)" />
+            <GetTransitiveClangDependencies Include="@(__GetTransitiveDependencies)" />
         </ItemGroup>
     </Target>
 
@@ -297,24 +301,24 @@
         <ImportTransitiveProjectReferenceItemsDependsOn>
             $(ImportTransitiveProjectReferenceItemsDependsOn);
             AssignProjectConfiguration;
-            GetTransitiveTargetItems;
-            GetTransitiveIncludeDirectories;
-            GetTransitiveLibraryDirectories;
-            GetTransitiveDependencies;
+            GetTransitiveClangTargetItems;
+            GetTransitiveClangIncludeDirectories;
+            GetTransitiveClangLibraryDirectories;
+            GetTransitiveClangDependencies;
         </ImportTransitiveProjectReferenceItemsDependsOn>
     </PropertyGroup>
 
     <Target Name="ImportTransitiveProjectReferenceItems" DependsOnTargets="$(ImportTransitiveProjectReferenceItemsDependsOn)">
         <ItemGroup>
-            <ImportedIncludeDirectories Include="@(GetTransitiveTargetItems->'%(IncludePath)')" />
-            <ImportedIncludeDirectories Include="@(GetTransitiveIncludeDirectories)" />
+            <ImportedIncludeDirectories Include="@(GetTransitiveClangTargetItems->'%(IncludePath)')" />
+            <ImportedIncludeDirectories Include="@(GetTransitiveClangIncludeDirectories)" />
         </ItemGroup>
         <ItemGroup>
-            <_GetTransitiveTargetItems Include="@(GetTransitiveTargetItems->'%(LibraryPath)')" />
+            <_GetTransitiveTargetItems Include="@(GetTransitiveClangTargetItems->'%(LibraryPath)')" />
             <ImportedLibraryDirectories Include="@(_GetTransitiveTargetItems->'%(RootDir)%(Directory)')" />
-            <ImportedLibraryDirectories Include="@(GetTransitiveLibraryDirectories)" />
-            <ImportedDependencies Include="@(GetTransitiveTargetItems->'%(TargetName)')" />
-            <ImportedDependencies Include="@(GetTransitiveDependencies)" />
+            <ImportedLibraryDirectories Include="@(GetTransitiveClangLibraryDirectories)" />
+            <ImportedDependencies Include="@(GetTransitiveClangTargetItems->'%(TargetName)')" />
+            <ImportedDependencies Include="@(GetTransitiveClangDependencies)" />
         </ItemGroup>
     </Target>
 
@@ -554,7 +558,7 @@
     <PropertyGroup>
         <GetCopyToOutputDirectoryItemsDependsOn>
             $(GetCopyToOutputDirectoryItemsDependsOn);
-            GetTransitiveTargetItems;
+            GetTransitiveClangTargetItems;
         </GetCopyToOutputDirectoryItemsDependsOn>
     </PropertyGroup>
 
@@ -572,10 +576,10 @@
             <OutputItemsWithTargetPath Include="@(Header)" Condition=" '%(Header.CopyToIncludeDirectory)' == 'true' And '%(Header.IncludePath)' != '' ">
                 <TargetPath>$(IncludePathName)%(Header.IncludePath)</TargetPath>
             </OutputItemsWithTargetPath>
-            <OutputItemsWithTargetPath Include="@(GetTransitiveTargetItems)" Condition=" '$(CopyProjectReferenceOutputToOutput)' == 'true' ">
+            <OutputItemsWithTargetPath Include="@(GetTransitiveClangTargetItems)" Condition=" '$(CopyProjectReferenceOutputToOutput)' == 'true' ">
                 <TargetPath>$(TargetPathName)%(Filename)%(Extension)</TargetPath>
             </OutputItemsWithTargetPath>
-            <_DebugSymbolsPathOutputItems Include="@(GetTransitiveTargetItems->'%(DebugSymbolsPath)')" Condition=" '%(DebugSymbolsPath)' != '' And Exists('%(DebugSymbolsPath)')" />
+            <_DebugSymbolsPathOutputItems Include="@(GetTransitiveClangTargetItems->'%(DebugSymbolsPath)')" Condition=" '%(DebugSymbolsPath)' != '' And Exists('%(DebugSymbolsPath)')" />
             <OutputItemsWithTargetPath Include="@(_DebugSymbolsPathOutputItems)" Condition=" '$(CopyProjectReferenceOutputToOutput)' == 'true' And '@(_DebugSymbolsPathOutputItems)' != '' ">
                 <TargetPath>$(TargetPathName)%(Filename)%(Extension)</TargetPath>
             </OutputItemsWithTargetPath>
