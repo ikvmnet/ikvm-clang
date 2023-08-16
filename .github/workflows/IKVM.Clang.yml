@@ -95,14 +95,16 @@ jobs:
         run:
         - IKVM.Clang.Sdk.Tests
         tfm:
-        - net6.0
+        - net7.0
         sys:
-        - windows
+        - win10-x64
+        - linux-x64
+        - osx-x64
     name: Test (${{ matrix.run }}:${{ matrix.tfm }}:${{ matrix.sys }})
     needs:
     - build
     timeout-minutes: 240
-    runs-on: ${{ fromJSON('{"windows":["windows-2022"],"linux":["ubuntu-22.04"],"macosx":["macosx-latest"]}')[matrix.sys] }}
+    runs-on: ${{ fromJSON('{"win10-x64":["windows-2022"],"linux-x64":["ubuntu-22.04"],"osx-x64":["macosx-latest"]}')[matrix.sys] }}
     steps:
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v3
@@ -137,7 +139,7 @@ jobs:
         }
 
         # scan for test assemblies
-        $tests = $(gci .\tests\$tst\$tfm -Recurse -Filter '*.Tests.dll')
+        $tests = $(gci ./tests/$tst/$tfm -Recurse -Filter '*.Tests.dll')
 
         # if a query was specified, add to test command
         if ($tests) {
@@ -204,14 +206,14 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
     - name: Push NuGet (GitHub)
       shell: pwsh
-      run: dotnet nuget push dist\nuget\*.nupkg --source $env:GITHUB_REPOS --api-key $env:GITHUB_TOKEN --skip-duplicate
+      run: dotnet nuget push dist/nuget/*.nupkg --source $env:GITHUB_REPOS --api-key $env:GITHUB_TOKEN --skip-duplicate
       env:
         GITHUB_REPOS: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Push NuGet
       if: github.ref_type == 'tag'
       shell: pwsh
-      run: dotnet nuget push dist\nuget\*.nupkg --source $env:NUGET_REPOS --api-key $env:NUGET_TOKEN --skip-duplicate
+      run: dotnet nuget push dist/nuget/*.nupkg --source $env:NUGET_REPOS --api-key $env:NUGET_TOKEN --skip-duplicate
       env:
         NUGET_REPOS: https://api.nuget.org/v3/index.json
         NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
