@@ -474,6 +474,8 @@
         <ItemGroup>
             <FileWrites Include="$(_ObjectPath)" />
         </ItemGroup>
+        
+        <CallTarget Targets="$(TargetsTriggeredByCompilation)" Condition="'$(TargetsTriggeredByCompilation)' != ''" />
     </Target>
 
     <!--
@@ -545,6 +547,8 @@
             <FileWrites Include="$(IntermediateOutputPath)$(LibraryFileName)" />
             <FileWrites Include="$(IntermediateOutputPath)$(DebugSymbolsFileName)" />
         </ItemGroup>
+    
+        <CallTarget Targets="$(TargetsTriggeredByLinking)" Condition="'$(TargetsTriggeredByLinking)' != ''" />
     </Target>
 
     <!--
