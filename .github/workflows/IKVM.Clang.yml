@@ -122,12 +122,12 @@ jobs:
         tfm:
         - net7.0
         sys:
-        - win10-x64
+        - win-x64
     name: Test (${{ matrix.run }}:${{ matrix.tfm }}:${{ matrix.sys }})
     needs:
     - build
     timeout-minutes: 240
-    runs-on: ${{ fromJSON('{"win10-x64":["windows-2022"],"linux-x64":["ubuntu-22.04"],"osx-x64":["macosx-latest"]}')[matrix.sys] }}
+    runs-on: ${{ fromJSON('{"win-x64":["windows-2022"],"linux-x64":["ubuntu-22.04"],"osx-x64":["macosx-latest"]}')[matrix.sys] }}
     steps:
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v4
