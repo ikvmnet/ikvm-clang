@@ -61,7 +61,7 @@ jobs:
       uses: microsoft/setup-msbuild@v2
     - name: Restore
       run: dotnet restore IKVM.Clang.sln
-      working-directory: ${{ env.WORKPATH }}/ikvm
+      working-directory: ${{ env.WORKPATH }}/ikvm-clang
     - name: Build
       shell: pwsh
       run: |
