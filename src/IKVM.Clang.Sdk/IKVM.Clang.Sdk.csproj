@@ -28,6 +28,14 @@
             <SetTargetFramework>TargetFramework=net6.0</SetTargetFramework>
             <ProjectPackagePath>tasks\net6.0</ProjectPackagePath>
         </PublishProjectReference>
+        <PublishProjectReference Include="..\IKVM.Clang.Sdk.Tasks\IKVM.Clang.Sdk.Tasks.csproj">
+            <SetTargetFramework>TargetFramework=net7.0</SetTargetFramework>
+            <ProjectPackagePath>tasks\net7.0</ProjectPackagePath>
+        </PublishProjectReference>
+        <PublishProjectReference Include="..\IKVM.Clang.Sdk.Tasks\IKVM.Clang.Sdk.Tasks.csproj">
+            <SetTargetFramework>TargetFramework=net8.0</SetTargetFramework>
+            <ProjectPackagePath>tasks\net8.0</ProjectPackagePath>
+        </PublishProjectReference>
     </ItemGroup>
 
     <Target Name="MakeGeneratedPropsFile" Outputs="$(IntermediateOutputPath)generated.props" BeforeTargets="_GetPackageFiles">

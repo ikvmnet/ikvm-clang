@@ -431,7 +431,7 @@
             <_SystemRootDirectories Include="%(Compile.SystemRootDirectories)" />
             <_SystemRootDirectories Include="@(SystemRootDirectories)" />
             <_SystemRootDirectories Include="$(SystemRootDirectories)" />
-            <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;')" Condition=" '@(_SystemRootDirectories)' != '' " />
+            <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_SystemRootDirectories)' != '' " />
 
             <_IncludeSystemRootDirectories Remove="@(_IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="%(Compile.IncludeSystemRootDirectories)" />
@@ -456,7 +456,7 @@
             <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
-            <_Args Include="@(_PreprocessorDefinitions->'-D &quot;%(Identity)&quot;')" Condition=" '@(_PreprocessorDefinitions)' != '' " />
+            <_Args Include="@(_PreprocessorDefinitions->'-D &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_PreprocessorDefinitions)' != '' " />
 
             <_AdditionalOptions Remove="@(_AdditionalOptions)" />
             <_AdditionalOptions Include="%(Compile.AdditionalCompileOptions)" />
@@ -464,12 +464,14 @@
             <_AdditionalOptions Include="$(AdditionalCompileOptions)" />
             <_Args Include="@(_AdditionalOptions)" />
 
-            <_Args Include="&quot;$(_SourcePath)&quot;" />
+            <_SourcePath Include="$(_SourcePath)" />
+            <_Args Include="@(_SourcePath->'&quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_SourcePath)' != '' " />
 
-            <_Args Include="-o;&quot;$(_ObjectPath)&quot;" />
+            <_ObjectPath Include="$(_ObjectPath)" />
+            <_Args Include="@(_ObjectPath->'-o &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_ObjectPath)' != '' " />
         </ItemGroup>
-
-        <Exec Command="clang @(_Args, ' ')" />
+        
+        <ClangExe Arguments="@(_Args)" />
         
         <ItemGroup>
             <FileWrites Include="$(_ObjectPath)" />
@@ -528,19 +530,20 @@
             <_Dependencies Include="@(Dependencies)" />
             <_Dependencies Include="$(Dependencies)" />
             <_Dependencies Include="@(ImportedDependencies)" />
-            <_Args Include="@(_Dependencies->'-l &quot;%(Identity)&quot;')" Condition=" '@(_Dependencies)' != '' " />
+            <_Args Include="@(_Dependencies->'-l &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_Dependencies)' != '' " />
 
             <_AdditionalOptions Remove="@(_AdditionalOptions)" />
             <_AdditionalOptions Include="@(AdditionalLinkOptions)" />
             <_AdditionalOptions Include="$(AdditionalLinkOptions)" />
             <_Args Include="@(_AdditionalOptions)" />
 
-            <_Args Include="@(Compile->'&quot;%(ObjectPath)&quot;')" />
-
-            <_Args Include="-o;&quot;$(IntermediateOutputPath)$(TargetFileName)&quot;" />
+            <_Args Include="@(Compile->'&quot;%(ObjectPath)&quot;'->Replace('\', '\\'))" />
+            
+            <_Output Include="$(IntermediateOutputPath)$(TargetFileName)" />
+            <_Args Include="@(_Output->'-o &quot;%(Identity)&quot;'->Replace('\', '\\'))" />
         </ItemGroup>
 
-        <Exec Command="clang @(_Args, ' ')" />
+        <ClangExe Arguments="@(_Args)" />
         
         <ItemGroup>
             <FileWrites Include="$(IntermediateOutputPath)$(TargetFileName)" />
