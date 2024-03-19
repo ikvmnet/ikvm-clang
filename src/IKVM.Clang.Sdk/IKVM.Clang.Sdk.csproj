@@ -22,19 +22,27 @@
     <ItemGroup>
         <PublishProjectReference Include="..\IKVM.Clang.Sdk.Tasks\IKVM.Clang.Sdk.Tasks.csproj">
             <SetTargetFramework>TargetFramework=net472</SetTargetFramework>
-            <ProjectPackagePath>tasks\net472</ProjectPackagePath>
+            <PublishPackagePath>tasks\net472</PublishPackagePath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Pack>true</Pack>
         </PublishProjectReference>
         <PublishProjectReference Include="..\IKVM.Clang.Sdk.Tasks\IKVM.Clang.Sdk.Tasks.csproj">
             <SetTargetFramework>TargetFramework=net6.0</SetTargetFramework>
-            <ProjectPackagePath>tasks\net6.0</ProjectPackagePath>
+            <PublishPackagePath>tasks\net6.0</PublishPackagePath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Pack>true</Pack>
         </PublishProjectReference>
         <PublishProjectReference Include="..\IKVM.Clang.Sdk.Tasks\IKVM.Clang.Sdk.Tasks.csproj">
             <SetTargetFramework>TargetFramework=net7.0</SetTargetFramework>
-            <ProjectPackagePath>tasks\net7.0</ProjectPackagePath>
+            <PublishPackagePath>tasks\net7.0</PublishPackagePath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Pack>true</Pack>
         </PublishProjectReference>
         <PublishProjectReference Include="..\IKVM.Clang.Sdk.Tasks\IKVM.Clang.Sdk.Tasks.csproj">
             <SetTargetFramework>TargetFramework=net8.0</SetTargetFramework>
-            <ProjectPackagePath>tasks\net8.0</ProjectPackagePath>
+            <PublishPackagePath>tasks\net8.0</PublishPackagePath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Pack>true</Pack>
         </PublishProjectReference>
     </ItemGroup>
 
