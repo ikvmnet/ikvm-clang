@@ -18,6 +18,21 @@ jobs:
     name: Build
     runs-on: windows-2022
     steps:
+    - name: Set Paths
+      shell: pwsh
+      run: |
+        $WORKPATH="C:\work"
+        mkdir $WORKPATH
+        mkdir $WORKPATH\temp
+        mkdir $WORKPATH\dotnet
+        mkdir $WORKPATH\nuget
+        mkdir $WORKPATH\nuget\packages
+        mkdir $WORKPATH\ikvm-clang
+        Add-Content $env:GITHUB_ENV "`nWORKPATH=$WORKPATH"
+        Add-Content $env:GITHUB_ENV "`nTMP=$WORKPATH\temp`nTEMP=$WORKPATH\temp`nTMPDIR=$WORKPATH\temp"
+        Add-Content $env:GITHUB_ENV "`nDOTNET_INSTALL_DIR=$WORKPATH\dotnet"
+        Add-Content $env:GITHUB_ENV "`nNUGET_PACKAGES=$WORKPATH\nuget\packages"
+        New-Item -Path "$env:GITHUB_WORKSPACE\work" -ItemType SymbolicLink -Value "$WORKPATH\ikvm-clang"
     - name: Checkout Source
       uses: actions/checkout@v3
       with:
@@ -43,7 +58,7 @@ jobs:
       with:
         useConfigFile: true
     - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v2
     - name: Restore
       run: dotnet restore IKVM.Clang.sln
     - name: Build
@@ -69,30 +84,31 @@ jobs:
           /p:CreateHardLinksForPublishFilesIfPossible=true `
           /p:ContinuousIntegrationBuild=true `
           IKVM.Clang.dist.msbuildproj
+      working-directory: ${{ env.WORKPATH }}/ikvm-clang
     - name: Upload MSBuild Log
       if: ${{ always() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: msbuild.binlog
-        path: msbuild.binlog
+        path: ${{ env.WORKPATH }}/ikvm-clang/msbuild.binlog
     - name: Upload NuGet Packages
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: nuget
-        path: dist/nuget
+        path: ${{ env.WORKPATH }}/ikvm-clang/dist/nuget
     - name: Upload VXIS
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: vsix
-        path: dist/vsix/
+        path: ${{ env.WORKPATH }}/ikvm-clang/dist/vsix
     - name: Package Tests
       run: tar czvf tests.tar.gz tests
-      working-directory: dist
+      working-directory: ${{ env.WORKPATH }}/ikvm-clang/dist
     - name: Upload Tests
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: tests
-        path: dist/tests.tar.gz
+        path: ${{ env.WORKPATH }}/ikvm-clang/dist/tests.tar.gz
   test:
     strategy:
       matrix:
