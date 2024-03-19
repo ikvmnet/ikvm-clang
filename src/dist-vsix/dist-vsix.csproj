@@ -7,13 +7,6 @@
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="IKVM.Core.MSBuild" Version="0.1.28">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
-
     <Import Sdk="Microsoft.Build.NoTargets" Version="3.7.0" Project="Sdk.targets"/>
 
     <PropertyGroup>
