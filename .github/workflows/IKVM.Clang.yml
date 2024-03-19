@@ -54,11 +54,13 @@ jobs:
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v1
       with:
-        versionSpec: 5.11
+        versionSpec: 5.x
     - name: Execute GitVersion
       uses: gittools/actions/gitversion/execute@v1
       with:
+        targetPath: ${{ env.WORKPATH }}\ikvm-clang
         useConfigFile: true
+        configFilePath: ${{ env.WORKPATH }}\ikvm-clang\GitVersion.yml
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v2
     - name: Restore
