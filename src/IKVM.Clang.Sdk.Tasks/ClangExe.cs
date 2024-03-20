@@ -42,18 +42,18 @@ namespace IKVM.Clang.Sdk.Tasks
                     if (arg.GetMetadata("Value") is string value && value.Length > 0)
                     {
                         // separate the value
-                        if (arg.GetMetadata("Seperator") is string seperator && seperator.Length > 0)
+                        if (arg.GetMetadata("Separator") is string seperator && seperator.Length > 0)
                             sb.Append(seperator);
 
                         AppendEscaped(sb, value);
 
-                        // additional Value/Seperator metadata
+                        // additional Value/Separator metadata
                         for (int i = 2; i < 128; i++)
                         {
                             if (arg.GetMetadata($"Value{i}") is string nextValue && nextValue.Length > 0)
                             {
                                 // seperate the second value
-                                if (arg.GetMetadata($"Seperator{i}") is string nextSeperator && nextSeperator.Length > 0)
+                                if (arg.GetMetadata($"Separator{i}") is string nextSeperator && nextSeperator.Length > 0)
                                     sb.Append(nextSeperator);
 
                                 AppendEscaped(sb, nextValue);

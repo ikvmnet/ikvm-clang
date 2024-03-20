@@ -418,13 +418,13 @@
             <_Args Remove="@(_Args)" />
             <_Args Include="-c" />
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
-            <_Args Include="--target" Value="$(TargetTriple)" Seperator="=" />
+            <_Args Include="--target" Value="$(TargetTriple)" Separator="=" />
             <_Args Include="-g" Condition=" '$(_DebugSymbols)' == 'true' " />
 
-            <_Args Include="-std" Value="$(_LanguageStandard)" Seperator="=" Condition=" '$(_LanguageStandard)' != '' " />
+            <_Args Include="-std" Value="$(_LanguageStandard)" Separator="=" Condition=" '$(_LanguageStandard)' != '' " />
             <_Args Include="-fPIC" Condition=" '$(_PositionIndependentCode)' == 'true' " />
             <_Args Include="-fms-compatibility" Condition=" '$(_MsCompatibility)' == 'true' " />
-            <_Args Include="-fms-compatibility-version" Value="$(_MsCompatibilityVersion)" Seperator="=" Condition=" '$(_MsCompatibilityVersion)' != '' " />
+            <_Args Include="-fms-compatibility-version" Value="$(_MsCompatibilityVersion)" Separator="=" Condition=" '$(_MsCompatibilityVersion)' != '' " />
 
             <_Args Include="-xc" Condition=" '$(_Language)' == 'C' " />
             <_Args Include="-xc++" Condition=" '$(_Language)' == 'C++' " />
@@ -436,7 +436,7 @@
             <_SystemRootDirectoriesTemp Remove="@(_SystemRootDirectoriesTemp)" />
             <_SystemRootDirectoriesTemp Include="@(_SystemRootDirectories->Distinct())" />
             <_SystemRootDirectoriesArgs Remove="@(_SystemRootDirectoriesArgs)" />
-            <_SystemRootDirectoriesArgs Include="@(_SystemRootDirectoriesTemp->'--sysroot')" Value="%(_SystemRootDirectoriesTemp.Identity)" Seperator=" " />
+            <_SystemRootDirectoriesArgs Include="@(_SystemRootDirectoriesTemp->'--sysroot')" Value="%(_SystemRootDirectoriesTemp.Identity)" Separator=" " />
             <_Args Include="@(_SystemRootDirectoriesArgs)" />
 
             <_IncludeSystemRootDirectories Remove="@(_IncludeSystemRootDirectories)" />
@@ -446,7 +446,7 @@
             <_IncludeSystemRootDirectoriesTemp Remove="@(_IncludeSystemRootDirectoriesTemp)" />
             <_IncludeSystemRootDirectoriesTemp Include="@(_IncludeSystemRootDirectories->Distinct())" />
             <_IncludeSystemRootDirectoriesArgs Remove="@(_IncludeSystemRootDirectoriesArgs)" />
-            <_IncludeSystemRootDirectoriesArgs Include="@(_IncludeSystemRootDirectoriesTemp->'-isysroot')" Value="%(_IncludeSystemRootDirectoriesTemp.Identity)" Seperator=" " />
+            <_IncludeSystemRootDirectoriesArgs Include="@(_IncludeSystemRootDirectoriesTemp->'-isysroot')" Value="%(_IncludeSystemRootDirectoriesTemp.Identity)" Separator=" " />
             <_Args Include="@(_IncludeSystemRootDirectoriesArgs)" />
 
             <_SystemIncludeDirectories Remove="@(_SystemIncludeDirectories)" />
@@ -456,7 +456,7 @@
             <_SystemIncludeDirectoriesTemp Remove="@(_SystemIncludeDirectoriesTemp)" />
             <_SystemIncludeDirectoriesTemp Include="@(_SystemIncludeDirectories->Distinct())" />
             <_SystemIncludeDirectoriesArgs Remove="@(_SystemIncludeDirectoriesArgs)" />
-            <_SystemIncludeDirectoriesArgs Include="@(_SystemIncludeDirectoriesTemp->'-isystem')" Value="%(_SystemIncludeDirectoriesTemp.Identity)" Seperator=" " />
+            <_SystemIncludeDirectoriesArgs Include="@(_SystemIncludeDirectoriesTemp->'-isystem')" Value="%(_SystemIncludeDirectoriesTemp.Identity)" Separator=" " />
             <_Args Include="@(_SystemIncludeDirectoriesArgs)" />
 
             <_IncludeDirectories Remove="@(_IncludeDirectories)" />
@@ -467,7 +467,7 @@
             <_IncludeDirectoriesTemp Remove="@(_IncludeDirectoriesTemp)" />
             <_IncludeDirectoriesTemp Include="@(_IncludeDirectories->Distinct())" />
             <_IncludeDirectoriesArgs Remove="@(_IncludeDirectoriesArgs)" />
-            <_IncludeDirectoriesArgs Include="@(_IncludeDirectoriesTemp->'-I')" Value="%(_IncludeDirectoriesTemp.Identity)" Seperator="" />
+            <_IncludeDirectoriesArgs Include="@(_IncludeDirectoriesTemp->'-I')" Value="%(_IncludeDirectoriesTemp.Identity)" Separator="" />
             <_Args Include="@(_IncludeDirectoriesArgs)" />
 
             <_PreprocessorDefinitions Remove="@(_PreprocessorDefinitions)" />
@@ -475,7 +475,7 @@
             <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
             <_PreprocessorDefinitionsArgs Remove="@(_PreprocessorDefinitionsArgs)" />
-            <_PreprocessorDefinitionsArgs Include="@(_PreprocessorDefinitions->'-D')" Value="%(_PreprocessorDefinitions.Identity)" Seperator="" Value2="%(_PreprocessorDefinitions.Value)" Seperator2="=" />
+            <_PreprocessorDefinitionsArgs Include="@(_PreprocessorDefinitions->'-D')" Value="%(_PreprocessorDefinitions.Identity)" Separator="" Value2="%(_PreprocessorDefinitions.Value)" Separator2="=" />
             <_Args Include="@(_PreprocessorDefinitionsArgs)" />
 
             <_AdditionalOptions Remove="@(_AdditionalOptions)" />
@@ -486,7 +486,7 @@
 
             <_Args Include="$(_SourcePath)" />
 
-            <_Args Include="-o" Value="$(_ObjectPath)" Seperator=" " />
+            <_Args Include="-o" Value="$(_ObjectPath)" Separator=" " />
         </ItemGroup>
 
         <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" />
@@ -522,8 +522,8 @@
             <_Args Include="-shared" Condition=" '$(OutputType)' == 'library' " />
             <_Args Include="-static" Condition=" '$(OutputType)' == 'staticlibrary' " />
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
-            <_Args Include="--target" Value="$(TargetTriple)" Seperator="=" />
-            <_Args Include="-fuse-ld" Value="lld" Seperator="=" Condition=" '$(UseLld)' == 'true' " />
+            <_Args Include="--target" Value="$(TargetTriple)" Separator="=" />
+            <_Args Include="-fuse-ld" Value="lld" Separator="=" Condition=" '$(UseLld)' == 'true' " />
             <_Args Include="-g" Condition=" '$(DebugSymbols)' == 'true' " />
 
             <_Args Include="-Wl,/subsystem:$(Subsystem)" Condition=" '$(Subsystem)' != '' " />
@@ -535,7 +535,7 @@
             <_SystemRootDirectoriesTemp Remove="@(_SystemRootDirectoriesTemp)" />
             <_SystemRootDirectoriesTemp Include="@(_SystemRootDirectories->Distinct())" />
             <_SystemRootDirectoriesArgs Remove="@(_SystemRootDirectoriesArgs)" />
-            <_SystemRootDirectoriesArgs Include="@(_SystemRootDirectoriesTemp->'--sysroot')" Value="%(_SystemRootDirectoriesTemp.Identity)" Seperator=" " />
+            <_SystemRootDirectoriesArgs Include="@(_SystemRootDirectoriesTemp->'--sysroot')" Value="%(_SystemRootDirectoriesTemp.Identity)" Separator=" " />
             <_Args Include="@(_SystemRootDirectoriesArgs)" />
 
             <_IncludeSystemRootDirectories Remove="@(_IncludeSystemRootDirectories)" />
@@ -545,7 +545,7 @@
             <_IncludeSystemRootDirectoriesTemp Remove="@(_IncludeSystemRootDirectoriesTemp)" />
             <_IncludeSystemRootDirectoriesTemp Include="@(_IncludeSystemRootDirectories->Distinct())" />
             <_IncludeSystemRootDirectoriesArgs Remove="@(_IncludeSystemRootDirectoriesArgs)" />
-            <_IncludeSystemRootDirectoriesArgs Include="@(_IncludeSystemRootDirectoriesTemp->'--isysroot')" Value="%(_IncludeSystemRootDirectoriesTemp.Identity)" Seperator=" " />
+            <_IncludeSystemRootDirectoriesArgs Include="@(_IncludeSystemRootDirectoriesTemp->'--isysroot')" Value="%(_IncludeSystemRootDirectoriesTemp.Identity)" Separator=" " />
             <_Args Include="@(_IncludeSystemRootDirectoriesArgs)" />
 
             <_LibraryDirectories Remove="@(_LibraryDirectories)" />
@@ -555,7 +555,7 @@
             <_LibraryDirectoriesTemp Remove="@(_LibraryDirectoriesTemp)" />
             <_LibraryDirectoriesTemp Include="@(_LibraryDirectories->Distinct())" />
             <_LibraryDirectoriesArgs Remove="@(_LibraryDirectoriesArgs)" />
-            <_LibraryDirectoriesArgs Include="@(_LibraryDirectoriesTemp->'-L')" Value="%(_LibraryDirectoriesTemp.Identity)" Seperator="" />
+            <_LibraryDirectoriesArgs Include="@(_LibraryDirectoriesTemp->'-L')" Value="%(_LibraryDirectoriesTemp.Identity)" Separator="" />
             <_Args Include="@(_LibraryDirectoriesArgs)" />
 
             <_Dependencies Remove="@(_Dependencies)" />
@@ -565,7 +565,7 @@
             <_DependenciesTemp Remove="@(_DependenciesTemp)" />
             <_DependenciesTemp Include="@(_Dependencies->Distinct())" />
             <_DependenciesArgs Remove="@(_DependenciesArgs)" />
-            <_DependenciesArgs Include="@(_DependenciesTemp->'-l')" Value="%(_DependenciesTemp.Identity)" Seperator="" />
+            <_DependenciesArgs Include="@(_DependenciesTemp->'-l')" Value="%(_DependenciesTemp.Identity)" Separator="" />
             <_Args Include="@(_DependenciesArgs)" />
 
             <_AdditionalOptions Remove="@(_AdditionalOptions)" />
@@ -575,7 +575,7 @@
 
             <_Args Include="@(Compile->'%(ObjectPath)')" />
 
-            <_Args Include="-o" Value="$(IntermediateOutputPath)$(TargetFileName)" Seperator=" " />
+            <_Args Include="-o" Value="$(IntermediateOutputPath)$(TargetFileName)" Separator=" " />
         </ItemGroup>
 
         <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" />
