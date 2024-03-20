@@ -475,7 +475,7 @@
             <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
             <_PreprocessorDefinitionsArgs Remove="@(_PreprocessorDefinitionsArgs)" />
-            <_PreprocessorDefinitionsArgs Include="@(_PreprocessorDefinitions->'-D')" Value="%(_PreprocessorDefinitions.Identity)" Separator="" Value2="%(_PreprocessorDefinitions.Value)" Separator2="=" />
+            <_PreprocessorDefinitionsArgs Include="@(_PreprocessorDefinitions->'-D')" Value="%(_PreprocessorDefinitions.Identity)" Separator="" Value2="%(_PreprocessorDefinitions.Value)" Seperator2="=" />
             <_Args Include="@(_PreprocessorDefinitionsArgs)" />
 
             <_AdditionalOptions Remove="@(_AdditionalOptions)" />
@@ -545,7 +545,7 @@
             <_IncludeSystemRootDirectoriesTemp Remove="@(_IncludeSystemRootDirectoriesTemp)" />
             <_IncludeSystemRootDirectoriesTemp Include="@(_IncludeSystemRootDirectories->Distinct())" />
             <_IncludeSystemRootDirectoriesArgs Remove="@(_IncludeSystemRootDirectoriesArgs)" />
-            <_IncludeSystemRootDirectoriesArgs Include="@(_IncludeSystemRootDirectoriesTemp->'--isysroot')" Value="%(_IncludeSystemRootDirectoriesTemp.Identity)" Separator=" " />
+            <_IncludeSystemRootDirectoriesArgs Include="@(_IncludeSystemRootDirectoriesTemp->'-isysroot')" Value="%(_IncludeSystemRootDirectoriesTemp.Identity)" Separator=" " />
             <_Args Include="@(_IncludeSystemRootDirectoriesArgs)" />
 
             <_LibraryDirectories Remove="@(_LibraryDirectories)" />
