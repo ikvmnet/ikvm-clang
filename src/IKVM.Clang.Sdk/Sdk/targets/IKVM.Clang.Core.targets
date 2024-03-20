@@ -446,7 +446,7 @@
             <_IncludeSystemRootDirectoriesTemp Remove="@(_IncludeSystemRootDirectoriesTemp)" />
             <_IncludeSystemRootDirectoriesTemp Include="@(_IncludeSystemRootDirectories->Distinct())" />
             <_IncludeSystemRootDirectoriesArgs Remove="@(_IncludeSystemRootDirectoriesArgs)" />
-            <_IncludeSystemRootDirectoriesArgs Include="@(_IncludeSystemRootDirectoriesTemp->'--isysroot')" Value="%(_IncludeSystemRootDirectoriesTemp.Identity)" Seperator=" " />
+            <_IncludeSystemRootDirectoriesArgs Include="@(_IncludeSystemRootDirectoriesTemp->'-isysroot')" Value="%(_IncludeSystemRootDirectoriesTemp.Identity)" Seperator=" " />
             <_Args Include="@(_IncludeSystemRootDirectoriesArgs)" />
 
             <_SystemIncludeDirectories Remove="@(_SystemIncludeDirectories)" />
