@@ -458,6 +458,7 @@
             <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
+            <_PreprocessorDefinitionsEscaped Remove="@(_PreprocessorDefinitionsEscaped)" />
             <_PreprocessorDefinitionsEscaped Include="@(_PreprocessorDefinitions)" EscapedValue="$([System.String]::Copy('%(_PreprocessorDefinitions.Value)').Replace('%22', '%5c%22'))" />
             <_Args Include="@(_PreprocessorDefinitionsEscaped->Distinct()->'-D %(Identity)')" Condition=" '@(_PreprocessorDefinitionsEscaped)' != '' And %(_PreprocessorDefinitionsEscaped.EscapedValue) == '' " />
             <_Args Include="@(_PreprocessorDefinitionsEscaped->Distinct()->'-D %(Identity)=%(EscapedValue)')" Condition=" '@(_PreprocessorDefinitionsEscaped)' != '' And %(_PreprocessorDefinitionsEscaped.EscapedValue) != '' " />
@@ -468,9 +469,11 @@
             <_AdditionalOptions Include="$(AdditionalCompileOptions)" />
             <_Args Include="@(_AdditionalOptions)" />
 
+            <_SourcePath Remove="@(_SourcePath)" />
             <_SourcePath Include="$(_SourcePath)" />
             <_Args Include="@(_SourcePath->Distinct()->Replace('\', '\\')->'&quot;%(Identity)&quot;')" Condition=" '@(_SourcePath)' != '' " />
 
+            <_ObjectPath Remove="@(_ObjectPath)" />
             <_ObjectPath Include="$(_ObjectPath)" />
             <_Args Include="@(_ObjectPath->Distinct()->Replace('\', '\\')->'-o &quot;%(Identity)&quot;')" Condition=" '@(_ObjectPath)' != '' " />
         </ItemGroup>
