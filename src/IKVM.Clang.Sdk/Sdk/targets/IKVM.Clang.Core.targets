@@ -458,7 +458,8 @@
             <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
-            <_Args Include="@(_PreprocessorDefinitions->'-D &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_PreprocessorDefinitions)' != '' " />
+            <_Args Include="@(_PreprocessorDefinitions->'-D %(Identity)')" Condition=" '@(_PreprocessorDefinitions)' != '' And %(_PreprocessorDefinitions.Value) == '' " />
+            <_Args Include="@(_PreprocessorDefinitions->'-D %(Identity)=%(Value)')" Condition=" '@(_PreprocessorDefinitions)' != '' And %(_PreprocessorDefinitions.Value) != '' " />
 
             <_AdditionalOptions Remove="@(_AdditionalOptions)" />
             <_AdditionalOptions Include="%(Compile.AdditionalCompileOptions)" />
