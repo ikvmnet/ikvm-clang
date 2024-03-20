@@ -6,6 +6,8 @@
     <PropertyGroup>
         <OutputType Condition=" '$(OutputType)' == '' ">Library</OutputType>
         <TargetTriple Condition=" '$(TargetTriple)' == '' ">$(TargetIdentifier)</TargetTriple>
+        <ClangToolExe Condition=" '$(ClangToolName)' == '' And !$([MSBuild]::IsOSUnixLike())">clang.exe</ClangToolExe>
+        <ClangToolExe Condition=" '$(ClangToolName)' == '' And  $([MSBuild]::IsOSUnixLike())">clang</ClangToolExe>
         <UseLld Condition=" '$(UseLld)' == '' ">true</UseLld>
         <DebugSymbols Condition=" '$(DebugSymbols)' == '' And '$(Configuration)' == 'Debug' ">true</DebugSymbols>
     </PropertyGroup>
@@ -471,7 +473,7 @@
             <_Args Include="@(_ObjectPath->'-o &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_ObjectPath)' != '' " />
         </ItemGroup>
         
-        <ClangExe Arguments="@(_Args)" />
+        <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" />
         
         <ItemGroup>
             <FileWrites Include="$(_ObjectPath)" />
@@ -543,7 +545,7 @@
             <_Args Include="@(_Output->'-o &quot;%(Identity)&quot;'->Replace('\', '\\'))" />
         </ItemGroup>
 
-        <ClangExe Arguments="@(_Args)" />
+        <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" />
         
         <ItemGroup>
             <FileWrites Include="$(IntermediateOutputPath)$(TargetFileName)" />
