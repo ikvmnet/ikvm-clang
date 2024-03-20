@@ -6,6 +6,7 @@
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <TargetIdentifiers>x86_64-pc-windows-msvc;i686-pc-windows-msvc;thumbv7-pc-windows-msvc;aarch64-pc-windows-msvc</TargetIdentifiers>
+        <Verbose>true</Verbose>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\SharedLibrary2\SharedLibrary2.clangproj">

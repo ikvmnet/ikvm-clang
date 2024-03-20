@@ -125,9 +125,9 @@ namespace IKVM.Clang.Sdk.Tests
             options.TargetsToBuild.Add("Clean");
             options.TargetsToBuild.Add("Restore");
             options.Arguments.Add("/v:d");
-            analyzer.Build(options).OverallSuccess.Should().Be(true);
-
+            var result = analyzer.Build(options);
             context.AddResultFile(Path.Combine(WorkRoot, "msbuild.binlog"));
+            result.OverallSuccess.Should().Be(true);
         }
 
         [DataTestMethod]
@@ -166,9 +166,10 @@ namespace IKVM.Clang.Sdk.Tests
             options.TargetsToBuild.Add("Clean");
             options.TargetsToBuild.Add("Build");
             options.Arguments.Add("/v:d");
-            analyzer.Build(options).OverallSuccess.Should().BeTrue();
-
+            var result = analyzer.Build(options);
             TestContext.AddResultFile(Path.Combine(WorkRoot, $"{tid}-msbuild.binlog"));
+            result.OverallSuccess.Should().BeTrue();
+
         }
 
     }
