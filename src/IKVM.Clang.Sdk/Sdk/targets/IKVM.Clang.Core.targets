@@ -500,7 +500,7 @@
         </CoreLinkDependsOn>
     </PropertyGroup>
 
-    <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(IntermediateOutputPath)$(TargetFileName)">
+    <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="%(Compile.ObjectPath)" Outputs="$(IntermediateOutputPath)$(TargetFileName)">
         <MakeDir Directories="$(IntermediateOutputPath)" />
 
         <ItemGroup>
