@@ -11,6 +11,7 @@ using Buildalyzer.Environment;
 using FluentAssertions;
 
 using Microsoft.Build.Framework;
+using Microsoft.Build.Tasks;
 using Microsoft.Build.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -115,7 +116,7 @@ namespace IKVM.Clang.Sdk.Tests
             analyzer.SetGlobalProperty("CreateHardLinksForCopyFilesToOutputDirectoryIfPossible", "true");
             analyzer.SetGlobalProperty("CreateHardLinksForCopyLocalIfPossible", "true");
             analyzer.SetGlobalProperty("CreateHardLinksForPublishFilesIfPossible", "true");
-            analyzer.SetGlobalProperty("Configuration", "Release");
+            analyzer.SetGlobalProperty("Configuration", "Debug");
 
             var options = new EnvironmentOptions();
             options.WorkingDirectory = TestRoot;
@@ -131,10 +132,10 @@ namespace IKVM.Clang.Sdk.Tests
         }
 
         [DataTestMethod]
-        [DataRow(EnvironmentPreference.Core, "x86_64-pc-windows-msvc")]
-        [DataRow(EnvironmentPreference.Core, "i686-pc-windows-msvc")]
-        [DataRow(EnvironmentPreference.Core, "aarch64-pc-windows-msvc")]
-        public void CanBuildTestProject(EnvironmentPreference env, string tid)
+        [DataRow(EnvironmentPreference.Core, "x86_64-pc-windows-msvc", "{0}.dll", "{0}.exe", "{0}.pdb")]
+        [DataRow(EnvironmentPreference.Core, "i686-pc-windows-msvc", "{0}.dll", "{0}.exe", "{0}.pdb")]
+        [DataRow(EnvironmentPreference.Core, "aarch64-pc-windows-msvc", "{0}.dll", "{0}.exe", "{0}.pdb")]
+        public void CanBuildTestProject(EnvironmentPreference env, string tid, string libName, string exeName, string symName)
         {
             TestContext.WriteLine("TestRoot: {0}", TestRoot);
             TestContext.WriteLine("TempRoot: {0}", TempRoot);
@@ -155,6 +156,7 @@ namespace IKVM.Clang.Sdk.Tests
             analyzer.SetGlobalProperty("CreateHardLinksForPublishFilesIfPossible", "true");
             analyzer.SetGlobalProperty("SkipCopyBuildProduct", "false");
             analyzer.SetGlobalProperty("CopyBuildOutputToOutputDirectory", "true");
+            analyzer.SetGlobalProperty("Configuration", "Debug");
 
             var options = new EnvironmentOptions();
             options.WorkingDirectory = TestRoot;
@@ -170,6 +172,17 @@ namespace IKVM.Clang.Sdk.Tests
             TestContext.AddResultFile(Path.Combine(WorkRoot, $"{tid}-msbuild.binlog"));
             result.OverallSuccess.Should().BeTrue();
 
+            var binDir = Path.Combine(TestRoot, "Executable", "dist", "Debug", tid, "bin"); 
+            File.Exists(Path.Combine(binDir, string.Format(exeName, "Executable"))).Should().BeTrue();
+            File.Exists(Path.Combine(binDir, string.Format(symName, "Executable"))).Should().BeTrue();
+
+            var libDir1 = Path.Combine(TestRoot, "SharedLibrary1", "dist", "Debug", tid, "lib");
+            File.Exists(Path.Combine(libDir1, string.Format(libName, "SharedLibrary1"))).Should().BeTrue();
+            File.Exists(Path.Combine(libDir1, string.Format(symName, "SharedLibrary1"))).Should().BeTrue();
+
+            var libDir2 = Path.Combine(TestRoot, "SharedLibrary2", "dist", "Debug", tid, "lib");
+            File.Exists(Path.Combine(libDir2, string.Format(libName, "SharedLibrary2"))).Should().BeTrue();
+            File.Exists(Path.Combine(libDir2, string.Format(symName, "SharedLibrary2"))).Should().BeTrue();
         }
 
     }
