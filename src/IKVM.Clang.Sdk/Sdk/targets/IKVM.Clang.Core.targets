@@ -433,33 +433,34 @@
             <_SystemRootDirectories Include="%(Compile.SystemRootDirectories)" />
             <_SystemRootDirectories Include="@(SystemRootDirectories)" />
             <_SystemRootDirectories Include="$(SystemRootDirectories)" />
-            <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_SystemRootDirectories)' != '' " />
+            <_Args Include="@(_SystemRootDirectories->Replace('\', '\\')->Replace('%22', '%5c%22')->'--sysroot &quot;%(Identity)&quot;')" Condition=" '@(_SystemRootDirectories)' != '' " />
 
             <_IncludeSystemRootDirectories Remove="@(_IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="%(Compile.IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="@(IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
-            <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
+            <_Args Include="@(_IncludeSystemRootDirectories->Replace('\', '\\')->Replace('%22', '%5c%22')->'-isysroot &quot;%(Identity)&quot;')" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
 
             <_SystemIncludeDirectories Remove="@(_SystemIncludeDirectories)" />
             <_SystemIncludeDirectories Include="%(Compile.SystemIncludeDirectories)" />
             <_SystemIncludeDirectories Include="@(SystemIncludeDirectories)" />
             <_SystemIncludeDirectories Include="$(SystemIncludeDirectories)" />
-            <_Args Include="@(_SystemIncludeDirectories->'-isystem &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_SystemIncludeDirectories)' != '' " />
+            <_Args Include="@(_SystemIncludeDirectories->Replace('\', '\\')->Replace('%22', '%5c%22')->'-isystem &quot;%(Identity)&quot;')" Condition=" '@(_SystemIncludeDirectories)' != '' " />
 
             <_IncludeDirectories Remove="@(_IncludeDirectories)" />
             <_IncludeDirectories Include="%(Compile.IncludeDirectories)" />
             <_IncludeDirectories Include="@(IncludeDirectories)" />
             <_IncludeDirectories Include="$(IncludeDirectories)" />
             <_IncludeDirectories Include="@(ImportedIncludeDirectories)" />
-            <_Args Include="@(_IncludeDirectories->'-I &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_IncludeDirectories)' != '' " />
+            <_Args Include="@(_IncludeDirectories->Replace('\', '\\')->Replace('%22', '%5c%22')->'-I &quot;%(Identity)&quot;')" Condition=" '@(_IncludeDirectories)' != '' " />
 
             <_PreprocessorDefinitions Remove="@(_PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
-            <_Args Include="@(_PreprocessorDefinitions->'-D %(Identity)')" Condition=" '@(_PreprocessorDefinitions)' != '' And %(_PreprocessorDefinitions.Value) == '' " />
-            <_Args Include="@(_PreprocessorDefinitions->'-D %(Identity)=%(Value)')" Condition=" '@(_PreprocessorDefinitions)' != '' And %(_PreprocessorDefinitions.Value) != '' " />
+            <_PreprocessorDefinitionsEscaped Include="@(_PreprocessorDefinitions)" EscapedValue="$([System.String]::Copy('%(_PreprocessorDefinitions.Value)').Replace('%22', '%5c%22'))" />
+            <_Args Include="@(_PreprocessorDefinitionsEscaped->'-D %(Identity)')" Condition=" '@(_PreprocessorDefinitionsEscaped)' != '' And %(_PreprocessorDefinitionsEscaped.EscapedValue) == '' " />
+            <_Args Include="@(_PreprocessorDefinitionsEscaped->'-D %(Identity)=%(EscapedValue)')" Condition=" '@(_PreprocessorDefinitionsEscaped)' != '' And %(_PreprocessorDefinitionsEscaped.EscapedValue) != '' " />
 
             <_AdditionalOptions Remove="@(_AdditionalOptions)" />
             <_AdditionalOptions Include="%(Compile.AdditionalCompileOptions)" />
@@ -468,10 +469,10 @@
             <_Args Include="@(_AdditionalOptions)" />
 
             <_SourcePath Include="$(_SourcePath)" />
-            <_Args Include="@(_SourcePath->'&quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_SourcePath)' != '' " />
+            <_Args Include="@(_SourcePath->Replace('\', '\\')->'&quot;%(Identity)&quot;')" Condition=" '@(_SourcePath)' != '' " />
 
             <_ObjectPath Include="$(_ObjectPath)" />
-            <_Args Include="@(_ObjectPath->'-o &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_ObjectPath)' != '' " />
+            <_Args Include="@(_ObjectPath->Replace('\', '\\')->'-o &quot;%(Identity)&quot;')" Condition=" '@(_ObjectPath)' != '' " />
         </ItemGroup>
         
         <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" />
@@ -516,34 +517,35 @@
             <_SystemRootDirectories Remove="@(_SystemRootDirectories)" />
             <_SystemRootDirectories Include="@(SystemRootDirectories)" />
             <_SystemRootDirectories Include="$(SystemRootDirectories)" />
-            <_Args Include="@(_SystemRootDirectories->'--sysroot &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_SystemRootDirectories)' != '' " />
+            <_Args Include="@(_SystemRootDirectories->Replace('\', '\\')->Replace('%22', '%5c%22')->'--sysroot &quot;%(Identity)&quot;')" Condition=" '@(_SystemRootDirectories)' != '' " />
 
             <_IncludeSystemRootDirectories Remove="@(_IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="@(IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
-            <_Args Include="@(_IncludeSystemRootDirectories->'-isysroot &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
+            <_Args Include="@(_IncludeSystemRootDirectories->Replace('\', '\\')->Replace('%22', '%5c%22')->'-isysroot &quot;%(Identity)&quot;')" Condition=" '@(_IncludeSystemRootDirectories)' != '' " />
 
             <_LibraryDirectories Remove="@(_LibraryDirectories)" />
             <_LibraryDirectories Include="@(LibraryDirectories)" />
             <_LibraryDirectories Include="$(LibraryDirectories)" />
             <_LibraryDirectories Include="@(ImportedLibraryDirectories)" />
-            <_Args Include="@(_LibraryDirectories->'-L &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_LibraryDirectories)' != '' " />
+            <_Args Include="@(_LibraryDirectories->Replace('\', '\\')->Replace('%22', '%5c%22')->'-L &quot;%(Identity)&quot;')" Condition=" '@(_LibraryDirectories)' != '' " />
 
             <_Dependencies Remove="@(_Dependencies)" />
             <_Dependencies Include="@(Dependencies)" />
             <_Dependencies Include="$(Dependencies)" />
             <_Dependencies Include="@(ImportedDependencies)" />
-            <_Args Include="@(_Dependencies->'-l &quot;%(Identity)&quot;'->Replace('\', '\\'))" Condition=" '@(_Dependencies)' != '' " />
+            <_Args Include="@(_Dependencies->Replace('\', '\\')->Replace('%22', '%5c%22')->'-l &quot;%(Identity)&quot;')" Condition=" '@(_Dependencies)' != '' " />
 
             <_AdditionalOptions Remove="@(_AdditionalOptions)" />
             <_AdditionalOptions Include="@(AdditionalLinkOptions)" />
             <_AdditionalOptions Include="$(AdditionalLinkOptions)" />
             <_Args Include="@(_AdditionalOptions)" />
 
-            <_Args Include="@(Compile->'&quot;%(ObjectPath)&quot;'->Replace('\', '\\'))" />
+            <_ObjectPath Include="@(Compile->'%(ObjectPath)')" />
+            <_Args Include="@(_ObjectPath->Replace('\', '\\')->Replace('%22', '%5c%22')->'&quot;%(Identity)&quot;')" />
             
             <_Output Include="$(IntermediateOutputPath)$(TargetFileName)" />
-            <_Args Include="@(_Output->'-o &quot;%(Identity)&quot;'->Replace('\', '\\'))" />
+            <_Args Include="@(_Output->Replace('\', '\\')->Replace('%22', '%5c%22')->'-o &quot;%(Identity)&quot;')" />
         </ItemGroup>
 
         <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" />

@@ -17,6 +17,7 @@
         <Header Include="hello1.h" />
         <PreprocessorDefinitions Include="JOE" />
         <PreprocessorDefinitions Include="FOO" Value="BAR" />
+        <PreprocessorDefinitions Include="STRING" Value="%22HI%22" />
     </ItemGroup>
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.targets" />
 </Project>
