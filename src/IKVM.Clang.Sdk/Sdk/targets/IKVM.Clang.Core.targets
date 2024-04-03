@@ -400,8 +400,8 @@
             <_DebugSymbols Condition=" '$(_DebugSymbols)' == '' ">$(DebugSymbols)</_DebugSymbols>
             <_Language>%(Compile.Language)</_Language>
             <_Language Condition=" '$(_Language)' == '' ">$(Language)</_Language>
-            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.c' ">C</_Language>
-            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.cpp' ">C++</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.c' ">c</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.cpp' ">c++</_Language>
             <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.m' ">objective-c</_Language>
             <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.mm' ">objective-c++</_Language>
             <_LanguageStandard>%(Compile.LanguageStandard)</_LanguageStandard>
@@ -426,8 +426,7 @@
             <_Args Include="-fms-compatibility" Condition=" '$(_MsCompatibility)' == 'true' " />
             <_Args Include="-fms-compatibility-version" Value="$(_MsCompatibilityVersion)" Separator="=" Condition=" '$(_MsCompatibilityVersion)' != '' " />
 
-            <_Args Include="-xc" Condition=" '$(_Language)' == 'C' " />
-            <_Args Include="-xc++" Condition=" '$(_Language)' == 'C++' " />
+            <_Args Include="-x $(_Language)" Condition=" '$(_Language)' != '' " />
 
             <_SystemRootDirectories Remove="@(_SystemRootDirectories)" />
             <_SystemRootDirectories Include="%(Compile.SystemRootDirectories)" />
