@@ -168,6 +168,7 @@ namespace IKVM.Clang.Sdk.Tests
             options.TargetsToBuild.Add("Clean");
             options.TargetsToBuild.Add("Build");
             options.Arguments.Add("/v:d");
+
             var result = analyzer.Build(options);
             TestContext.AddResultFile(Path.Combine(WorkRoot, $"{tid}-msbuild.binlog"));
             result.OverallSuccess.Should().BeTrue();

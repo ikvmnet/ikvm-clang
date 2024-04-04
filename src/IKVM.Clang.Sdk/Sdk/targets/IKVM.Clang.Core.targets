@@ -426,7 +426,7 @@
             <_Args Include="-fms-compatibility" Condition=" '$(_MsCompatibility)' == 'true' " />
             <_Args Include="-fms-compatibility-version" Value="$(_MsCompatibilityVersion)" Separator="=" Condition=" '$(_MsCompatibilityVersion)' != '' " />
 
-            <_Args Include="-x $(_Language)" Condition=" '$(_Language)' != '' " />
+            <_Args Include="-x;$(_Language)" Condition=" '$(_Language)' != '' " />
 
             <_SystemRootDirectories Remove="@(_SystemRootDirectories)" />
             <_SystemRootDirectories Include="%(Compile.SystemRootDirectories)" />
