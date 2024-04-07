@@ -4,12 +4,15 @@
         <ProjectGuid>f511e617-3e18-4dc6-9936-8746f3060663</ProjectGuid>
     </PropertyGroup>
     <PropertyGroup>
-        <OutputType>Library</OutputType>
+        <OutputType>Shared</OutputType>
         <TargetIdentifiers>x86_64-pc-windows-msvc;i686-pc-windows-msvc;thumbv7-pc-windows-msvc;aarch64-pc-windows-msvc</TargetIdentifiers>
         <Verbose>true</Verbose>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\SharedLibrary2\SharedLibrary2.clangproj">
+            <BuildReference>true</BuildReference>
+        </ProjectReference>
+        <ProjectReference Include="..\StaticLibrary1\StaticLibrary1.clangproj">
             <BuildReference>true</BuildReference>
         </ProjectReference>
     </ItemGroup>

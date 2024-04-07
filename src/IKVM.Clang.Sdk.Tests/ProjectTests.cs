@@ -125,7 +125,8 @@ namespace IKVM.Clang.Sdk.Tests
             options.TargetsToBuild.Clear();
             options.TargetsToBuild.Add("Clean");
             options.TargetsToBuild.Add("Restore");
-            options.Arguments.Add("/v:d");
+            options.Arguments.Add("/v:diag");
+
             var result = analyzer.Build(options);
             context.AddResultFile(Path.Combine(WorkRoot, "msbuild.binlog"));
             result.OverallSuccess.Should().Be(true);
@@ -167,21 +168,21 @@ namespace IKVM.Clang.Sdk.Tests
             options.TargetsToBuild.Clear();
             options.TargetsToBuild.Add("Clean");
             options.TargetsToBuild.Add("Build");
-            options.Arguments.Add("/v:d");
+            options.Arguments.Add("/v:diag");
 
             var result = analyzer.Build(options);
             TestContext.AddResultFile(Path.Combine(WorkRoot, $"{tid}-msbuild.binlog"));
             result.OverallSuccess.Should().BeTrue();
 
-            var binDir = Path.Combine(TestRoot, "Executable", "dist", "Debug", tid, "bin"); 
+            var binDir = Path.Combine(TestRoot, "Executable", "bin", "Debug", tid);
             File.Exists(Path.Combine(binDir, string.Format(exeName, "Executable"))).Should().BeTrue();
             File.Exists(Path.Combine(binDir, string.Format(symName, "Executable"))).Should().BeTrue();
 
-            var libDir1 = Path.Combine(TestRoot, "SharedLibrary1", "dist", "Debug", tid, "lib");
+            var libDir1 = Path.Combine(TestRoot, "SharedLibrary1", "bin", "Debug", tid);
             File.Exists(Path.Combine(libDir1, string.Format(libName, "SharedLibrary1"))).Should().BeTrue();
             File.Exists(Path.Combine(libDir1, string.Format(symName, "SharedLibrary1"))).Should().BeTrue();
 
-            var libDir2 = Path.Combine(TestRoot, "SharedLibrary2", "dist", "Debug", tid, "lib");
+            var libDir2 = Path.Combine(TestRoot, "SharedLibrary2", "bin", "Debug", tid);
             File.Exists(Path.Combine(libDir2, string.Format(libName, "SharedLibrary2"))).Should().BeTrue();
             File.Exists(Path.Combine(libDir2, string.Format(symName, "SharedLibrary2"))).Should().BeTrue();
         }

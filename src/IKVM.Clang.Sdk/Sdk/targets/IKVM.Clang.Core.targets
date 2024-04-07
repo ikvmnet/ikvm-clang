@@ -4,59 +4,82 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <OutputType Condition=" '$(OutputType)' == '' ">Library</OutputType>
+        <TargetName Condition=" '$(TargetName)' == '' ">$(MSBuildProjectName)</TargetName>
+        <OutputType Condition=" '$(OutputType)' == '' ">Shared</OutputType>
         <TargetTriple Condition=" '$(TargetTriple)' == '' ">$(TargetIdentifier)</TargetTriple>
         <ClangToolExe Condition=" '$(ClangToolName)' == '' And !$([MSBuild]::IsOSUnixLike())">clang.exe</ClangToolExe>
         <ClangToolExe Condition=" '$(ClangToolName)' == '' And  $([MSBuild]::IsOSUnixLike())">clang</ClangToolExe>
-        <UseLld Condition=" '$(UseLld)' == '' ">true</UseLld>
         <DebugSymbols Condition=" '$(DebugSymbols)' == '' And '$(Configuration)' == 'Debug' ">true</DebugSymbols>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(OutputType)' == 'exe' ">
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
-        <TargetExt Condition=" '$(TargetExt)' == '' And '$(OutputType)' == 'exe' And $(TargetTriple.Contains('-windows-'))">.exe</TargetExt>
-        <Subsystem Condition=" '$(Subsystem)' == '' And $(TargetTriple.Contains('-windows-')) ">console</Subsystem>
-        <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">true</CopyProjectReferenceOutputToOutput>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(OutputType)' == 'library' ">
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' "></TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</TargetPrefix>
-        <TargetPrefix Condition=" '$(TargetPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</TargetPrefix>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.dll</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.so</TargetExt>
-        <TargetExt Condition=" '$(TargetExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.dylib</TargetExt>
-        <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">false</CopyProjectReferenceOutputToOutput>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <ObjectExt Condition=" '$(ObjectExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.obj</ObjectExt>
-        <ObjectExt Condition=" '$(ObjectExt)' == '' ">.o</ObjectExt>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.lib</LibraryExt>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' ">.a</LibraryExt>
-    </PropertyGroup>
-
-    <PropertyGroup>
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.pdb</DebugSymbolsExt>
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.g</DebugSymbolsExt>
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.dsym</DebugSymbolsExt>
     </PropertyGroup>
 
-    <PropertyGroup>
-        <TargetName Condition=" '$(TargetName)' == '' ">$(ProjectName)</TargetName>
-        <TargetFileName Condition=" '$(TargetFileName)' == '' ">$(TargetPrefix)$(TargetName)$(TargetExt)</TargetFileName>
-        <LibraryFileName Condition=" '$(LibraryFileName)' == '' And '$(LibraryExt)' != '' ">$(TargetPrefix)$(TargetName)$(LibraryExt)</LibraryFileName>
-        <DebugSymbolsFileName Condition=" '$(DebugSymbolsFileName)' == '' And '$(DebugSymbolsExt)' != '' ">$(TargetPrefix)$(TargetName)$(DebugSymbolsExt)</DebugSymbolsFileName>
+    <PropertyGroup Condition=" '$(OutputType)' == 'exe' ">
+        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' "></ExecutablePrefix>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And '$(OutputType)' == 'exe' And $(TargetTriple.Contains('-windows-'))">.exe</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' "></ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-windows-'))">.dll</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-linux-'))">.so</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-apple-'))">.dylib</ExecutableExt>
+        <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' ">$(ExecutablePrefix)$(TargetName)$(ExecutableExt)</ExecutableFileName>
+        <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' "></DebugSymbolsPrefix>
+        <Subsystem Condition=" '$(Subsystem)' == '' And $(TargetTriple.Contains('-windows-')) ">console</Subsystem>
+        <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">true</CopyProjectReferenceOutputToOutput>
+        <UseLd Condition=" '$(UseLd)' == '' ">lld</UseLd>
+    </PropertyGroup>
 
-        <!-- output libraries and binaries to different directories -->
-        <LibraryPathName Condition=" '$(LibraryPathName)' == '' ">lib\</LibraryPathName>
-        <BinaryPathName Condition=" '$(BinaryPathName)' == '' ">bin\</BinaryPathName>
-        <IncludePathName Condition=" '$(IncludePathName)' == '' ">include\</IncludePathName>
-        <TargetPathName Condition=" '$(OutputType)' == 'library' ">$(LibraryPathName)</TargetPathName>
-        <TargetPathName Condition=" '$(OutputType)' == 'exe' ">$(BinaryPathName)</TargetPathName>
+    <PropertyGroup Condition=" '$(OutputType)' == 'shared' ">
+        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' "></ExecutablePrefix>
+        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('-windows-'))"></ExecutablePrefix>
+        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('-linux-'))">lib</ExecutablePrefix>
+        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('-apple-'))">lib</ExecutablePrefix>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' "></ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-windows-'))">.dll</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-linux-'))">.so</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-apple-'))">.dylib</ExecutableExt>
+        <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' ">$(ExecutablePrefix)$(TargetName)$(ExecutableExt)</ExecutableFileName>
+        <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</LibraryPrefix>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</LibraryPrefix>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.lib</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.so</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.dylib</LibraryExt>
+        <LibraryFileName Condition=" '$(LibraryFileName)' == '' ">$(LibraryPrefix)$(TargetName)$(LibraryExt)</LibraryFileName>
+        <LibraryIntermediateOutputPath Condition=" '$(LibraryFileName)' != '' ">$(IntermediateOutputPath)$(LibraryFileName)</LibraryIntermediateOutputPath>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</DebugSymbolsPrefix>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</DebugSymbolsPrefix>
+        <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">false</CopyProjectReferenceOutputToOutput>
+        <UseLd Condition=" '$(UseLd)' == '' ">lld</UseLd>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(OutputType)' == 'static' ">
+        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' "></ExecutablePrefix>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' "></ExecutableExt>
+        <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' "></ExecutableFileName>
+        <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</LibraryPrefix>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</LibraryPrefix>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.lib</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.a</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.a</LibraryExt>
+        <LibraryFileName Condition=" '$(LibraryFileName)' == '' ">$(LibraryPrefix)$(TargetName)$(LibraryExt)</LibraryFileName>
+        <LibraryIntermediateOutputPath Condition=" '$(LibraryFileName)' != '' ">$(IntermediateOutputPath)$(LibraryFileName)</LibraryIntermediateOutputPath>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</DebugSymbolsPrefix>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</DebugSymbolsPrefix>
+        <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">false</CopyProjectReferenceOutputToOutput>
+        <UseLd Condition=" '$(UseLd)' == '' And $(TargetTriple.Contains('-windows-'))">llvm-lib</UseLd>
+        <UseLd Condition=" '$(UseLd)' == '' ">lld</UseLd>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <ObjectExt Condition=" '$(ObjectExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.obj</ObjectExt>
+        <ObjectExt Condition=" '$(ObjectExt)' == '' ">.o</ObjectExt>
+        <DebugSymbolsFileName Condition=" '$(DebugSymbolsFileName)' == '' ">$(DebugSymbolsPrefix)$(TargetName)$(DebugSymbolsExt)</DebugSymbolsFileName>
+        <DebugSymbolsIntermediateOutputPath Condition=" '$(DebugSymbolsFileName)' != '' ">$(IntermediateOutputPath)$(DebugSymbolsFileName)</DebugSymbolsIntermediateOutputPath>
+        <HeadersPathName Condition=" '$(HeadersPathName)' == '' ">headers\</HeadersPathName>
+        <HeadersIntermediateOutputPath Condition=" '$(HeadersPathName)' != '' ">$(IntermediateOutputPath)$(HeadersPathName)</HeadersIntermediateOutputPath>
     </PropertyGroup>
 
     <!--
@@ -87,9 +110,6 @@
                 <BuildReference Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == ''">true</BuildReference>
                 <ReferenceTargetItems Condition="'%(ProjectReferenceWithConfiguration.ReferenceTargetItems)' == ''">true</ReferenceTargetItems>
                 <CopyTargetItemsLocal Condition="'%(ProjectReferenceWithConfiguration.CopyTargetItemsLocal)' == ''">true</CopyTargetItemsLocal>
-                <ReferenceIncludeDirectories Condition="'%(ProjectReferenceWithConfiguration.ReferenceIncludeDirectories)' == ''">true</ReferenceIncludeDirectories>
-                <ReferenceLibraryDirectories Condition="'%(ProjectReferenceWithConfiguration.ReferenceLibraryDirectories)' == ''">true</ReferenceLibraryDirectories>
-                <ReferenceDependencies Condition="'%(ProjectReferenceWithConfiguration.ReferenceDependencies)' == ''">true</ReferenceDependencies>
             </ProjectReferenceWithConfiguration>
         </ItemGroup>
     </Target>
@@ -134,39 +154,40 @@
 
     <!--
     
-    GetClangTargetItem
+    GetTargetItem
     
     Externally callable target that returns information about the native target being built.
     
     -->
 
-    <Target Name="GetClangTargetItem" Returns="@(GetClangTargetItem)">
+    <Target Name="GetTargetItem" Returns="@(GetTargetItem)">
         <ItemGroup>
-            <GetClangTargetItem Include="$([System.IO.Path]::GetFullPath('$(OutputPath)$(TargetPathName)$(TargetFileName)'))">
+            <GetTargetItem Include="$([System.IO.Path]::GetFullPath('$(OutputPath)$(TargetPathName)$(TargetFileName)'))">
                 <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
                 <TargetName>$(TargetName)</TargetName>
                 <TargetTriple>$(TargetTriple)</TargetTriple>
-                <LibraryPath>$([System.IO.Path]::GetFullPath('$(OutputPath)$(LibraryPathName)$(LibraryFileName)'))</LibraryPath>
-                <DebugSymbolsPath>$([System.IO.Path]::GetFullPath('$(OutputPath)$(TargetPathName)$(DebugSymbolsFileName)'))</DebugSymbolsPath>
-                <IncludePath>$([System.IO.Path]::GetFullPath('$(OutputPath)$(IncludePathName)'))</IncludePath>
+                <ExecutablePath Condition=" '$(ExecutableIntermediateOutputPath)' != '' ">$([System.IO.Path]::GetFullPath('$(ExecutableIntermediateOutputPath)'))</ExecutablePath>
+                <LibraryPath Condition=" '$(LibraryIntermediateOutputPath)' != '' ">$([System.IO.Path]::GetFullPath('$(LibraryIntermediateOutputPath)'))</LibraryPath>
+                <DebugSymbolsPath Condition=" '$(DebugSymbolsIntermediateOutputPath)' != '' ">$([System.IO.Path]::GetFullPath('$(DebugSymbolsIntermediateOutputPath)'))</DebugSymbolsPath>
+                <HeadersPath Condition=" '$(HeadersIntermediateOutputPath)' != '' ">$([System.IO.Path]::GetFullPath('$(HeadersIntermediateOutputPath)'))</HeadersPath>
                 <Version>$(Version)</Version>
                 <CopyUpToDateMarker>@(CopyUpToDateMarker)</CopyUpToDateMarker>
-            </GetClangTargetItem>
+            </GetTargetItem>
         </ItemGroup>
     </Target>
 
     <!--
     
-    GetTransitiveClangTargetItems
+    GetProjectReferenceTargetItems
     
     Externally callable target that returns information about the native target being built and the same for any dependent project references.
     
     -->
 
-    <Target Name="GetTransitiveClangTargetItems" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveClangTargetItems)">
+    <Target Name="GetProjectReferenceTargetItems" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetProjectReferenceTargetItems)">
         <MSBuild
             Projects="@(ProjectReferenceWithConfiguration)"
-            Targets="GetClangTargetItem;GetTransitiveClangTargetItems"
+            Targets="GetTargetItem"
             SkipNonexistentTargets="true"
             BuildInParallel="$(BuildInParallel)"
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
@@ -174,153 +195,38 @@
             ContinueOnError="false"
             RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
             RebaseOutputs="false">
-            <Output TaskParameter="TargetOutputs" ItemName="_GetTransitiveTargetItems" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceTargetItems)' == 'true' "/>
+            <Output TaskParameter="TargetOutputs" ItemName="_GetProjectReferenceTargetItems" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceTargetItems)' == 'true' "/>
         </MSBuild>
-        <RemoveDuplicates Inputs="@(_GetTransitiveTargetItems)">
-            <Output TaskParameter="Filtered" ItemName="__GetTransitiveTargetItems"/>
+        <RemoveDuplicates Inputs="@(_GetProjectReferenceTargetItems)">
+            <Output TaskParameter="Filtered" ItemName="__GetProjectReferenceTargetItems"/>
         </RemoveDuplicates>
         <ItemGroup>
-            <GetTransitiveTargetItems Include="@(__GetTransitiveTargetItems)" />
+            <GetProjectReferenceTargetItems Include="@(__GetProjectReferenceTargetItems)" />
         </ItemGroup>
     </Target>
 
     <!--
     
-    GetClangIncludeDirectories
-    
-    Externally callable target that returns the include directory information about the target being built and the same for any dependent project references.
-    
-    -->
-
-    <Target Name="GetClangIncludeDirectories" Returns="@(GetClangIncludeDirectories)">
-        <ItemGroup>
-            <GetClangIncludeDirectories Include="$(IncludeDirectories)" />
-            <GetClangIncludeDirectories Include="@(IncludeDirectories)" />
-        </ItemGroup>
-    </Target>
-
-    <Target Name="GetTransitiveClangIncludeDirectories" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveClangIncludeDirectories)">
-        <MSBuild
-            Projects="@(ProjectReferenceWithConfiguration)"
-            Targets="GetClangIncludeDirectories;GetTransitiveClangIncludeDirectories"
-            SkipNonexistentTargets="true"
-            BuildInParallel="$(BuildInParallel)"
-            Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
-            Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
-            ContinueOnError="false"
-            RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
-            RebaseOutputs="true">
-            <Output TaskParameter="TargetOutputs" ItemName="_GetTransitiveIncludeDirectories" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceIncludeDirectories)' == 'true' "/>
-        </MSBuild>
-        <RemoveDuplicates Inputs="@(_GetTransitiveIncludeDirectories)">
-            <Output TaskParameter="Filtered" ItemName="__GetTransitiveIncludeDirectories"/>
-        </RemoveDuplicates>
-        <ItemGroup>
-            <GetTransitiveIncludeDirectories Include="@(__GetTransitiveIncludeDirectories)" />
-        </ItemGroup>
-    </Target>
-
-    <!--
-    
-    GetTransitiveClangLibraryDirectories
-    
-    Externally callable target that returns the library directory information about the target being built and the same for any dependent project references.
-    
-    -->
-
-    <Target Name="GetClangLibraryDirectories" Returns="@(GetClangLibraryDirectories)">
-        <ItemGroup>
-            <GetClangLibraryDirectories Include="$(LibraryDirectories)" />
-            <GetClangLibraryDirectories Include="@(LibraryDirectories)" />
-        </ItemGroup>
-    </Target>
-
-    <Target Name="GetTransitiveClangLibraryDirectories" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveClangLibraryDirectories)">
-        <MSBuild
-            Projects="@(ProjectReferenceWithConfiguration)"
-            Targets="GetClangLibraryDirectories;GetTransitiveClangLibraryDirectories"
-            SkipNonexistentTargets="true"
-            BuildInParallel="$(BuildInParallel)"
-            Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
-            Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
-            ContinueOnError="false"
-            RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
-            RebaseOutputs="true">
-            <Output TaskParameter="TargetOutputs" ItemName="_GetTransitiveLibraryDirectories" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceLibraryDirectories)' == 'true' "/>
-        </MSBuild>
-        <RemoveDuplicates Inputs="@(_GetTransitiveLibraryDirectories)">
-            <Output TaskParameter="Filtered" ItemName="__GetTransitiveLibraryDirectories"/>
-        </RemoveDuplicates>
-        <ItemGroup>
-            <GetTransitiveLibraryDirectories Include="@(__GetTransitiveLibraryDirectories)" />
-        </ItemGroup>
-    </Target>
-
-    <!--
-    
-    GetTransitiveClangDependencies
-    
-    Externally callable target that returns the dependency information about the target being built and the same for any dependent project references.
-    
-    -->
-
-    <Target Name="GetClangDependencies" Returns="@(GetClangDependencies)">
-        <ItemGroup>
-            <GetClangDependencies Include="$(Dependencies)" />
-            <GetClangDependencies Include="@(Dependencies)" />
-        </ItemGroup>
-    </Target>
-
-    <Target Name="GetTransitiveClangDependencies" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetTransitiveClangDependencies)">
-        <MSBuild
-            Projects="@(ProjectReferenceWithConfiguration)"
-            Targets="GetClangDependencies;GetTransitiveClangDependencies"
-            SkipNonexistentTargets="true"
-            BuildInParallel="$(BuildInParallel)"
-            Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
-            Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
-            ContinueOnError="false"
-            RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
-            RebaseOutputs="false">
-            <Output TaskParameter="TargetOutputs" ItemName="_GetTransitiveDependencies" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceDependencies)' == 'true' "/>
-        </MSBuild>
-        <RemoveDuplicates Inputs="@(_GetTransitiveDependencies)">
-            <Output TaskParameter="Filtered" ItemName="__GetTransitiveDependencies"/>
-        </RemoveDuplicates>
-        <ItemGroup>
-            <GetTransitiveDependencies Include="@(__GetTransitiveDependencies)" />
-        </ItemGroup>
-    </Target>
-
-    <!--
-    
-    ImportTransitiveProjectReferenceItems
+    ImportProjectReferenceItems
     
     Collect any items resolved from ProjectReferences and configure locally.
     
     -->
     <PropertyGroup>
-        <ImportTransitiveProjectReferenceItemsDependsOn>
-            $(ImportTransitiveProjectReferenceItemsDependsOn);
+        <ImportProjectReferenceItemsDependsOn>
+            $(ImportProjectReferenceItemsDependsOn);
             AssignProjectConfiguration;
-            GetTransitiveClangTargetItems;
-            GetTransitiveClangIncludeDirectories;
-            GetTransitiveClangLibraryDirectories;
-            GetTransitiveClangDependencies;
-        </ImportTransitiveProjectReferenceItemsDependsOn>
+            GetProjectReferenceTargetItems;
+        </ImportProjectReferenceItemsDependsOn>
     </PropertyGroup>
 
-    <Target Name="ImportTransitiveProjectReferenceItems" DependsOnTargets="$(ImportTransitiveProjectReferenceItemsDependsOn)">
+    <Target Name="ImportProjectReferenceItems" DependsOnTargets="$(ImportProjectReferenceItemsDependsOn)">
         <ItemGroup>
-            <ImportedIncludeDirectories Include="@(GetTransitiveTargetItems->'%(IncludePath)')" />
-            <ImportedIncludeDirectories Include="@(GetTransitiveIncludeDirectories)" />
-        </ItemGroup>
-        <ItemGroup>
-            <_GetTransitiveTargetItems Include="@(GetTransitiveTargetItems->'%(LibraryPath)')" />
-            <ImportedLibraryDirectories Include="@(_GetTransitiveTargetItems->'%(RootDir)%(Directory)')" />
-            <ImportedLibraryDirectories Include="@(GetTransitiveLibraryDirectories)" />
-            <ImportedDependencies Include="@(GetTransitiveTargetItems->'%(TargetName)')" />
-            <ImportedDependencies Include="@(GetTransitiveDependencies)" />
+            <IncludeDirectories Include="@(GetProjectReferenceTargetItems->'%(HeadersPath)')" />
+            <_LibraryDirectories Remove="@(_LibraryDirectories)" />
+            <_LibraryDirectories Include="@(GetProjectReferenceTargetItems->'%(LibraryPath)')" />
+            <LibraryDirectories Include="@(_LibraryDirectories->'%(RootDir)%(Directory)')" />
+            <Dependencies Include="@(GetProjectReferenceTargetItems->'%(TargetName)')" />
         </ItemGroup>
     </Target>
 
@@ -362,7 +268,7 @@
     
     -->
 
-    <Target Name="PrepareCompile" DependsOnTargets="ImportTransitiveProjectReferenceItems" Condition=" '@(Compile)' != '' ">
+    <Target Name="PrepareCompile" DependsOnTargets="ImportProjectReferenceItems" Condition=" '@(Compile)' != '' ">
         <IkvmClangSdkGenerateUniqueFileName Items="@(Compile)" MetadataName="ObjectPath" Extension="$(ObjectExt)" Directory="$(IntermediateOutputPath)">
             <Output TaskParameter="Items" ItemName="_Compile" />
         </IkvmClangSdkGenerateUniqueFileName>
@@ -385,7 +291,7 @@
         <CoreCompileDependsOn>
             $(CoreCompileDependsOn);
             ResolveProjectReferences;
-            ImportTransitiveProjectReferenceItems;
+            ImportProjectReferenceItems;
             PrepareCompile;
         </CoreCompileDependsOn>
     </PropertyGroup>
@@ -462,7 +368,6 @@
             <_IncludeDirectories Include="%(Compile.IncludeDirectories)" />
             <_IncludeDirectories Include="@(IncludeDirectories)" />
             <_IncludeDirectories Include="$(IncludeDirectories)" />
-            <_IncludeDirectories Include="@(ImportedIncludeDirectories)" />
             <_IncludeDirectoriesTemp Remove="@(_IncludeDirectoriesTemp)" />
             <_IncludeDirectoriesTemp Include="@(_IncludeDirectories->Distinct())" />
             <_IncludeDirectoriesArgs Remove="@(_IncludeDirectoriesArgs)" />
@@ -509,20 +414,25 @@
         <CoreLinkDependsOn>
             $(CoreLinkDependsOn);
             Compile;
-            ImportTransitiveProjectReferenceItems;
+            ImportProjectReferenceItems;
         </CoreLinkDependsOn>
     </PropertyGroup>
 
     <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(IntermediateOutputPath)$(TargetFileName)">
         <MakeDir Directories="$(IntermediateOutputPath)" />
+        
+        <PropertyGroup>
+            <_OutputPath Condition=" '$(LibraryIntermediateOutputPath)' != '' ">$(LibraryIntermediateOutputPath)</_OutputPath>
+            <_OutputPath Condition=" '$(ExecutableIntermediateOutputPath)' != '' ">$(ExecutableIntermediateOutputPath)</_OutputPath>
+        </PropertyGroup>
 
         <ItemGroup>
             <_Args Remove="@(_Args)" />
-            <_Args Include="-shared" Condition=" '$(OutputType)' == 'library' " />
-            <_Args Include="-static" Condition=" '$(OutputType)' == 'staticlibrary' " />
+            <_Args Include="-shared" Condition=" '$(OutputType)' == 'shared' " />
+            <_Args Include="-static" Condition=" '$(OutputType)' == 'static' " />
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
             <_Args Include="--target" Value="$(TargetTriple)" Separator="=" />
-            <_Args Include="-fuse-ld" Value="lld" Separator="=" Condition=" '$(UseLld)' == 'true' " />
+            <_Args Include="-fuse-ld" Value="$(UseLd)" Separator="=" Condition=" '$(UseLd)' != '' " />
             <_Args Include="-g" Condition=" '$(DebugSymbols)' == 'true' " />
 
             <_Args Include="-Wl,/subsystem:$(Subsystem)" Condition=" '$(Subsystem)' != '' " />
@@ -550,7 +460,6 @@
             <_LibraryDirectories Remove="@(_LibraryDirectories)" />
             <_LibraryDirectories Include="@(LibraryDirectories)" />
             <_LibraryDirectories Include="$(LibraryDirectories)" />
-            <_LibraryDirectories Include="@(ImportedLibraryDirectories)" />
             <_LibraryDirectoriesTemp Remove="@(_LibraryDirectoriesTemp)" />
             <_LibraryDirectoriesTemp Include="@(_LibraryDirectories->Distinct())" />
             <_LibraryDirectoriesArgs Remove="@(_LibraryDirectoriesArgs)" />
@@ -560,7 +469,6 @@
             <_Dependencies Remove="@(_Dependencies)" />
             <_Dependencies Include="@(Dependencies)" />
             <_Dependencies Include="$(Dependencies)" />
-            <_Dependencies Include="@(ImportedDependencies)" />
             <_DependenciesTemp Remove="@(_DependenciesTemp)" />
             <_DependenciesTemp Include="@(_Dependencies->Distinct())" />
             <_DependenciesArgs Remove="@(_DependenciesArgs)" />
@@ -574,18 +482,56 @@
 
             <_Args Include="@(Compile->'%(ObjectPath)')" />
 
-            <_Args Include="-o" Value="$(IntermediateOutputPath)$(TargetFileName)" Separator=" " />
+            <_Args Include="-o" Value="$(_OutputPath)" Separator=" " />
         </ItemGroup>
 
         <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" />
 
         <ItemGroup>
-            <FileWrites Include="$(IntermediateOutputPath)$(TargetFileName)" />
-            <FileWrites Include="$(IntermediateOutputPath)$(LibraryFileName)" />
-            <FileWrites Include="$(IntermediateOutputPath)$(DebugSymbolsFileName)" />
+            <FileWrites Include="$(ExecutableIntermediateOutputPath)" />
+            <FileWrites Include="$(LibraryIntermediateOutputPath)" />
+            <FileWrites Include="$(DebugSymbolsIntermediateOutputPath)" />
         </ItemGroup>
 
         <CallTarget Targets="$(TargetsTriggeredByLinking)" Condition="'$(TargetsTriggeredByLinking)' != ''" />
+    </Target>
+    
+    <!--
+    
+    CopyHeaders
+    
+    Collect any headers and copy to temp directory.
+    
+    -->
+
+    <Target Name="PrepareCopyHeaders">
+        <ItemGroup>
+            <Header Update="@(Header)">
+                <IncludePath Condition=" '%(Header.IncludePath)' == '' ">%(RecursiveDir)%(Filename)%(Extension)</IncludePath>
+            </Header>
+        </ItemGroup>
+    </Target>
+
+    <PropertyGroup>
+        <CopyHeadersDependsOn>
+            $(CopyHeadersDependsOn);
+            PrepareCopyHeaders;
+        </CopyHeadersDependsOn>
+    </PropertyGroup>
+
+    <Target Name="CopyHeaders" DependsOnTargets="$(CopyHeadersDependsOn)" Inputs="@(Header)" Outputs="@(Header->'$(HeadersIntermediateOutputPath)%(IncludePath)')">
+        <Copy
+            SourceFiles="@(Header)"
+            DestinationFiles="@(Header->'$(HeadersIntermediateOutputPath)%(IncludePath)')"
+            SkipUnchangedFiles="$(SkipCopyUnchangedFiles)"
+            OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
+            Retries="$(CopyRetryCount)"
+            RetryDelayMilliseconds="$(CopyRetryDelayMilliseconds)"
+            UseHardlinksIfPossible="$(CreateHardLinksForCopyFilesToOutputDirectoryIfPossible)"
+            UseSymboliclinksIfPossible="$(CreateSymbolicLinksForCopyFilesToOutputDirectoryIfPossible)"
+            ErrorIfLinkFails="$(ErrorIfLinkFailsForCopyFilesToOutputDirectory)">
+            <Output TaskParameter="DestinationFiles" ItemName="FileWrites"/>
+        </Copy>
     </Target>
 
     <!--
@@ -599,30 +545,17 @@
     <PropertyGroup>
         <GetCopyToOutputDirectoryItemsDependsOn>
             $(GetCopyToOutputDirectoryItemsDependsOn);
-            GetTransitiveClangTargetItems;
+            GetProjectReferenceTargetItems;
         </GetCopyToOutputDirectoryItemsDependsOn>
     </PropertyGroup>
 
     <Target Name="GetCopyToOutputDirectoryItems" DependsOnTargets="$(GetCopyToOutputDirectoryItemsDependsOn)" Returns="@(OutputItemsWithTargetPath)">
         <ItemGroup>
-            <OutputItemsWithTargetPath Include="$(IntermediateOutputPath)$(TargetFileName)">
-                <TargetPath>$(TargetPathName)$(TargetFileName)</TargetPath>
+            <OutputItemsWithTargetPath Include="$(ExecutableIntermediateOutputPath)" Condition=" '$(ExecutableIntermediateOutputPath)' != '' And Exists('$(ExecutableIntermediateOutputPath)')">
+                <TargetPath>$(ExecutableFileName)</TargetPath>
             </OutputItemsWithTargetPath>
-            <OutputItemsWithTargetPath Include="$(IntermediateOutputPath)$(LibraryFileName)" Condition=" '$(LibraryFileName)' != '' And Exists('$(IntermediateOutputPath)$(LibraryFileName)')">
-                <TargetPath>$(LibraryPathName)$(LibraryFileName)</TargetPath>
-            </OutputItemsWithTargetPath>
-            <OutputItemsWithTargetPath Include="$(IntermediateOutputPath)$(DebugSymbolsFileName)" Condition=" '$(DebugSymbolsFileName)' != '' ANd Exists('$(IntermediateOutputPath)$(DebugSymbolsFileName)')">
-                <TargetPath>$(TargetPathName)$(DebugSymbolsFileName)</TargetPath>
-            </OutputItemsWithTargetPath>
-            <OutputItemsWithTargetPath Include="@(Header)" Condition=" '%(Header.CopyToIncludeDirectory)' == 'true' And '%(Header.IncludePath)' != '' ">
-                <TargetPath>$(IncludePathName)%(Header.IncludePath)</TargetPath>
-            </OutputItemsWithTargetPath>
-            <OutputItemsWithTargetPath Include="@(GetTransitiveClangTargetItems)" Condition=" '$(CopyProjectReferenceOutputToOutput)' == 'true' ">
-                <TargetPath>$(TargetPathName)%(Filename)%(Extension)</TargetPath>
-            </OutputItemsWithTargetPath>
-            <_DebugSymbolsPathOutputItems Include="@(GetTransitiveClangTargetItems->'%(DebugSymbolsPath)')" Condition=" '%(DebugSymbolsPath)' != '' And Exists('%(DebugSymbolsPath)')" />
-            <OutputItemsWithTargetPath Include="@(_DebugSymbolsPathOutputItems)" Condition=" '$(CopyProjectReferenceOutputToOutput)' == 'true' And '@(_DebugSymbolsPathOutputItems)' != '' ">
-                <TargetPath>$(TargetPathName)%(Filename)%(Extension)</TargetPath>
+            <OutputItemsWithTargetPath Include="$(DebugSymbolsIntermediateOutputPath)" Condition=" '$(DebugSymbolsIntermediateOutputPath)' != '' And Exists('$(DebugSymbolsIntermediateOutputPath)')">
+                <TargetPath>$(DebugSymbolsFileName)</TargetPath>
             </OutputItemsWithTargetPath>
         </ItemGroup>
     </Target>
@@ -632,6 +565,7 @@
             AssignProjectConfiguration;
             Compile;
             Link;
+            CopyHeaders;
             CopyFilesToOutputDirectory;
         </CoreBuildDependsOn>
     </PropertyGroup>
