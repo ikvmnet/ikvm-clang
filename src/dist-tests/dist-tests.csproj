@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <TestTarget Include="IKVM.Clang.Sdk.Tests|net8.0" ProjectName="IKVM.Clang.Sdk.Tests" TargetFramework="net7.0" />
+        <TestTarget Include="IKVM.Clang.Sdk.Tests|net8.0" ProjectName="IKVM.Clang.Sdk.Tests" TargetFramework="net8.0" />
     </ItemGroup>
 
     <!-- Runs once per TFM/RID combination to generate individual output. -->
