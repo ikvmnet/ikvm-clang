@@ -26,9 +26,12 @@
         </None>
     </ItemGroup>
 
+    <ItemGroup>
+        <IkvmNativeSdk Include="..\..\ext\ikvm-native-sdk\**\*" Exclude="..\..\ext\ikvm-native-sdk\**\terminfo" />
+    </ItemGroup>
+
     <Target Name="ImportIkvmNativeSdk" BeforeTargets="AssignTargetPaths">
         <ItemGroup>
-            <IkvmNativeSdk Include="..\..\ext\ikvm-native-sdk\**\*" Exclude="..\..\ext\ikvm-native-sdk\**\terminfo" />
             <None Include="@(IkvmNativeSdk)">
                 <TargetPath>ikvm-native-sdk\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
                 <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
