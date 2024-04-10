@@ -15,6 +15,7 @@
 
     <ItemGroup>
         <None Include="Sdk\**\*" Pack="true" PackagePath="Sdk\%(RecursiveDir)%(Filename)%(Extension)" />
+        <None Include="targets\**\*" Pack="true" PackagePath="targets\%(RecursiveDir)%(Filename)%(Extension)" />
         <None Include="..\..\LICENSE" Pack="true" PackagePath="." />
         <None Include="README.md" Pack="true" PackagePath="." />
     </ItemGroup>

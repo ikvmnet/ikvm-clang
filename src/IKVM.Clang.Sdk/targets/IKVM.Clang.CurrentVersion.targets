@@ -87,6 +87,7 @@
     <PropertyGroup>
         <LinkDependsOn>
             $(LinkDependsOn);
+            Compile;
             BeforeLink;
             CoreLink;
             AfterLink;

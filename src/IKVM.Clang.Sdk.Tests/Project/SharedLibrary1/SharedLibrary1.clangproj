@@ -1,11 +1,11 @@
 ﻿<Project>
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.props" />
+    <Import Project="..\lib.props" />
     <PropertyGroup Label="Globals">
         <ProjectGuid>f511e617-3e18-4dc6-9936-8746f3060663</ProjectGuid>
     </PropertyGroup>
     <PropertyGroup>
-        <OutputType>Shared</OutputType>
-        <TargetIdentifiers>x86_64-pc-windows-msvc;i686-pc-windows-msvc;thumbv7-pc-windows-msvc;aarch64-pc-windows-msvc</TargetIdentifiers>
+        <OutputType>Dll</OutputType>
         <Verbose>true</Verbose>
     </PropertyGroup>
     <ItemGroup>
@@ -24,4 +24,5 @@
         <PreprocessorDefinitions Include="STRING" Value="%22HI%22" />
     </ItemGroup>
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.targets" />
+    <Import Project="..\lib.targets" />
 </Project>

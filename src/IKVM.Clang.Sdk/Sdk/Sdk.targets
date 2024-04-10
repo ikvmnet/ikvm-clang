@@ -3,5 +3,5 @@
         <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     </PropertyGroup>
 
-    <Import Project="$(MSBuildThisFileDirectory)targets\IKVM.Clang.Sdk.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)..\targets\IKVM.Clang.Sdk.targets" />
 </Project>

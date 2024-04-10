@@ -12,9 +12,10 @@
         <IkvmClangSdkTaskFolder Condition=" '$(MSBuildRuntimeType)' != 'Core' ">net472</IkvmClangSdkTaskFolder>
         <IkvmClangSdkTaskFactory Condition=" '$(MSBuildRuntimeType)' == 'Core' "></IkvmClangSdkTaskFactory>
         <IkvmClangSdkTaskFactory Condition=" '$(MSBuildRuntimeType)' != 'Core' ">TaskHostFactory</IkvmClangSdkTaskFactory>
-        <IkvmClangSdkTaskAssembly>$(MSBuildThisFileDirectory)..\..\tasks\$(IkvmClangSdkTaskFolder)\IKVM.Clang.Sdk.Tasks.dll</IkvmClangSdkTaskAssembly>
+        <IkvmClangSdkTaskAssembly>$(MSBuildThisFileDirectory)..\tasks\$(IkvmClangSdkTaskFolder)\IKVM.Clang.Sdk.Tasks.dll</IkvmClangSdkTaskAssembly>
     </PropertyGroup>
 
     <UsingTask TaskName="ClangExe" AssemblyFile="$(IkvmClangSdkTaskAssembly)" TaskFactory="$(IkvmClangSdkTaskFactory)" />
+    <UsingTask TaskName="LlvmArExe" AssemblyFile="$(IkvmClangSdkTaskAssembly)" TaskFactory="$(IkvmClangSdkTaskFactory)" />
 
 </Project>

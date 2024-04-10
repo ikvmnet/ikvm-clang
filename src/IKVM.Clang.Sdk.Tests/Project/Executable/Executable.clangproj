@@ -1,14 +1,14 @@
 ﻿<Project>
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.props" />
+    <Import Project="..\lib.props" />
     <PropertyGroup Label="Globals">
         <ProjectGuid>25bf59da-b011-4eaf-9abd-3653bd9b21b9</ProjectGuid>
     </PropertyGroup>
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetIdentifiers>x86_64-pc-windows-msvc;i686-pc-windows-msvc;thumbv7-pc-windows-msvc;aarch64-pc-windows-msvc</TargetIdentifiers>
         <Verbose>true</Verbose>
     </PropertyGroup>
-    <PropertyGroup Condition="$(TargetIdentifier.Contains('-windows-'))">
+    <PropertyGroup Condition="$(TargetIdentifier.StartsWith('win-'))">
         <Subsystem>console</Subsystem>
     </PropertyGroup>
     <ItemGroup>
@@ -20,4 +20,5 @@
         <Compile Include="main.c" />
     </ItemGroup>
     <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.targets" />
+    <Import Project="..\lib.targets" />
 </Project>

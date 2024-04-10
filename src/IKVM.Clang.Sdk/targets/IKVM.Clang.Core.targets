@@ -9,6 +9,8 @@
         <TargetTriple Condition=" '$(TargetTriple)' == '' ">$(TargetIdentifier)</TargetTriple>
         <ClangToolExe Condition=" '$(ClangToolName)' == '' And !$([MSBuild]::IsOSUnixLike())">clang.exe</ClangToolExe>
         <ClangToolExe Condition=" '$(ClangToolName)' == '' And  $([MSBuild]::IsOSUnixLike())">clang</ClangToolExe>
+        <LlvmArToolExe Condition=" '$(ClangToolName)' == '' And !$([MSBuild]::IsOSUnixLike())">llvm-ar.exe</LlvmArToolExe>
+        <LlvmArToolExe Condition=" '$(ClangToolName)' == '' And  $([MSBuild]::IsOSUnixLike())">llvm-ar</LlvmArToolExe>
         <DebugSymbols Condition=" '$(DebugSymbols)' == '' And '$(Configuration)' == 'Debug' ">true</DebugSymbols>
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.pdb</DebugSymbolsExt>
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.g</DebugSymbolsExt>
@@ -17,11 +19,10 @@
 
     <PropertyGroup Condition=" '$(OutputType)' == 'exe' ">
         <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' "></ExecutablePrefix>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And '$(OutputType)' == 'exe' And $(TargetTriple.Contains('-windows-'))">.exe</ExecutableExt>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' "></ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-windows-'))">.dll</ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-linux-'))">.so</ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-apple-'))">.dylib</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-windows-'))">.exe</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-linux-'))"></ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-apple-'))"></ExecutableExt>
         <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' ">$(ExecutablePrefix)$(TargetName)$(ExecutableExt)</ExecutableFileName>
         <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
         <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' "></DebugSymbolsPrefix>
@@ -30,7 +31,7 @@
         <UseLd Condition=" '$(UseLd)' == '' ">lld</UseLd>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(OutputType)' == 'shared' ">
+    <PropertyGroup Condition=" '$(OutputType)' == 'dll' ">
         <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' "></ExecutablePrefix>
         <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('-windows-'))"></ExecutablePrefix>
         <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('-linux-'))">lib</ExecutablePrefix>
@@ -54,7 +55,7 @@
         <UseLd Condition=" '$(UseLd)' == '' ">lld</UseLd>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(OutputType)' == 'static' ">
+    <PropertyGroup Condition=" '$(OutputType)' == 'lib' ">
         <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' "></ExecutablePrefix>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' "></ExecutableExt>
         <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' "></ExecutableFileName>
@@ -69,8 +70,6 @@
         <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</DebugSymbolsPrefix>
         <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</DebugSymbolsPrefix>
         <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">false</CopyProjectReferenceOutputToOutput>
-        <UseLd Condition=" '$(UseLd)' == '' And $(TargetTriple.Contains('-windows-'))">llvm-lib</UseLd>
-        <UseLd Condition=" '$(UseLd)' == '' ">lld</UseLd>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -418,18 +417,12 @@
         </CoreLinkDependsOn>
     </PropertyGroup>
 
-    <Target Name="CoreLink" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(IntermediateOutputPath)$(TargetFileName)">
+    <Target Name="CoreLinkExecutable" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(ExecutableIntermediateOutputPath);$(LibraryIntermediateOutputPath)" Condition=" '$(OutputType)' == 'exe' Or '$(OutputType)' == 'dll' ">
         <MakeDir Directories="$(IntermediateOutputPath)" />
-        
-        <PropertyGroup>
-            <_OutputPath Condition=" '$(LibraryIntermediateOutputPath)' != '' ">$(LibraryIntermediateOutputPath)</_OutputPath>
-            <_OutputPath Condition=" '$(ExecutableIntermediateOutputPath)' != '' ">$(ExecutableIntermediateOutputPath)</_OutputPath>
-        </PropertyGroup>
 
         <ItemGroup>
             <_Args Remove="@(_Args)" />
-            <_Args Include="-shared" Condition=" '$(OutputType)' == 'shared' " />
-            <_Args Include="-static" Condition=" '$(OutputType)' == 'static' " />
+            <_Args Include="-shared" Condition=" '$(OutputType)' == 'dll' " />
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
             <_Args Include="--target" Value="$(TargetTriple)" Separator="=" />
             <_Args Include="-fuse-ld" Value="$(UseLd)" Separator="=" Condition=" '$(UseLd)' != '' " />
@@ -482,7 +475,7 @@
 
             <_Args Include="@(Compile->'%(ObjectPath)')" />
 
-            <_Args Include="-o" Value="$(_OutputPath)" Separator=" " />
+            <_Args Include="-o" Value="$(ExecutableIntermediateOutputPath)" Separator=" " />
         </ItemGroup>
 
         <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" />
@@ -494,6 +487,29 @@
         </ItemGroup>
 
         <CallTarget Targets="$(TargetsTriggeredByLinking)" Condition="'$(TargetsTriggeredByLinking)' != ''" />
+    </Target>
+
+    <Target Name="CoreLinkLibrary" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(LibraryIntermediateOutputPath)" Condition=" '$(OutputType)' == 'lib' ">
+        <MakeDir Directories="$(IntermediateOutputPath)" />
+
+        <ItemGroup>
+            <_Args Remove="@(_Args)" />
+            <_Args Include="r" />
+            <_Args Include="$(LibraryIntermediateOutputPath)" Separator=" " />
+            <_Args Include="@(Compile->'%(ObjectPath)')" />
+        </ItemGroup>
+
+        <ClangExe ToolExe="$(LlvmArToolExe)" Arguments="@(_Args)" />
+
+        <ItemGroup>
+            <FileWrites Include="$(LibraryIntermediateOutputPath)" />
+        </ItemGroup>
+
+        <CallTarget Targets="$(TargetsTriggeredByLinking)" Condition="'$(TargetsTriggeredByLinking)' != ''" />
+    </Target>
+
+    <Target Name="CoreLink" DependsOnTargets="CoreLinkExecutable;CoreLinkLibrary">
+        
     </Target>
     
     <!--

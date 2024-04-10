@@ -3,7 +3,7 @@
         <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     </PropertyGroup>
 
-    <Import Project="$(MSBuildThisFileDirectory)..\ProjectSystem\Clang.ProjectSystem.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)..\Sdk\ProjectSystem\Clang.ProjectSystem.targets" />
 
     <ItemGroup Condition=" '$(SolutionDir)' != '' ">
         <_GlobalJsonStartingDir Include="$(SolutionDir)" />

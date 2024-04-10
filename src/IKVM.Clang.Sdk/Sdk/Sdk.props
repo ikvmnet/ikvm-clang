@@ -12,5 +12,5 @@
     </PropertyGroup>
 
     <Import Project="$(AlternateCommonProps)" Condition="'$(AlternateCommonProps)' != ''" />
-    <Import Project="$(MSBuildThisFileDirectory)targets\IKVM.Clang.Sdk.props" />
+    <Import Project="$(MSBuildThisFileDirectory)..\targets\IKVM.Clang.Sdk.props" />
 </Project>

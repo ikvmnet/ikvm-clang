@@ -1,6 +1,7 @@
 name: IKVM.Clang
 
 on:
+  workflow_dispatch:
   push:
     branches:
     - main
@@ -12,6 +13,9 @@ on:
   release:
     types:
     - created
+
+env:
+  NATIVE_SDK_VERSION: "20240403.1"
 
 jobs:
   build:
@@ -61,6 +65,14 @@ jobs:
         targetPath: ${{ env.WORKPATH }}\ikvm-clang
         useConfigFile: true
         configFilePath: ${{ env.WORKPATH }}\ikvm-clang\GitVersion.yml
+    - name: Download Native SDKs
+      uses: robinraju/release-downloader@v1.9
+      with:
+        repository: ikvmnet/ikvm-native-sdk
+        tag: ${{ env.NATIVE_SDK_VERSION }}
+        fileName: "*.tar.gz"
+        out-file-path: ${{ env.WORKPATH }}/ikvm-clang/ext/ikvm-native-sdk
+        extract: true
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v2
     - name: Restore

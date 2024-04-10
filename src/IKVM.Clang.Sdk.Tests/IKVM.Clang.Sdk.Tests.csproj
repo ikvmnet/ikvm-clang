@@ -2,13 +2,9 @@
     <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
     <PropertyGroup>
-        <TargetFrameworks>net7.0</TargetFrameworks>
+        <TargetFrameworks>net8.0</TargetFrameworks>
         <RunSettingsFilePath>$(MSBuildProjectDirectory)\IKVM.Clang.Sdk.Tests.runsettings</RunSettingsFilePath>
     </PropertyGroup>
-
-    <ItemGroup>
-        <None Include="Project\**\*" CopyToOutputDirectory="Always" />
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="6.12.0" />
@@ -23,6 +19,22 @@
     <ItemGroup Condition=" '$(TargetFramework)' != '' ">
         <PackageProjectReference Include="..\IKVM.Clang.Sdk\IKVM.Clang.Sdk.csproj" PackageTargetPath="nuget" />
     </ItemGroup>
+
+    <ItemGroup>
+        <None Include="Project\**\*">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <Target Name="ImportIkvmNativeSdk" BeforeTargets="AssignTargetPaths">
+        <ItemGroup>
+            <IkvmNativeSdk Include="..\..\ext\ikvm-native-sdk\**\*" Exclude="..\..\ext\ikvm-native-sdk\**\terminfo" />
+            <None Include="@(IkvmNativeSdk)">
+                <TargetPath>ikvm-native-sdk\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            </None>
+        </ItemGroup>
+    </Target>
 
     <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
@@ -46,4 +58,5 @@
             $(GetCopyToOutputDirectoryItemsDependsOn);
         </GetCopyToOutputDirectoryItemsDependsOn>
     </PropertyGroup>
+    
 </Project>
