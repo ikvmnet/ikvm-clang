@@ -66,7 +66,7 @@ jobs:
         useConfigFile: true
         configFilePath: ${{ env.WORKPATH }}\ikvm-clang\GitVersion.yml
     - name: Download Native SDKs
-      uses: robinraju/release-downloader@v1
+      uses: robinraju/release-downloader@62178ff416a9e20c47b8464ff4ef5c5aaf26e31c
       with:
         repository: ikvmnet/ikvm-native-sdk
         tag: ${{ env.NATIVE_SDK_VERSION }}
