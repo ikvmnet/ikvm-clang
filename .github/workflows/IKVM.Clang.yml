@@ -132,7 +132,7 @@ jobs:
         run:
         - IKVM.Clang.Sdk.Tests
         tfm:
-        - net7.0
+        - net8.0
         sys:
         - win-x64
     name: Test (${{ matrix.run }}:${{ matrix.tfm }}:${{ matrix.sys }})
