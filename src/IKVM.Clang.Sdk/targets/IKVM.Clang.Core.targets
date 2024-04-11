@@ -153,15 +153,15 @@
 
     <!--
     
-    GetTargetItem
+    GetOutputItem
     
     Externally callable target that returns information about the native target being built.
     
     -->
 
-    <Target Name="GetTargetItem" Returns="@(GetTargetItem)">
+    <Target Name="GetOutputItem" Returns="@(GetOutputItem)">
         <ItemGroup>
-            <GetTargetItem Include="$([System.IO.Path]::GetFullPath('$(OutputPath)$(TargetPathName)$(TargetFileName)'))">
+            <GetOutputItem Include="$([System.IO.Path]::GetFullPath('$(MSBuildProjectFile)'))">
                 <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
                 <TargetName>$(TargetName)</TargetName>
                 <TargetTriple>$(TargetTriple)</TargetTriple>
@@ -171,22 +171,22 @@
                 <HeadersPath Condition=" '$(HeadersIntermediateOutputPath)' != '' ">$([System.IO.Path]::GetFullPath('$(HeadersIntermediateOutputPath)'))</HeadersPath>
                 <Version>$(Version)</Version>
                 <CopyUpToDateMarker>@(CopyUpToDateMarker)</CopyUpToDateMarker>
-            </GetTargetItem>
+            </GetOutputItem>
         </ItemGroup>
     </Target>
 
     <!--
     
-    GetProjectReferenceTargetItems
+    GetProjectReferenceOutputItems
     
     Externally callable target that returns information about the native target being built and the same for any dependent project references.
     
     -->
 
-    <Target Name="GetProjectReferenceTargetItems" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetProjectReferenceTargetItems)">
+    <Target Name="GetProjectReferenceOutputItems" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetProjectReferenceOutputItems)">
         <MSBuild
             Projects="@(ProjectReferenceWithConfiguration)"
-            Targets="GetTargetItem"
+            Targets="GetOutputItem"
             SkipNonexistentTargets="true"
             BuildInParallel="$(BuildInParallel)"
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
@@ -194,13 +194,13 @@
             ContinueOnError="false"
             RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
             RebaseOutputs="false">
-            <Output TaskParameter="TargetOutputs" ItemName="_GetProjectReferenceTargetItems" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceTargetItems)' == 'true' "/>
+            <Output TaskParameter="TargetOutputs" ItemName="_GetProjectReferenceOutputItems" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceTargetItems)' == 'true' "/>
         </MSBuild>
-        <RemoveDuplicates Inputs="@(_GetProjectReferenceTargetItems)">
-            <Output TaskParameter="Filtered" ItemName="__GetProjectReferenceTargetItems"/>
+        <RemoveDuplicates Inputs="@(_GetProjectReferenceOutputItems)">
+            <Output TaskParameter="Filtered" ItemName="__GetProjectReferenceOutputItems"/>
         </RemoveDuplicates>
         <ItemGroup>
-            <GetProjectReferenceTargetItems Include="@(__GetProjectReferenceTargetItems)" />
+            <GetProjectReferenceOutputItems Include="@(__GetProjectReferenceOutputItems)" />
         </ItemGroup>
     </Target>
 
@@ -215,17 +215,17 @@
         <ImportProjectReferenceItemsDependsOn>
             $(ImportProjectReferenceItemsDependsOn);
             AssignProjectConfiguration;
-            GetProjectReferenceTargetItems;
+            GetProjectReferenceOutputItems;
         </ImportProjectReferenceItemsDependsOn>
     </PropertyGroup>
 
     <Target Name="ImportProjectReferenceItems" DependsOnTargets="$(ImportProjectReferenceItemsDependsOn)">
         <ItemGroup>
-            <IncludeDirectories Include="@(GetProjectReferenceTargetItems->'%(HeadersPath)')" />
+            <IncludeDirectories Include="@(GetProjectReferenceOutputItems->'%(HeadersPath)')" />
             <_LibraryDirectories Remove="@(_LibraryDirectories)" />
-            <_LibraryDirectories Include="@(GetProjectReferenceTargetItems->'%(LibraryPath)')" />
+            <_LibraryDirectories Include="@(GetProjectReferenceOutputItems->'%(LibraryPath)')" />
             <LibraryDirectories Include="@(_LibraryDirectories->'%(RootDir)%(Directory)')" />
-            <Dependencies Include="@(GetProjectReferenceTargetItems->'%(TargetName)')" />
+            <Dependencies Include="@(GetProjectReferenceOutputItems->'%(TargetName)')" />
         </ItemGroup>
     </Target>
 
@@ -561,7 +561,7 @@
     <PropertyGroup>
         <GetCopyToOutputDirectoryItemsDependsOn>
             $(GetCopyToOutputDirectoryItemsDependsOn);
-            GetProjectReferenceTargetItems;
+            GetProjectReferenceOutputItems;
         </GetCopyToOutputDirectoryItemsDependsOn>
     </PropertyGroup>
 
