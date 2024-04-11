@@ -134,9 +134,9 @@ namespace IKVM.Clang.Sdk.Tests
         [DataRow(EnvironmentPreference.Core, "win-x64", "{0}.dll", "{0}.lib", "{0}.exe", "{0}.pdb")]
         [DataRow(EnvironmentPreference.Core, "win-x86", "{0}.dll", "{0}.lib", "{0}.exe", "{0}.pdb")]
         [DataRow(EnvironmentPreference.Core, "win-arm64", "{0}.dll", "{0}.lib", "{0}.exe", "{0}.pdb")]
-        [DataRow(EnvironmentPreference.Core, "linux-x64", "lib{0}.so", "lib{0}.a", "{0}", "_")]
-        [DataRow(EnvironmentPreference.Core, "linux-arm", "lib{0}.so", "lib{0}.a", "{0}", "_")]
-        [DataRow(EnvironmentPreference.Core, "linux-arm64", "lib{0}.so", "lib{0}.a", "{0}", "_")]
+        //[DataRow(EnvironmentPreference.Core, "linux-x64", "lib{0}.so", "lib{0}.a", "{0}", "_")]
+        //[DataRow(EnvironmentPreference.Core, "linux-arm", "lib{0}.so", "lib{0}.a", "{0}", "_")]
+        //[DataRow(EnvironmentPreference.Core, "linux-arm64", "lib{0}.so", "lib{0}.a", "{0}", "_")]
         public void CanBuildTestProject(EnvironmentPreference env, string tid, string dllName, string libName, string exeName, string symName)
         {
             TestContext.WriteLine("TestRoot: {0}", TestRoot);

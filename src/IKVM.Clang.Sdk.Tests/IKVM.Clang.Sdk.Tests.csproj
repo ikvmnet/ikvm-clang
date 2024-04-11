@@ -26,19 +26,6 @@
         </None>
     </ItemGroup>
 
-    <ItemGroup>
-        <IkvmNativeSdk Include="..\..\ext\ikvm-native-sdk\**\*" Exclude="..\..\ext\ikvm-native-sdk\**\terminfo" />
-    </ItemGroup>
-
-    <Target Name="ImportIkvmNativeSdk" BeforeTargets="AssignTargetPaths">
-        <ItemGroup>
-            <None Include="@(IkvmNativeSdk)">
-                <TargetPath>ikvm-native-sdk\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
-                <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            </None>
-        </ItemGroup>
-    </Target>
-
     <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
     <!-- Generate a file the Tests can use to retrieve various MSBuild properties. -->
