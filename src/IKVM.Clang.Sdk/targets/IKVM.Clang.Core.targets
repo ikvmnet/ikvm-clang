@@ -334,9 +334,9 @@
             <_Args Include="-x;$(_Language)" Condition=" '$(_Language)' != '' " />
 
             <_SystemRootDirectories Remove="@(_SystemRootDirectories)" />
-            <_SystemRootDirectories Include="%(Compile.SystemRootDirectories)" />
             <_SystemRootDirectories Include="@(SystemRootDirectories)" />
             <_SystemRootDirectories Include="$(SystemRootDirectories)" />
+            <_SystemRootDirectories Include="%(Compile.SystemRootDirectories)" />
             <_SystemRootDirectoriesTemp Remove="@(_SystemRootDirectoriesTemp)" />
             <_SystemRootDirectoriesTemp Include="@(_SystemRootDirectories->Distinct())" />
             <_SystemRootDirectoriesArgs Remove="@(_SystemRootDirectoriesArgs)" />
@@ -344,9 +344,9 @@
             <_Args Include="@(_SystemRootDirectoriesArgs)" />
 
             <_IncludeSystemRootDirectories Remove="@(_IncludeSystemRootDirectories)" />
-            <_IncludeSystemRootDirectories Include="%(Compile.IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="@(IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
+            <_IncludeSystemRootDirectories Include="%(Compile.IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectoriesTemp Remove="@(_IncludeSystemRootDirectoriesTemp)" />
             <_IncludeSystemRootDirectoriesTemp Include="@(_IncludeSystemRootDirectories->Distinct())" />
             <_IncludeSystemRootDirectoriesArgs Remove="@(_IncludeSystemRootDirectoriesArgs)" />
@@ -354,9 +354,9 @@
             <_Args Include="@(_IncludeSystemRootDirectoriesArgs)" />
 
             <_SystemIncludeDirectories Remove="@(_SystemIncludeDirectories)" />
-            <_SystemIncludeDirectories Include="%(Compile.SystemIncludeDirectories)" />
             <_SystemIncludeDirectories Include="@(SystemIncludeDirectories)" />
             <_SystemIncludeDirectories Include="$(SystemIncludeDirectories)" />
+            <_SystemIncludeDirectories Include="%(Compile.SystemIncludeDirectories)" />
             <_SystemIncludeDirectoriesTemp Remove="@(_SystemIncludeDirectoriesTemp)" />
             <_SystemIncludeDirectoriesTemp Include="@(_SystemIncludeDirectories->Distinct())" />
             <_SystemIncludeDirectoriesArgs Remove="@(_SystemIncludeDirectoriesArgs)" />
@@ -364,9 +364,9 @@
             <_Args Include="@(_SystemIncludeDirectoriesArgs)" />
 
             <_IncludeDirectories Remove="@(_IncludeDirectories)" />
-            <_IncludeDirectories Include="%(Compile.IncludeDirectories)" />
             <_IncludeDirectories Include="@(IncludeDirectories)" />
             <_IncludeDirectories Include="$(IncludeDirectories)" />
+            <_IncludeDirectories Include="%(Compile.IncludeDirectories)" />
             <_IncludeDirectoriesTemp Remove="@(_IncludeDirectoriesTemp)" />
             <_IncludeDirectoriesTemp Include="@(_IncludeDirectories->Distinct())" />
             <_IncludeDirectoriesArgs Remove="@(_IncludeDirectoriesArgs)" />
@@ -374,17 +374,17 @@
             <_Args Include="@(_IncludeDirectoriesArgs)" />
 
             <_PreprocessorDefinitions Remove="@(_PreprocessorDefinitions)" />
-            <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
+            <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />
             <_PreprocessorDefinitionsArgs Remove="@(_PreprocessorDefinitionsArgs)" />
             <_PreprocessorDefinitionsArgs Include="@(_PreprocessorDefinitions->'-D')" Value="%(_PreprocessorDefinitions.Identity)" Separator="" Value2="%(_PreprocessorDefinitions.Value)" Separator2="=" />
             <_Args Include="@(_PreprocessorDefinitionsArgs)" />
 
             <_AdditionalOptions Remove="@(_AdditionalOptions)" />
-            <_AdditionalOptions Include="%(Compile.AdditionalCompileOptions)" />
             <_AdditionalOptions Include="@(AdditionalCompileOptions)" />
             <_AdditionalOptions Include="$(AdditionalCompileOptions)" />
+            <_AdditionalOptions Include="%(Compile.AdditionalCompileOptions)" />
             <_Args Include="@(_AdditionalOptions)" />
 
             <_Args Include="$(_SourcePath)" />
@@ -431,7 +431,6 @@
             <_Args Include="-Wl,/subsystem:$(Subsystem)" Condition=" '$(Subsystem)' != '' " />
 
             <_SystemRootDirectories Remove="@(_SystemRootDirectories)" />
-            <_SystemRootDirectories Include="%(Compile.SystemRootDirectories)" />
             <_SystemRootDirectories Include="@(SystemRootDirectories)" />
             <_SystemRootDirectories Include="$(SystemRootDirectories)" />
             <_SystemRootDirectoriesTemp Remove="@(_SystemRootDirectoriesTemp)" />
@@ -441,7 +440,6 @@
             <_Args Include="@(_SystemRootDirectoriesArgs)" />
 
             <_IncludeSystemRootDirectories Remove="@(_IncludeSystemRootDirectories)" />
-            <_IncludeSystemRootDirectories Include="%(Compile.IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="@(IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="$(IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectoriesTemp Remove="@(_IncludeSystemRootDirectoriesTemp)" />
