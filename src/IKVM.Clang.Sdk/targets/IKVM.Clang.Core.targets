@@ -124,6 +124,8 @@
     <ItemDefinitionGroup>
         <ProjectReference>
             <ReferenceSourceTarget>ProjectReference</ReferenceSourceTarget>
+            <Include>True</Include>
+            <Link>True</Link>
         </ProjectReference>
     </ItemDefinitionGroup>
 
@@ -221,11 +223,11 @@
 
     <Target Name="ImportProjectReferenceItems" DependsOnTargets="$(ImportProjectReferenceItemsDependsOn)">
         <ItemGroup>
-            <IncludeDirectories Include="@(GetProjectReferenceOutputItems->'%(HeadersPath)')" />
+            <IncludeDirectories Include="@(GetProjectReferenceOutputItems->WithMetadataValue('Include', 'True')->'%(HeadersPath)')" />
             <_LibraryDirectories Remove="@(_LibraryDirectories)" />
-            <_LibraryDirectories Include="@(GetProjectReferenceOutputItems->'%(LibraryPath)')" />
+            <_LibraryDirectories Include="@(GetProjectReferenceOutputItems->WithMetadataValue('Link', 'True')->'%(LibraryPath)')" />
             <LibraryDirectories Include="@(_LibraryDirectories->'%(RootDir)%(Directory)')" />
-            <Dependencies Include="@(GetProjectReferenceOutputItems->'%(TargetName)')" />
+            <Dependencies Include="@(GetProjectReferenceOutputItems->WithMetadataValue('Link', 'True')->'%(TargetName)')" />
         </ItemGroup>
     </Target>
 
