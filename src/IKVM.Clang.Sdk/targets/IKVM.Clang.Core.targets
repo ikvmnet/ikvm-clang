@@ -24,7 +24,7 @@
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-windows-'))">.exe</ExecutableExt>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-linux-'))"></ExecutableExt>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-apple-'))"></ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('wasm32'))"></ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('wasm32'))">.wasm</ExecutableExt>
         <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' ">$(ExecutablePrefix)$(TargetName)$(ExecutableExt)</ExecutableFileName>
         <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
         <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' "></DebugSymbolsPrefix>

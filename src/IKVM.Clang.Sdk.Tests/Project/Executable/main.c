@@ -11,3 +11,7 @@ int main() {
     hello1();
 #endif
 }
+
+int exit() {
+    return 0;
+}

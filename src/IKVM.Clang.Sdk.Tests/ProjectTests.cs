@@ -157,7 +157,7 @@ namespace IKVM.Clang.Sdk.Tests
         //[DataRow(EnvironmentPreference.Core, "linux-x64", "lib{0}.so", "lib{0}.a", "{0}", "_")]
         //[DataRow(EnvironmentPreference.Core, "linux-arm", "lib{0}.so", "lib{0}.a", "{0}", "_")]
         //[DataRow(EnvironmentPreference.Core, "linux-arm64", "lib{0}.so", "lib{0}.a", "{0}", "_")]
-        [DataRow(EnvironmentPreference.Core, "browser-wasm", "{0}.wasm", "{0}.wasm", "{0}.wasm", "{0}.g")]
+        [DataRow(EnvironmentPreference.Core, "browser-wasm", "lib{0}.so", "lib{0}.a", "{0}.wasm", "_")]
         public void CanBuildTestProject(EnvironmentPreference env, string tid, string dllName, string libName, string exeName, string symName)
         {
             TestContext.WriteLine("TestRoot: {0}", TestRoot);

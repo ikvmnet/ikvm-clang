@@ -104,7 +104,6 @@
         <SystemIncludeDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot\include" />
         <LibraryDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot\lib" />
         <Dependencies Include="embind" />
-        <Dependencies Include="noexit" />
     </ItemGroup>
 
     <PropertyGroup Condition="$(TargetIdentifier.StartsWith('linux-'))">
