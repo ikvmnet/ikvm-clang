@@ -15,6 +15,7 @@
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.pdb</DebugSymbolsExt>
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.g</DebugSymbolsExt>
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.dsym</DebugSymbolsExt>
+        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('wasm32')) ">.g</DebugSymbolsExt>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(OutputType)' == 'exe' ">
@@ -23,6 +24,7 @@
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-windows-'))">.exe</ExecutableExt>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-linux-'))"></ExecutableExt>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-apple-'))"></ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('wasm32'))"></ExecutableExt>
         <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' ">$(ExecutablePrefix)$(TargetName)$(ExecutableExt)</ExecutableFileName>
         <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
         <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' "></DebugSymbolsPrefix>
@@ -36,21 +38,26 @@
         <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('-windows-'))"></ExecutablePrefix>
         <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('-linux-'))">lib</ExecutablePrefix>
         <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('-apple-'))">lib</ExecutablePrefix>
+        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('wasm32'))">lib</ExecutablePrefix>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' "></ExecutableExt>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-windows-'))">.dll</ExecutableExt>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-linux-'))">.so</ExecutableExt>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-apple-'))">.dylib</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('wasm32'))">.wasm</ExecutableExt>
         <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' ">$(ExecutablePrefix)$(TargetName)$(ExecutableExt)</ExecutableFileName>
         <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
         <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</LibraryPrefix>
         <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</LibraryPrefix>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('wasm32')) ">lib</LibraryPrefix>
         <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.lib</LibraryExt>
         <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.so</LibraryExt>
         <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.dylib</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('wasm32')) ">.wasm</LibraryExt>
         <LibraryFileName Condition=" '$(LibraryFileName)' == '' ">$(LibraryPrefix)$(TargetName)$(LibraryExt)</LibraryFileName>
         <LibraryIntermediateOutputPath Condition=" '$(LibraryFileName)' != '' ">$(IntermediateOutputPath)$(LibraryFileName)</LibraryIntermediateOutputPath>
         <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</DebugSymbolsPrefix>
         <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</DebugSymbolsPrefix>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('wasm32')) ">lib</DebugSymbolsPrefix>
         <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">false</CopyProjectReferenceOutputToOutput>
         <UseLd Condition=" '$(UseLd)' == '' ">lld</UseLd>
     </PropertyGroup>
@@ -62,13 +69,16 @@
         <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
         <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</LibraryPrefix>
         <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</LibraryPrefix>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('wasm32')) ">lib</LibraryPrefix>
         <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.lib</LibraryExt>
         <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.a</LibraryExt>
         <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.a</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('wasm32')) ">.a</LibraryExt>
         <LibraryFileName Condition=" '$(LibraryFileName)' == '' ">$(LibraryPrefix)$(TargetName)$(LibraryExt)</LibraryFileName>
         <LibraryIntermediateOutputPath Condition=" '$(LibraryFileName)' != '' ">$(IntermediateOutputPath)$(LibraryFileName)</LibraryIntermediateOutputPath>
         <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</DebugSymbolsPrefix>
         <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</DebugSymbolsPrefix>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('wasm32'))">lib</DebugSymbolsPrefix>
         <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">false</CopyProjectReferenceOutputToOutput>
     </PropertyGroup>
 
@@ -566,6 +576,7 @@
     </PropertyGroup>
 
     <Target Name="GetCopyToOutputDirectoryItems" DependsOnTargets="$(GetCopyToOutputDirectoryItemsDependsOn)" Returns="@(OutputItemsWithTargetPath)">
+        <Error Condition=" '$(ExecutableIntermediateOutputPath)' == '$(DebugSymbolsIntermediateOutputPath)' And Exists('$(ExecutableIntermediateOutputPath)') And Exists('$(DebugSymbolsIntermediateOutputPath)')" Text="Output file name and debug file name are equal." />
         <ItemGroup>
             <OutputItemsWithTargetPath Include="$(ExecutableIntermediateOutputPath)" Condition=" '$(ExecutableIntermediateOutputPath)' != '' And Exists('$(ExecutableIntermediateOutputPath)')">
                 <TargetPath>$(ExecutableFileName)</TargetPath>
