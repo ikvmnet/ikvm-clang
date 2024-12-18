@@ -157,7 +157,7 @@ namespace IKVM.Clang.Sdk.Tests
         //[DataRow(EnvironmentPreference.Core, "linux-x64", "lib{0}.so", "lib{0}.a", "{0}", "_")]
         //[DataRow(EnvironmentPreference.Core, "linux-arm", "lib{0}.so", "lib{0}.a", "{0}", "_")]
         //[DataRow(EnvironmentPreference.Core, "linux-arm64", "lib{0}.so", "lib{0}.a", "{0}", "_")]
-        [DataRow(EnvironmentPreference.Core, "browser-wasm", "lib{0}.so", "lib{0}.a", "{0}.wasm", "_")]
+        [DataRow(EnvironmentPreference.Core, "browser-wasm", "_", "lib{0}.a", "{0}.wasm", "_")]
         public void CanBuildTestProject(EnvironmentPreference env, string tid, string dllName, string libName, string exeName, string symName)
         {
             TestContext.WriteLine("TestRoot: {0}", TestRoot);
@@ -198,22 +198,26 @@ namespace IKVM.Clang.Sdk.Tests
             result.OverallSuccess.Should().BeTrue();
 
             var binDir = Path.Combine(TestRoot, "Executable", "obj", "Debug", tid);
-            File.Exists(Path.Combine(binDir, string.Format(exeName, "Executable"))).Should().BeTrue();
+            if (exeName != "_")
+                File.Exists(Path.Combine(binDir, string.Format(exeName, "Executable"))).Should().BeTrue();
             if (symName != "_")
                 File.Exists(Path.Combine(binDir, string.Format(symName, "Executable"))).Should().BeTrue();
 
             var dllDir1 = Path.Combine(TestRoot, "SharedLibrary1", "obj", "Debug", tid);
-            File.Exists(Path.Combine(dllDir1, string.Format(dllName, "SharedLibrary1"))).Should().BeTrue();
+            if (dllName != "_")
+                File.Exists(Path.Combine(dllDir1, string.Format(dllName, "SharedLibrary1"))).Should().BeTrue();
             if (symName != "_")
                 File.Exists(Path.Combine(dllDir1, string.Format(symName, "SharedLibrary1"))).Should().BeTrue();
 
             var dllDir2 = Path.Combine(TestRoot, "SharedLibrary2", "obj", "Debug", tid);
-            File.Exists(Path.Combine(dllDir2, string.Format(dllName, "SharedLibrary2"))).Should().BeTrue();
+            if (dllName != "_")
+                File.Exists(Path.Combine(dllDir2, string.Format(dllName, "SharedLibrary2"))).Should().BeTrue();
             if (symName != "_")
                 File.Exists(Path.Combine(dllDir2, string.Format(symName, "SharedLibrary2"))).Should().BeTrue();
 
             var libDir1 = Path.Combine(TestRoot, "StaticLibrary1", "obj", "Debug", tid);
-            File.Exists(Path.Combine(libDir1, string.Format(libName, "StaticLibrary1"))).Should().BeTrue();
+            if (libName != "_")
+                File.Exists(Path.Combine(libDir1, string.Format(libName, "StaticLibrary1"))).Should().BeTrue();
         }
 
     }
