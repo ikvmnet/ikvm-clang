@@ -12,6 +12,8 @@ int main() {
 #endif
 }
 
+#ifdef EMSCRIPTEN
 int exit() {
     return 0;
 }
+#endif

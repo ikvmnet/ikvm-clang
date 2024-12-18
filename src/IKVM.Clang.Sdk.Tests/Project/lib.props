@@ -103,6 +103,7 @@
         <SystemRootDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot" />
         <SystemIncludeDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot\include" />
         <LibraryDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot\lib" />
+        <PreprocessorDefinitions Include="EMSCRIPTEN" />
         <Dependencies Include="embind" />
     </ItemGroup>
 
