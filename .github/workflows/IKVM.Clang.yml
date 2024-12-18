@@ -65,6 +65,7 @@ jobs:
         targetPath: ${{ env.WORKPATH }}\ikvm-clang
         useConfigFile: true
         configFilePath: ${{ env.WORKPATH }}\ikvm-clang\GitVersion.yml
+    - uses: mymindstorm/setup-emsdk@v14
     - name: Download Native SDKs
       uses: robinraju/release-downloader@62178ff416a9e20c47b8464ff4ef5c5aaf26e31c
       with:
