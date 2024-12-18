@@ -5,11 +5,7 @@
 
     <PropertyGroup>
         <MSBuildRuntimeVersion Condition=" '$(MSBuildRuntimeVersion)' == '' ">$([System.Runtime.InteropServices.RuntimeInformation]:: FrameworkDescription.ToString())</MSBuildRuntimeVersion>
-        <IkvmClangSdkTaskFolder Condition=" '$(MSBuildRuntimeType)' == 'Core' ">net6.0</IkvmClangSdkTaskFolder>
-        <IkvmClangSdkTaskFolder Condition=" '$(MSBuildRuntimeType)' == 'Core' And $(MSBuildRuntimeVersion.StartsWith('.NET 7')) ">net7.0</IkvmClangSdkTaskFolder>
-        <IkvmClangSdkTaskFolder Condition=" '$(MSBuildRuntimeType)' == 'Core' And $(MSBuildRuntimeVersion.StartsWith('.NET 8')) ">net8.0</IkvmClangSdkTaskFolder>
-        <IkvmClangSdkTaskFolder Condition=" '$(MSBuildRuntimeType)' == 'Core' And $(MSBuildRuntimeVersion.StartsWith('.NET 9')) ">net8.0</IkvmClangSdkTaskFolder>
-        <IkvmClangSdkTaskFolder Condition=" '$(MSBuildRuntimeType)' != 'Core' ">net472</IkvmClangSdkTaskFolder>
+        <IkvmClangSdkTaskFolder>netstandard2.0</IkvmClangSdkTaskFolder>
         <IkvmClangSdkTaskFactory Condition=" '$(MSBuildRuntimeType)' == 'Core' "></IkvmClangSdkTaskFactory>
         <IkvmClangSdkTaskFactory Condition=" '$(MSBuildRuntimeType)' != 'Core' ">TaskHostFactory</IkvmClangSdkTaskFactory>
         <IkvmClangSdkTaskAssembly>$(MSBuildThisFileDirectory)..\tasks\$(IkvmClangSdkTaskFolder)\IKVM.Clang.Sdk.Tasks.dll</IkvmClangSdkTaskAssembly>
