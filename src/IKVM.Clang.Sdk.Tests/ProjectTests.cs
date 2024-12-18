@@ -13,6 +13,9 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace IKVM.Clang.Sdk.Tests
 {
 
@@ -58,7 +61,7 @@ namespace IKVM.Clang.Sdk.Tests
         public static string NuGetPackageRoot { get; set; }
 
         [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        public static void Init(TestContext context)
         {
             // properties to load into test build
             Properties = File.ReadAllLines("IKVM.Clang.Sdk.Tests.properties").Select(i => i.Split('=', 2)).ToDictionary(i => i[0], i => i[1]);
@@ -85,6 +88,23 @@ namespace IKVM.Clang.Sdk.Tests
             NuGetPackageRoot = Path.Combine(TempRoot, "nuget", "packages");
 
             // nuget.config file that defines package sources
+            using (var globalJson = new JsonTextWriter(File.CreateText(Path.Combine(TestRoot, "global.json"))) { Formatting = Formatting.Indented, CloseOutput = true })
+            {
+                new JObject()
+                {
+                    ["sdk"] = new JObject()
+                    {
+                        ["version"] = "8.0.0",
+                        ["rollForward"] = "latestFeature"
+                    },
+                    ["msbuild-sdks"] = new JObject()
+                    {
+                        ["IKVM.Clang.Sdk"] = Properties["PackageVersion"],
+                    }
+                }.WriteTo(globalJson);
+            }
+
+            // nuget.config file that defines package sources
             new XDocument(
                 new XElement("configuration",
                     new XElement("config",
@@ -94,17 +114,18 @@ namespace IKVM.Clang.Sdk.Tests
                     new XElement("packageSources",
                         new XElement("clear"),
                         new XElement("add",
-                            new XAttribute("key", "nuget.org"),
-                            new XAttribute("value", "https://api.nuget.org/v3/index.json")),
-                        new XElement("add",
                             new XAttribute("key", "dev"),
-                            new XAttribute("value", Path.Combine(Path.GetDirectoryName(typeof(ProjectTests).Assembly.Location), @"nuget"))))))
+                            new XAttribute("value", Path.Combine(Path.GetDirectoryName(typeof(ProjectTests).Assembly.Location), @"nuget"))),
+                        new XElement("add",
+                            new XAttribute("key", "nuget.org"),
+                            new XAttribute("value", "https://api.nuget.org/v3/index.json")))))
                 .Save(Path.Combine(TestRoot, "nuget.config"));
 
             var manager = new AnalyzerManager();
             var analyzer = manager.GetProject(Path.Combine(TestRoot, "Executable", "Executable.clangproj"));
             analyzer.AddBuildLogger(new TargetLogger(context));
             analyzer.AddBinaryLogger(Path.Combine(WorkRoot, "msbuild.binlog"));
+            analyzer.SetEnvironmentVariable("NUGET_PACKAGES", "");
             analyzer.SetGlobalProperty("ImportDirectoryBuildProps", "false");
             analyzer.SetGlobalProperty("ImportDirectoryBuildTargets", "false");
             analyzer.SetGlobalProperty("PackageVersion", Properties["PackageVersion"]);
@@ -121,7 +142,6 @@ namespace IKVM.Clang.Sdk.Tests
             options.DesignTime = false;
             options.Restore = false;
             options.TargetsToBuild.Clear();
-            options.TargetsToBuild.Add("Clean");
             options.TargetsToBuild.Add("Restore");
             options.Arguments.Add("/v:diag");
 
@@ -137,6 +157,7 @@ namespace IKVM.Clang.Sdk.Tests
         //[DataRow(EnvironmentPreference.Core, "linux-x64", "lib{0}.so", "lib{0}.a", "{0}", "_")]
         //[DataRow(EnvironmentPreference.Core, "linux-arm", "lib{0}.so", "lib{0}.a", "{0}", "_")]
         //[DataRow(EnvironmentPreference.Core, "linux-arm64", "lib{0}.so", "lib{0}.a", "{0}", "_")]
+        [DataRow(EnvironmentPreference.Core, "browser-wasm", "{0}.wasm", "{0}.wasm", "{0}.wasm", "{0}.g")]
         public void CanBuildTestProject(EnvironmentPreference env, string tid, string dllName, string libName, string exeName, string symName)
         {
             TestContext.WriteLine("TestRoot: {0}", TestRoot);
@@ -147,6 +168,7 @@ namespace IKVM.Clang.Sdk.Tests
             var analyzer = manager.GetProject(Path.Combine(TestRoot, "Executable", "Executable.clangproj"));
             analyzer.AddBuildLogger(new TargetLogger(TestContext));
             analyzer.AddBinaryLogger(Path.Combine(WorkRoot, $"{tid}-msbuild.binlog"));
+            analyzer.SetEnvironmentVariable("NUGET_PACKAGES", "");
             analyzer.SetGlobalProperty("ImportDirectoryBuildProps", "false");
             analyzer.SetGlobalProperty("ImportDirectoryBuildTargets", "false");
             analyzer.SetGlobalProperty("PackageVersion", Properties["PackageVersion"]);

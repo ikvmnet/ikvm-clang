@@ -1,5 +1,5 @@
 ﻿<Project>
-    <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.props" />
+    <Import Sdk="IKVM.Clang.Sdk" Project="Sdk.props" />
     <Import Project="..\lib.props" />
     <PropertyGroup Label="Globals">
         <ProjectGuid>f511e617-3e18-4dc6-9936-8746f3060663</ProjectGuid>
@@ -12,6 +12,6 @@
         <Compile Include="hello2.c" />
         <Header Include="hello2.h" />
     </ItemGroup>
-    <Import Sdk="IKVM.Clang.Sdk" Version="$(PackageVersion)" Project="Sdk.targets" />
+    <Import Sdk="IKVM.Clang.Sdk" Project="Sdk.targets" />
     <Import Project="..\lib.targets" />
 </Project>

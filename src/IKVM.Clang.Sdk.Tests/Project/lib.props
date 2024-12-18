@@ -25,6 +25,7 @@
         <TargetTriple Condition=" '$(TargetIdentifier)' == 'linux-musl-arm' ">arm-unknown-linux-musleabihf</TargetTriple>
         <TargetTriple Condition=" '$(TargetIdentifier)' == 'osx-x64' ">x86_64-apple-macosx</TargetTriple>
         <TargetTriple Condition=" '$(TargetIdentifier)' == 'osx-arm64' ">arm64-apple-macosx</TargetTriple>
+        <TargetTriple Condition=" '$(TargetIdentifier)' == 'browser-wasm' ">wasm32-unknown-emscripten</TargetTriple>
     </PropertyGroup>
 
     <PropertyGroup Condition="$(TargetIdentifier.StartsWith('win-'))">
@@ -96,6 +97,14 @@
     <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('OSX')) And $(TargetIdentifier.StartsWith('osx-'))">
         <IncludeSystemRootDirectories Include="$(MSBuildThisFileDirectory)..\ikvm-native-sdk\osx" />
         <LibraryDirectories Include="$(MSBuildThisFileDirectory)..\ikvm-native-sdk\osx\usr\lib" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(TargetIdentifier)' == 'browser-wasm' ">
+        <SystemRootDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot" />
+        <SystemIncludeDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot\include" />
+        <LibraryDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot\lib" />
+        <Dependencies Include="embind" />
+        <Dependencies Include="noexit" />
     </ItemGroup>
 
     <PropertyGroup Condition="$(TargetIdentifier.StartsWith('linux-'))">
