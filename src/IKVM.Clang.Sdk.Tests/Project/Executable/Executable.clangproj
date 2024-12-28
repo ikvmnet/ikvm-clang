@@ -12,18 +12,17 @@
         <Subsystem>console</Subsystem>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\SharedLibrary1\SharedLibrary1.clangproj" Condition=" '$(TargetIdentifier)' != 'browser-wasm' ">
+        <ProjectReference Include="..\SharedLibrary1\SharedLibrary1.clangproj">
             <BuildReference>true</BuildReference>
         </ProjectReference>
-        <ProjectReference Include="..\StaticLibrary1\StaticLibrary1.clangproj" Condition=" '$(TargetIdentifier)' == 'browser-wasm' ">
-            <BuildReference>true</BuildReference>
-        </ProjectReference>
-    </ItemGroup>
-    <ItemGroup Condition=" '$(TargetIdentifier)' == 'browser-wasm' ">
-        <PreprocessorDefinitions Include="STATICHELLO" />
     </ItemGroup>
     <ItemGroup>
         <Compile Include="main.c" />
+    </ItemGroup>
+    <ItemGroup Condition=" '$(TargetIdentifier)' == 'browser-wasm' ">
+        <Dependencies Include="compiler_rt" />
+        <AdditionalLinkOptions Include="-Wl,--no-entry" />
+        <AdditionalLinkOptions Include="-Wl,-mllvm,-enable-emscripten-sjlj" />
     </ItemGroup>
     <Import Sdk="IKVM.Clang.Sdk" Project="Sdk.targets" />
     <Import Project="..\lib.targets" />

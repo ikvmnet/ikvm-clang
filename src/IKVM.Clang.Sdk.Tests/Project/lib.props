@@ -48,6 +48,11 @@
         <WinSdkDirName>win.ci</WinSdkDirName>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(TargetIdentifier)' == 'browser-wasm' ">
+        <ClangToolExe>$(EMSDK)\upstream\bin\clang.exe</ClangToolExe>
+        <LlvmArToolExe>$(EMSDK)\upstream\bin\llvm-ar.exe</LlvmArToolExe>
+    </PropertyGroup>
+
     <ItemGroup Condition="!$([MSBuild]::IsOSPlatform('Windows')) And $(TargetIdentifier.StartsWith('win-'))">
         <SystemIncludeDirectories Include="$(MSBuildThisFileDirectory)..\ikvm-native-sdk\$(WinSdkDirName)\crt\include" />
         <SystemIncludeDirectories Include="$(MSBuildThisFileDirectory)..\ikvm-native-sdk\$(WinSdkDirName)\sdk\include\shared" />
@@ -103,8 +108,9 @@
         <SystemRootDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot" />
         <SystemIncludeDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot\include" />
         <LibraryDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot\lib" />
+        <LibraryDirectories Include="$(EMSDK)\upstream\emscripten\cache\sysroot\lib\wasm32-emscripten" />
         <PreprocessorDefinitions Include="EMSCRIPTEN" />
-        <Dependencies Include="embind" />
+        <!--<Dependencies Include="embind" />-->
     </ItemGroup>
 
     <PropertyGroup Condition="$(TargetIdentifier.StartsWith('linux-'))">

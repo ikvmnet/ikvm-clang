@@ -6,6 +6,7 @@
     </PropertyGroup>
     <PropertyGroup>
         <OutputType>Dll</OutputType>
+        <OutputType Condition=" '$(TargetIdentifier)' == 'browser-wasm' ">lib</OutputType>
         <Verbose>true</Verbose>
     </PropertyGroup>
     <ItemGroup>
