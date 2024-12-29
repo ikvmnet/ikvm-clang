@@ -136,7 +136,7 @@ jobs:
         dotnet-version: 8.0.x
     - uses: mymindstorm/setup-emsdk@v14
     - name: Build EMSDK
-      run: embuilder.py build ALL
+      run: embuilder build ALL
     - name: Download Tests
       uses: actions/download-artifact@v4
       with:
