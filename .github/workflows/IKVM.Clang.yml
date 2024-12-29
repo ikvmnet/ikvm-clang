@@ -136,7 +136,7 @@ jobs:
         dotnet-version: 8.0.x
     - uses: mymindstorm/setup-emsdk@v14
     - name: Build EMSDK
-      run: embuilder build MINIMAL_PIC
+      run: embuilder build ALL MINIMAL_PIC
     - name: Download Tests
       uses: actions/download-artifact@v4
       with:
