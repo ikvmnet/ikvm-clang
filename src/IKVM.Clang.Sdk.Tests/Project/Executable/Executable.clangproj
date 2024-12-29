@@ -19,11 +19,6 @@
     <ItemGroup>
         <Compile Include="main.c" />
     </ItemGroup>
-    <ItemGroup Condition=" '$(TargetIdentifier)' == 'browser-wasm' ">
-        <Dependencies Include="compiler_rt" />
-        <AdditionalLinkOptions Include="-Wl,--no-entry" />
-        <AdditionalLinkOptions Include="-Wl,-mllvm,-enable-emscripten-sjlj" />
-    </ItemGroup>
     <Import Sdk="IKVM.Clang.Sdk" Project="Sdk.targets" />
     <Import Project="..\lib.targets" />
 </Project>

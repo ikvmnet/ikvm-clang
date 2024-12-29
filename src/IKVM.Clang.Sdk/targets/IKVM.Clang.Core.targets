@@ -48,7 +48,7 @@
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-windows-'))">.dll</ExecutableExt>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-linux-'))">.so</ExecutableExt>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-apple-'))">.dylib</ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('wasm32'))">.wasm</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('wasm32'))">.so</ExecutableExt>
         <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' ">$(ExecutablePrefix)$(TargetName)$(ExecutableExt)</ExecutableFileName>
         <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
         <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</LibraryPrefix>
@@ -57,7 +57,7 @@
         <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.lib</LibraryExt>
         <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.so</LibraryExt>
         <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.dylib</LibraryExt>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('wasm32')) ">.wasm</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('wasm32')) ">.so</LibraryExt>
         <LibraryFileName Condition=" '$(LibraryFileName)' == '' ">$(LibraryPrefix)$(TargetName)$(LibraryExt)</LibraryFileName>
         <LibraryIntermediateOutputPath Condition=" '$(LibraryFileName)' != '' ">$(IntermediateOutputPath)$(LibraryFileName)</LibraryIntermediateOutputPath>
         <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</DebugSymbolsPrefix>
@@ -514,7 +514,7 @@
             <_Args Include="@(Compile->'%(ObjectPath)')" />
         </ItemGroup>
 
-        <ClangExe ToolExe="$(LlvmArToolExe)" Arguments="@(_Args)" />
+        <LlvmArExe ToolExe="$(LlvmArToolExe)" Arguments="@(_Args)" />
 
         <ItemGroup>
             <FileWrites Include="$(LibraryIntermediateOutputPath)" />
