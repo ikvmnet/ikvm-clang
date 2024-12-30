@@ -138,8 +138,8 @@ jobs:
     - name: Build EMSDK
       shell: pwsh
       run: |
-        embuilder build ALL
-        embuilder build ALL --pic
+        embuilder build MINIMAL_PIC
+        embuilder build MINIMAL_PIC --pic
     - name: Download Tests
       uses: actions/download-artifact@v4
       with:
