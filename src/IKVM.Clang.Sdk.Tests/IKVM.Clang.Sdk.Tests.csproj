@@ -1,5 +1,5 @@
 ﻿<Project>
-    <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+    <Import Project="Sdk.props" Sdk="MSTest.Sdk" />
 
     <PropertyGroup>
         <TargetFrameworks>net8.0</TargetFrameworks>
@@ -9,11 +9,6 @@
     <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="6.12.0" />
         <PackageReference Include="Buildalyzer" Version="6.0.4" />
-        <PackageReference Include="Microsoft.CodeCoverage" Version="17.9.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-        <PackageReference Include="Moq" Version="4.20.70" />
-        <PackageReference Include="MSTest.TestAdapter" Version="3.2.2" />
-        <PackageReference Include="MSTest.TestFramework" Version="3.2.2" />
     </ItemGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' != '' ">
@@ -26,7 +21,7 @@
         </None>
     </ItemGroup>
 
-    <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+    <Import Project="Sdk.targets" Sdk="MSTest.Sdk" />
 
     <!-- Generate a file the Tests can use to retrieve various MSBuild properties. -->
     <Target Name="GeneratePropertiesFile">
