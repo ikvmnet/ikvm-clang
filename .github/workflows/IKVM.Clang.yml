@@ -120,7 +120,7 @@ jobs:
     needs:
     - build
     timeout-minutes: 240
-    runs-on: ${{ fromJSON('{"win-x64":["windows-2022"],"linux-x64":["ubuntu-22.04"],"osx-x64":["macosx-latest"]}')[matrix.sys] }}
+    runs-on: ${{ fromJSON('{"win-x64":["windows-2022"],"linux-x64":["ubuntu-22.04"],"osx-x64":["macosx-13"],"osx-arm64":["macosx-15"]}')[matrix.sys] }}
     steps:
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v4
