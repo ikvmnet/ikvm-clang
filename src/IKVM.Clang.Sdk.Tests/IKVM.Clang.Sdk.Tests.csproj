@@ -43,5 +43,13 @@
             $(GetCopyToOutputDirectoryItemsDependsOn);
         </GetCopyToOutputDirectoryItemsDependsOn>
     </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Update="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+      <PackageReference Update="Microsoft.Testing.Extensions.CodeCoverage" Version="18.1.0" />
+      <PackageReference Update="Microsoft.Testing.Extensions.TrxReport" Version="2.0.2" />
+      <PackageReference Update="MSTest.TestAdapter" Version="4.0.2" />
+      <PackageReference Update="MSTest.TestFramework" Version="4.0.2" />
+    </ItemGroup>
     
 </Project>
