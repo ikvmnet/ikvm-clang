@@ -8,13 +8,13 @@ namespace IKVM.Clang.Sdk.Tasks
 {
 
     /// <summary>
-    /// Executes llvm-ar with a set of arguments.
+    /// Executes executable with a set of arguments.
     /// </summary>
     public abstract class ExeTask : ToolTask
     {
 
         /// <summary>
-        /// Command line arguments to be passed to llvm-ar.
+        /// Command line arguments to be passed to executable.
         /// </summary>
         [Required]
         public ITaskItem[] Arguments { get; set; } = Array.Empty<ITaskItem>();
