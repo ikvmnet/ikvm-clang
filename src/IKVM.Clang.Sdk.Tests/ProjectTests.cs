@@ -94,7 +94,7 @@ namespace IKVM.Clang.Sdk.Tests
                 {
                     ["sdk"] = new JObject()
                     {
-                        ["version"] = "8.0.0",
+                        ["version"] = "10.0.0",
                         ["rollForward"] = "latestFeature"
                     },
                     ["msbuild-sdks"] = new JObject()
