@@ -7,8 +7,8 @@
         <ClangToolName Condition=" '$(ClangToolName)' == '' And !$([MSBuild]::IsOSUnixLike())">clang.exe</ClangToolName>
         <ClangToolName Condition=" '$(ClangToolName)' == '' And  $([MSBuild]::IsOSUnixLike())">clang</ClangToolName>
         <ClangToolExe Condition=" '$(ClangToolExe)' == '' And '$(ClangToolName)' != '' ">$(ClangToolName)</ClangToolExe>
-        <LlvmArToolName Condition=" '$(ClangToolName)' == '' And !$([MSBuild]::IsOSUnixLike())">llvm-ar.exe</LlvmArToolName>
-        <LlvmArToolName Condition=" '$(ClangToolName)' == '' And  $([MSBuild]::IsOSUnixLike())">llvm-ar</LlvmArToolName>
+        <LlvmArToolName Condition=" '$(LlvmArToolName)' == '' And !$([MSBuild]::IsOSUnixLike())">llvm-ar.exe</LlvmArToolName>
+        <LlvmArToolName Condition=" '$(LlvmArToolName)' == '' And  $([MSBuild]::IsOSUnixLike())">llvm-ar</LlvmArToolName>
         <LlvmArToolExe Condition=" '$(LlvmArToolExe)' == '' And '$(LlvmArToolName)' != '' ">$(LlvmArToolName)</LlvmArToolExe>
     </PropertyGroup>
 
@@ -409,7 +409,7 @@
             <_Args Include="-o" Value="$(_ObjectPath)" Separator=" " />
         </ItemGroup>
 
-        <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" />
+        <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
 
         <ItemGroup>
             <FileWrites Include="$(_ObjectPath)" />
@@ -493,7 +493,7 @@
             <_Args Include="-o" Value="$(ExecutableIntermediateOutputPath)" Separator=" " />
         </ItemGroup>
 
-        <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" />
+        <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
 
         <ItemGroup>
             <FileWrites Include="$(ExecutableIntermediateOutputPath)" />
@@ -514,7 +514,7 @@
             <_Args Include="@(Compile->'%(ObjectPath)')" />
         </ItemGroup>
 
-        <LlvmArExe ToolExe="$(LlvmArToolExe)" Arguments="@(_Args)" />
+        <LlvmArExe ToolExe="$(LlvmArToolExe)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
 
         <ItemGroup>
             <FileWrites Include="$(LibraryIntermediateOutputPath)" />
