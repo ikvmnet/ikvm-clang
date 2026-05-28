@@ -245,7 +245,7 @@ jobs:
         NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
     - name: Publish to Visual Studio Marketplace
       if: github.ref_type == 'tag'
-      uses: CalvinAllen/action-vs-marketplace-publish@v2
+      uses: CodingWithCalvin/GHA-VSMarketplacePublisher@v2
       with:
         marketplace-pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
         publish-manifest-path: dist/vsix/IKVM.Clang.manifest.json
