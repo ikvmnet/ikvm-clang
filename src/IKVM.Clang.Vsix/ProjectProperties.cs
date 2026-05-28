@@ -7,6 +7,7 @@ namespace IKVM.Clang.Vsix
 {
 
     [Export]
+    [AppliesTo(ClangUnconfiguredProject.UniqueCapability)]
     internal partial class ProjectProperties : StronglyTypedPropertyAccess
     {
 
