@@ -2,7 +2,6 @@
 
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.VS;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace IKVM.Clang.Vsix
@@ -10,8 +9,15 @@ namespace IKVM.Clang.Vsix
 
     [Export]
     [AppliesTo(UniqueCapability)]
-    [ProjectTypeRegistration(ClangPackage.ProjectTypeGuid, "#1", "#2", ProjectExtension, Language, resourcePackageGuid: ClangPackage.PackageGuidString, PossibleProjectExtensions = ProjectExtension,ProjectTemplatesDir = "..\\..\\Templates\\Projects\\ClangProject")]
-    [ProvideProjectItem(ClangPackage.ProjectTypeGuid, "My Items", "..\\..\\Templates\\ProjectItems\\ClangProject", 500)]
+    [ProjectTypeRegistration(
+        projectTypeGuid: ClangPackage.ProjectTypeGuid,
+        displayName: "#1",
+        displayProjectFileExtensions: "#2",
+        defaultProjectExtension: ProjectExtension,
+        language: Language,
+        resourcePackageGuid: ClangPackage.PackageGuidString,
+        Capabilities = UniqueCapability,
+        PossibleProjectExtensions = ProjectExtension)]
     internal class ClangUnconfiguredProject
     {
 
@@ -24,11 +30,11 @@ namespace IKVM.Clang.Vsix
         [ImportingConstructor]
         public ClangUnconfiguredProject(UnconfiguredProject unconfiguredProject)
         {
+            UnconfiguredProject = unconfiguredProject;
             ProjectHierarchies = new OrderPrecedenceImportCollection<IVsHierarchy>(projectCapabilityCheckProvider: unconfiguredProject);
         }
 
-        [Import]
-        internal UnconfiguredProject UnconfiguredProject { get; private set; }
+        internal UnconfiguredProject UnconfiguredProject { get; }
 
         [Import]
         internal IActiveConfiguredProjectSubscriptionService SubscriptionService { get; private set; }
@@ -43,9 +49,9 @@ namespace IKVM.Clang.Vsix
         internal ActiveConfiguredProject<ClangConfiguredProject> ClangActiveConfiguredProject { get; private set; }
 
         [ImportMany(ExportContractNames.VsTypes.IVsProject, typeof(IVsProject))]
-        internal OrderPrecedenceImportCollection<IVsHierarchy> ProjectHierarchies { get; private set; }
+        internal OrderPrecedenceImportCollection<IVsHierarchy> ProjectHierarchies { get; }
 
-        internal IVsHierarchy ProjectHierarchy => ProjectHierarchies.Single().Value;
+        internal IVsHierarchy ProjectHierarchy => ProjectHierarchies.FirstOrDefault().Value;
 
     }
 

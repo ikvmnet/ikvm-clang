@@ -19,7 +19,7 @@ namespace IKVM.Clang.Vsix {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class VSPackage {
@@ -70,7 +70,25 @@ namespace IKVM.Clang.Vsix {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Clang Project Files (*.wsproj);*.wsproj.
+        ///   Looks up a localized string similar to IKVM.Clang.
+        /// </summary>
+        internal static string _110 {
+            get {
+                return ResourceManager.GetString("110", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Visual Studio extension for Clang projects..
+        /// </summary>
+        internal static string _112 {
+            get {
+                return ResourceManager.GetString("112", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clang Project Files (*.clangproj);*.clangproj.
         /// </summary>
         internal static string _2 {
             get {

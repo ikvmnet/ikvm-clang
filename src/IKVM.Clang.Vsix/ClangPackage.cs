@@ -1,6 +1,6 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
 namespace IKVM.Clang.Vsix
@@ -8,11 +8,13 @@ namespace IKVM.Clang.Vsix
 
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(PackageGuidString)]
+    [InstalledProductRegistration("#110", "#112", "1.0")]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
     public sealed class ClangPackage : AsyncPackage
     {
 
         public const string PackageGuidString = "D31F7CDF-6323-47F9-B5A1-CFC5A256E5EF";
-        public const string ProjectTypeGuid = "6DE1C62B-E8D7-451A-8734-87EAEB46E35B";
+        public const string ProjectTypeGuid = "C16F8DA6-AF2B-48DF-A3C0-8B93BDB1BB12";
 
     }
 
