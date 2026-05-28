@@ -20,7 +20,7 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: windows-2025
+    runs-on: windows-2025-vs2026
     steps:
     - name: Checkout Source
       uses: actions/checkout@v6
