@@ -4,16 +4,16 @@
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns="http://schemas.microsoft.com/VisualStudio/ImageManifestSchema/2014">
 	<Symbols>
-		<String Name="Resources" Value="/IKVM.Clang.Vsix;Component/Images" />
-		<Guid Name="ClangMonikersGuid" Value="{7A3F2B1C-4E8D-4F6A-9B2C-1D5E3F7A8B9C}" />
-		<ID Name="ClangProject" Value="1" />
+		<String Name="AssemblyName" Value="IKVM.Clang.Vsix" />
+		<Guid Name="ClangProjectIconGuid" Value="{7A3F2B1C-4E8D-4F6A-9B2C-1D5E3F7A8B9C}" />
+		<ID Name="ClangProjectIconId" Value="0" />
 	</Symbols>
 	<Images>
-		<Image Guid="$(ClangMonikersGuid)" ID="$(ClangProject)">
-			<Source Uri="$(Resources)/ClangProjectIcon_16x.png">
+		<Image Guid="$(ClangProjectIconGuid)" ID="$(ClangProjectIconId)">
+			<Source Uri="/$(AssemblyName);Component/Images/ClangProjectIcon_16x.png">
 				<Size Value="16" />
 			</Source>
-			<Source Uri="$(Resources)/ClangProjectIcon_32x.png">
+			<Source Uri="/$(AssemblyName);Component/Images/ClangProjectIcon_32x.png">
 				<Size Value="32" />
 			</Source>
 		</Image>

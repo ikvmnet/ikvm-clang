@@ -110,9 +110,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <!-- Embed PNGs into the assembly so the image manifest URI /IKVM.Clang.Vsix;Component/Images/... resolves -->
-        <Resource Include="Images\ClangProjectIcon_16x.png" />
-        <Resource Include="Images\ClangProjectIcon_32x.png" />
+        <!-- Include PNGs on disk so the image manifest can resolve them by relative path -->
+        <Resource Include="Images\ClangProjectIcon_16x.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <IncludeInVSIX>true</IncludeInVSIX>
+            <VSIXSubPath>Images</VSIXSubPath>
+        </Resource>
+        <Content Include="Images\ClangProjectIcon_32x.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <IncludeInVSIX>true</IncludeInVSIX>
+            <VSIXSubPath>Images</VSIXSubPath>
+        </Content>
         <!-- Include the image manifest in the VSIX so VS registers it at install time -->
         <Content Include="Images\ClangMonikers.imagemanifest">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
