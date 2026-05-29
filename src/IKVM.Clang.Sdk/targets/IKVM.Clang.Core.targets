@@ -322,10 +322,23 @@
             <_DebugSymbols Condition=" '$(_DebugSymbols)' == '' ">$(DebugSymbols)</_DebugSymbols>
             <_Language>%(Compile.Language)</_Language>
             <_Language Condition=" '$(_Language)' == '' ">$(Language)</_Language>
+            <!-- C -->
             <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.c' ">c</_Language>
+            <!-- C++ -->
             <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.cpp' ">c++</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.cc' ">c++</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.cxx' ">c++</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.c++' ">c++</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.cppm' ">c++</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.ixx' ">c++</_Language>
+            <!-- Objective-C -->
             <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.m' ">objective-c</_Language>
+            <!-- Objective-C++ -->
             <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.mm' ">objective-c++</_Language>
+            <!-- Assembly (passed through clang as assembler-with-cpp) -->
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.s' ">assembler-with-cpp</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.S' ">assembler-with-cpp</_Language>
+            <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.asm' ">assembler-with-cpp</_Language>
             <_LanguageStandard>%(Compile.LanguageStandard)</_LanguageStandard>
             <_LanguageStandard Condition=" '$(_LanguageStandard)' == '' ">$(LanguageStandard)</_LanguageStandard>
             <_PositionIndependentCode>%(Compile.PositionIndependentCode)</_PositionIndependentCode>
