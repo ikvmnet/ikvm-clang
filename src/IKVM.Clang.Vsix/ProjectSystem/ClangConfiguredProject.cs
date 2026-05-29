@@ -2,11 +2,11 @@
 
 using Microsoft.VisualStudio.ProjectSystem;
 
-namespace IKVM.Clang.Vsix
+namespace IKVM.Clang.Vsix.ProjectSystem
 {
 
     [Export]
-    [AppliesTo(ClangUnconfiguredProject.UniqueCapability)]
+    [AppliesTo(ClangProjectCapabilities.AppliesTo)]
     internal class ClangConfiguredProject
     {
 

@@ -1,29 +1,29 @@
 ﻿using System.ComponentModel.Composition;
 
+using IKVM.Clang.Vsix.Packaging;
+
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.VS;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace IKVM.Clang.Vsix
+namespace IKVM.Clang.Vsix.ProjectSystem
 {
 
     [Export]
-    [AppliesTo(UniqueCapability)]
+    [AppliesTo(ClangProjectCapabilities.AppliesTo)]
     [ProjectTypeRegistration(
-        projectTypeGuid: ClangPackage.ProjectTypeGuid,
+        projectTypeGuid: ProjectType.Clang,
         displayName: "#1",
         displayProjectFileExtensions: "#2",
         defaultProjectExtension: ProjectExtension,
         language: Language,
-        resourcePackageGuid: ClangPackage.PackageGuidString,
-        Capabilities = UniqueCapability,
+        resourcePackageGuid: ClangPackage.PackageGuid,
+        Capabilities = ClangProjectCapabilities.Default,
         PossibleProjectExtensions = ProjectExtension)]
     internal class ClangUnconfiguredProject
     {
 
         internal const string ProjectExtension = "clangproj";
-
-        internal const string UniqueCapability = "Clang";
 
         internal const string Language = "Clang";
 

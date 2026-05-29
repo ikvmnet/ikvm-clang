@@ -2,6 +2,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 
 using IKVM.Clang.Vsix.Images;
+using IKVM.Clang.Vsix.ProjectSystem;
 
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.ProjectSystem;
@@ -14,7 +15,7 @@ namespace IKVM.Clang.Vsix.Icons
     /// and for the Clang project root node itself.
     /// </summary>
     [Export(typeof(IProjectTreePropertiesProvider))]
-    [AppliesTo(ClangUnconfiguredProject.UniqueCapability)]
+    [AppliesTo(ClangProjectCapabilities.AppliesTo)]
     [Order(0)]
     internal sealed class ClangFileIconProvider : IProjectTreePropertiesProvider
     {

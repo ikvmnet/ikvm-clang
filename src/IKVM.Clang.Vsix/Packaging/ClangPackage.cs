@@ -5,11 +5,11 @@ using IKVM.Clang.Vsix.Registration;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
-namespace IKVM.Clang.Vsix
+namespace IKVM.Clang.Vsix.Packaging
 {
 
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [Guid(PackageGuidString)]
+    [Guid(PackageGuid)]
     [InstalledProductRegistration("#110", "#112", "1.0")]
     [ProvideBindingPath]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string, PackageAutoLoadFlags.BackgroundLoad)]
@@ -18,8 +18,7 @@ namespace IKVM.Clang.Vsix
     public sealed class ClangPackage : AsyncPackage
     {
 
-        public const string PackageGuidString = "D31F7CDF-6323-47F9-B5A1-CFC5A256E5EF";
-        public const string ProjectTypeGuid = "C16F8DA6-AF2B-48DF-A3C0-8B93BDB1BB12";
+        public const string PackageGuid = "D31F7CDF-6323-47F9-B5A1-CFC5A256E5EF";
 
     }
 

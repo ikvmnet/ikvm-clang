@@ -3,11 +3,11 @@
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.Properties;
 
-namespace IKVM.Clang.Vsix
+namespace IKVM.Clang.Vsix.ProjectSystem
 {
 
     [Export]
-    [AppliesTo(ClangUnconfiguredProject.UniqueCapability)]
+    [AppliesTo(ClangProjectCapabilities.AppliesTo)]
     internal partial class ProjectProperties : StronglyTypedPropertyAccess
     {
 
