@@ -1,9 +1,5 @@
-﻿<Project>
-    <Import Sdk="IKVM.Clang.Sdk" Project="Sdk.props" />
+﻿<Project Sdk="IKVM.Clang.Sdk">
     <Import Project="..\lib.props" />
-    <PropertyGroup Label="Globals">
-        <ProjectGuid>f511e617-3e18-4dc6-9936-8746f3060663</ProjectGuid>
-    </PropertyGroup>
     <PropertyGroup>
         <OutputType>Dll</OutputType>
         <Verbose>true</Verbose>
@@ -17,12 +13,9 @@
         </ProjectReference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="hello1.c" />
-        <Header Include="hello1.h" />
         <PreprocessorDefinitions Include="JOE" />
         <PreprocessorDefinitions Include="FOO" Value="BAR" />
         <PreprocessorDefinitions Include="STRING" Value="%22HI%22" />
     </ItemGroup>
-    <Import Sdk="IKVM.Clang.Sdk" Project="Sdk.targets" />
     <Import Project="..\lib.targets" />
 </Project>

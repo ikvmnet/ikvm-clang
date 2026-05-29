@@ -1,9 +1,5 @@
-﻿<Project>
-    <Import Sdk="IKVM.Clang.Sdk" Project="Sdk.props" />
+﻿<Project dk="IKVM.Clang.Sdk">
     <Import Project="..\lib.props" />
-    <PropertyGroup Label="Globals">
-        <ProjectGuid>25bf59da-b011-4eaf-9abd-3653bd9b21b9</ProjectGuid>
-    </PropertyGroup>
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <Verbose>true</Verbose>
@@ -16,9 +12,5 @@
             <BuildReference>true</BuildReference>
         </ProjectReference>
     </ItemGroup>
-    <ItemGroup>
-        <Compile Include="main.c" />
-    </ItemGroup>
-    <Import Sdk="IKVM.Clang.Sdk" Project="Sdk.targets" />
     <Import Project="..\lib.targets" />
 </Project>
