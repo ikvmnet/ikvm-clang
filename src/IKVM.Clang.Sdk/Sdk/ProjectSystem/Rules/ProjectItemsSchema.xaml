@@ -64,6 +64,24 @@
     </ContentType>
 
     <ContentType
+        Name="ObjCCode"
+        DisplayName="Objective-C Code"
+        ItemType="Compile">
+    </ContentType>
+
+    <ContentType
+        Name="ObjCppCode"
+        DisplayName="Objective-C++ Code"
+        ItemType="Compile">
+    </ContentType>
+
+    <ContentType
+        Name="AsmCode"
+        DisplayName="Assembly Code"
+        ItemType="Compile">
+    </ContentType>
+
+    <ContentType
         Name="Text"
         DisplayName="Text file"
         ItemType="Text">
@@ -344,6 +362,13 @@
     <FileExtension Name=".cppm" ContentType="CppModule"/>
     <FileExtension Name=".cxx" ContentType="CppCode"/>
     <FileExtension Name=".ixx" ContentType="CppModule"/>
+
+    <FileExtension Name=".m" ContentType="ObjCCode"/>
+    <FileExtension Name=".mm" ContentType="ObjCppCode"/>
+
+    <FileExtension Name=".s" ContentType="AsmCode"/>
+    <FileExtension Name=".S" ContentType="AsmCode"/>
+    <FileExtension Name=".asm" ContentType="AsmCode"/>
 
     <FileExtension Name=".h" ContentType="CppHeader"/>
     <FileExtension Name=".h++" ContentType="CppHeader"/>

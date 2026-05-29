@@ -1,0 +1,43 @@
+{
+    "name": "ikvm-clang",
+    "displayName": "IKVM.Clang Language Support",
+    "description": "TextMate grammars for C, C++, Objective-C, Objective-C++ and Assembly files in IKVM.Clang projects.",
+    "version": "1.0.0",
+    "engines": { "vscode": "*" },
+    "contributes": {
+        "grammars": [
+            {
+                "language": "objc",
+                "scopeName": "source.objc",
+                "path": "./objc.tmLanguage.json"
+            },
+            {
+                "language": "objcpp",
+                "scopeName": "source.objcpp",
+                "path": "./objcpp.tmLanguage.json"
+            },
+            {
+                "language": "asm",
+                "scopeName": "source.asm.gas",
+                "path": "./asm.tmLanguage.json"
+            }
+        ],
+        "languages": [
+            {
+                "id": "objc",
+                "aliases": [ "Objective-C", "objc" ],
+                "extensions": [ ".m" ]
+            },
+            {
+                "id": "objcpp",
+                "aliases": [ "Objective-C++", "objcpp" ],
+                "extensions": [ ".mm" ]
+            },
+            {
+                "id": "asm",
+                "aliases": [ "Assembly", "asm" ],
+                "extensions": [ ".s", ".S", ".asm" ]
+            }
+        ]
+    }
+}

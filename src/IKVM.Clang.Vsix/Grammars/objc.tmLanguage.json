@@ -1,0 +1,162 @@
+{
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Objective-C",
+    "scopeName": "source.objc",
+    "fileTypes": [ "m" ],
+    "patterns": [
+        { "include": "#comments" },
+        { "include": "#strings" },
+        { "include": "#objc-literals" },
+        { "include": "#preprocessor" },
+        { "include": "#keywords" },
+        { "include": "#objc-keywords" },
+        { "include": "#storage-types" },
+        { "include": "#numbers" },
+        { "include": "#objc-message" },
+        { "include": "#identifiers" }
+    ],
+    "repository": {
+        "comments": {
+            "patterns": [
+                {
+                    "name": "comment.block.c",
+                    "begin": "/\\*",
+                    "end": "\\*/"
+                },
+                {
+                    "name": "comment.line.double-slash.c",
+                    "match": "//.*$"
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.objc",
+                    "begin": "@\"",
+                    "end": "\"",
+                    "patterns": [
+                        { "name": "constant.character.escape.c", "match": "\\\\." }
+                    ]
+                },
+                {
+                    "name": "string.quoted.double.c",
+                    "begin": "\"",
+                    "end": "\"",
+                    "patterns": [
+                        { "name": "constant.character.escape.c", "match": "\\\\." }
+                    ]
+                },
+                {
+                    "name": "string.quoted.single.c",
+                    "begin": "'",
+                    "end": "'",
+                    "patterns": [
+                        { "name": "constant.character.escape.c", "match": "\\\\." }
+                    ]
+                }
+            ]
+        },
+        "objc-literals": {
+            "patterns": [
+                {
+                    "name": "constant.language.objc",
+                    "match": "@(?:YES|NO|nil|true|false)\\b"
+                },
+                {
+                    "name": "constant.numeric.objc",
+                    "match": "@-?[0-9]+(?:\\.[0-9]+)?\\b"
+                }
+            ]
+        },
+        "preprocessor": {
+            "patterns": [
+                {
+                    "name": "meta.preprocessor.include.c",
+                    "match": "^\\s*#\\s*(?:include|import)\\s+[<\"][^>\"]*[>\"]",
+                    "captures": {
+                        "0": { "name": "keyword.control.import.c" }
+                    }
+                },
+                {
+                    "name": "meta.preprocessor.c",
+                    "match": "^\\s*#\\s*\\w+",
+                    "captures": {
+                        "0": { "name": "keyword.control.directive.c" }
+                    }
+                }
+            ]
+        },
+        "keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.control.c",
+                    "match": "\\b(?:if|else|for|while|do|switch|case|default|break|continue|return|goto|sizeof|typeof)\\b"
+                }
+            ]
+        },
+        "objc-keywords": {
+            "patterns": [
+                {
+                    "name": "keyword.other.objc",
+                    "match": "\\b(?:self|super|_cmd|nil|Nil|YES|NO|IBOutlet|IBAction|IBInspectable|IBDesignable)\\b"
+                },
+                {
+                    "name": "keyword.control.objc",
+                    "match": "@(?:interface|implementation|protocol|end|property|synthesize|dynamic|selector|encode|defs|synchronized|try|catch|throw|finally|autoreleasepool|optional|required|class|compatibility_alias)\\b"
+                },
+                {
+                    "name": "storage.modifier.objc",
+                    "match": "\\b(?:strong|weak|assign|copy|readonly|readwrite|atomic|nonatomic|retain|unsafe_unretained|nullable|nonnull|null_resettable|__strong|__weak|__autoreleasing|__unsafe_unretained)\\b"
+                }
+            ]
+        },
+        "storage-types": {
+            "patterns": [
+                {
+                    "name": "storage.type.c",
+                    "match": "\\b(?:void|char|short|int|long|float|double|signed|unsigned|bool|_Bool|id|Class|SEL|IMP|instancetype|BOOL|NSInteger|NSUInteger|CGFloat|NSString|NSArray|NSDictionary|NSObject|NSNumber)\\b"
+                },
+                {
+                    "name": "storage.modifier.c",
+                    "match": "\\b(?:static|extern|auto|register|volatile|const|inline|restrict|__block|__unused|__attribute__)\\b"
+                }
+            ]
+        },
+        "numbers": {
+            "patterns": [
+                {
+                    "name": "constant.numeric.c",
+                    "match": "\\b(?:0[xX][0-9a-fA-F]+|0[0-7]+|[0-9]+(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)[uUlLfF]*\\b"
+                }
+            ]
+        },
+        "objc-message": {
+            "patterns": [
+                {
+                    "name": "meta.bracketed.objc",
+                    "begin": "\\[",
+                    "end": "\\]",
+                    "patterns": [
+                        { "include": "$self" }
+                    ]
+                }
+            ]
+        },
+        "identifiers": {
+            "patterns": [
+                {
+                    "name": "entity.name.function.objc",
+                    "match": "\\b[-+]\\s*\\([^)]+\\)\\s*([a-zA-Z_][a-zA-Z0-9_]*)",
+                    "captures": {
+                        "1": { "name": "entity.name.function.objc" }
+                    }
+                },
+                {
+                    "name": "variable.other.objc",
+                    "match": "\\b_[a-zA-Z][a-zA-Z0-9_]*\\b"
+                }
+            ]
+        }
+    }
+}

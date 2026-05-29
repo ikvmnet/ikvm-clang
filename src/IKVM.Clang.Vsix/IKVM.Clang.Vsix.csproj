@@ -86,6 +86,40 @@
         </None>
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="Grammars\package.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <IncludeInVSIX>true</IncludeInVSIX>
+            <VSIXSubPath>Grammars</VSIXSubPath>
+        </Content>
+        <Content Include="Grammars\objc.tmLanguage.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <IncludeInVSIX>true</IncludeInVSIX>
+            <VSIXSubPath>Grammars</VSIXSubPath>
+        </Content>
+        <Content Include="Grammars\objcpp.tmLanguage.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <IncludeInVSIX>true</IncludeInVSIX>
+            <VSIXSubPath>Grammars</VSIXSubPath>
+        </Content>
+        <Content Include="Grammars\asm.tmLanguage.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <IncludeInVSIX>true</IncludeInVSIX>
+            <VSIXSubPath>Grammars</VSIXSubPath>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Embed PNGs into the assembly so the image manifest URI /IKVM.Clang.Vsix;Component/Images/... resolves -->
+        <Resource Include="Images\ClangProjectIcon_16x.png" />
+        <Resource Include="Images\ClangProjectIcon_32x.png" />
+        <!-- Include the image manifest in the VSIX so VS registers it at install time -->
+        <Content Include="Images\ClangMonikers.imagemanifest">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <IncludeInVSIX>true</IncludeInVSIX>
+        </Content>
+    </ItemGroup>
+
     <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
     <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
 

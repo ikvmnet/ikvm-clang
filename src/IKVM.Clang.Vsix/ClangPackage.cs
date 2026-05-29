@@ -1,5 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 
+using IKVM.Clang.Vsix.Registration;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
@@ -11,6 +13,7 @@ namespace IKVM.Clang.Vsix
     [InstalledProductRegistration("#110", "#112", "1.0")]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideTextMateGrammars("Grammars")]
     public sealed class ClangPackage : AsyncPackage
     {
 
