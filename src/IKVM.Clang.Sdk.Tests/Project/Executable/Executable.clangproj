@@ -1,4 +1,4 @@
-﻿<Project dk="IKVM.Clang.Sdk">
+﻿<Project Sdk="IKVM.Clang.Sdk">
     <Import Project="..\lib.props" />
     <PropertyGroup>
         <OutputType>Exe</OutputType>
