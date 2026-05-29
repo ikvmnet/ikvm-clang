@@ -24,6 +24,18 @@
         <ProjectCapability Include="native" />
     </ItemGroup>
 
+    <!--
+    Prompt the user to install the IKVM.Clang Visual Studio extension if it is not already installed.
+    CPS reads VsixDependency items and shows an info-bar offering installation when the VSIX is absent.
+    -->
+    <ItemGroup>
+        <VsixDependency Include="IKVM.Clang.175fc96e-c263-4111-8146-43365d6f80e8">
+            <DisplayName>IKVM.Clang</DisplayName>
+            <MoreInfoUrl>https://github.com/ikvmnet/ikvm-clang</MoreInfoUrl>
+            <SuggestedVersion>[1.0,)</SuggestedVersion>
+        </VsixDependency>
+    </ItemGroup>
+
     <ItemGroup>
         <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\ProjectItemsSchema.xaml;">
             
