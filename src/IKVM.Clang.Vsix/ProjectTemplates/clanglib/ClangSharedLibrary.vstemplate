@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+	<TemplateData>
+		<Name>Clang Shared Library</Name>
+		<Description>Creates a new Clang shared library (DLL/SO) project</Description>
+		<ProjectType>Clang</ProjectType>
+		<DefaultName>ClangLib</DefaultName>
+		<SortOrder>1001</SortOrder>
+		<Icon>ClangProjectIcon_32x.png</Icon>
+		<ProvideDefaultName>true</ProvideDefaultName>
+		<LanguageTag>C++</LanguageTag>
+		<PlatformTag>Windows</PlatformTag>
+		<PlatformTag>Linux</PlatformTag>
+		<PlatformTag>macOS</PlatformTag>
+	</TemplateData>
+	<TemplateContent>
+		<Project File="ClangLib.clangproj" ReplaceParameters="true">
+			<ProjectItem ReplaceParameters="true" TargetFileName="library.h">library.h</ProjectItem>
+			<ProjectItem ReplaceParameters="true" TargetFileName="library.c">library.c</ProjectItem>
+		</Project>
+	</TemplateContent>
+</VSTemplate>

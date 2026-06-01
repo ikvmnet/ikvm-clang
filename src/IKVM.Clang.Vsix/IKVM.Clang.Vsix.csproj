@@ -27,6 +27,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<!-- Transform values for .clangproj.in files -->
+		<TransformValues Include="PackageVersion">
+			<Value>$(PackageVersion)</Value>
+		</TransformValues>
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Remove="IKVM.Clang.imagemanifest" />
 		<None Remove="IKVM.Clang.manifest.json" />
 		<None Remove="Images\ClangProjectIcon_32x.png" />
@@ -96,8 +103,43 @@
 		<Content Include="IKVM.Clang.manifest.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+
 		<Resource Include="Images\ClangProjectIcon_32x.png" />
 	</ItemGroup>
+	
+	<ItemGroup>
+		<Transform Include="..\IKVM.Clang.Templates\content\**\*.in">
+			<TargetPath>$(IntermediateOutputPath)ProjectTemplates\%(RecursiveDir)%(Filename)</TargetPath>
+		</Transform>
+	</ItemGroup>
+
+	<Target Name="CopyVsixTemplateFiles" DependsOnTargets="Transform" BeforeTargets="PrepareForBuild">
+		<ItemGroup>
+			<_SourceFiles Include="ProjectTemplates\**\*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(_SourceFiles)" DestinationFolder="$(IntermediateOutputPath)ProjectTemplates\%(RecursiveDir)" />
+		<ItemGroup>
+			<_LinkedSourceFiles Include="..\IKVM.Clang.Templates\content\**\*" Exclude="..\IKVM.Clang.Templates\content\**\*.in;..\IKVM.Clang.Templates\content\**\template.json;..\IKVM.Clang.Templates\content\**\.template.config\**" />
+		</ItemGroup>
+		<Copy SourceFiles="@(_LinkedSourceFiles)" DestinationFiles="@(_LinkedSourceFiles->'$(IntermediateOutputPath)ProjectTemplates\%(RecursiveDir)%(Filename)%(Extension)')">
+			<Output TaskParameter="CopiedFiles" ItemName="_CopiedVsixSourceFiles" />
+		</Copy>
+	</Target>
+
+	<Target Name="IncludeVsixTransformedFiles" DependsOnTargets="CopyVsixTemplateFiles" BeforeTargets="PrepareForBuild;GetVsixSourceItems">
+		<ItemGroup>
+			<VSTemplate Include="$(IntermediateOutputPath)ProjectTemplates\**\*.vstemplate">
+				<SubType>Designer</SubType>
+			</VSTemplate>
+			<_ProjectTemplatesItems Include="$(IntermediateOutputPath)ProjectTemplates\**\*" />
+			<Content Include="@(_ProjectTemplatesItems)">
+				<VSIXSubPath>ProjectTemplates\%(RecursiveDir)</VSIXSubPath>
+				<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+				<IncludeInVSIX>true</IncludeInVSIX>
+			</Content>
+		</ItemGroup>
+		<Message Text="Added VSIX template file: %(Content.Identity)" Condition="$([System.String]::Copy('%(Content.Identity)').Contains('$(IntermediateOutputPath)ProjectTemplates'))" Importance="high" />
+	</Target>
 
 	<Target Name="GetVsixVersion" Returns="$(FileVersion)" />
 	<Target Name="GetVsixExperimental" Returns="$(Experimental)" />
