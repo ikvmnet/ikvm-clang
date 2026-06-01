@@ -28,11 +28,6 @@
 			 This is in the .targets because it needs to come after the final BaseOutputPath has been evaluated. -->
 		<DefaultItemExcludes Condition="'$(PublishDir)' != '' And '$([MSBuild]::NormalizePath($(MSBuildProjectDirectory), $(PublishDir)))' != '$([MSBuild]::NormalizePath($(MSBuildProjectDirectory)))'">$(DefaultItemExcludes);$(PublishDir)/**</DefaultItemExcludes>
 
-		<!-- bin folder, by default -->
-		<DefaultItemExcludes>$(DefaultItemExcludes);$(BaseOutputPath)/**</DefaultItemExcludes>
-		<!-- obj folder, by default -->
-		<DefaultItemExcludes>$(DefaultItemExcludes);$(BaseIntermediateOutputPath)/**</DefaultItemExcludes>
-
 		<!-- Various files that should generally always be ignored -->
 		<DefaultItemExcludes>$(DefaultItemExcludes);**/*.user</DefaultItemExcludes>
 		<DefaultItemExcludes>$(DefaultItemExcludes);**/*.*proj</DefaultItemExcludes>
