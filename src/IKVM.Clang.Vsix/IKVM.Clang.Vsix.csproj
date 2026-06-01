@@ -1,138 +1,105 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-        <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
-        <BaseOutputPath>$(MSBuildThisFileDirectory)bin\</BaseOutputPath>
-        <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\</BaseIntermediateOutputPath>
-        <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
-        <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-        <RootNamespace>IKVM.Clang.Vsix</RootNamespace>
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<Nullable>enable</Nullable>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
 
-    <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" />
+	<PropertyGroup>
+		<VSSDKBuildToolsAutoSetup>true</VSSDKBuildToolsAutoSetup>
+		<VsixDeployOnDebug>true</VsixDeployOnDebug>
+		<GeneratePkgDefFile>true</GeneratePkgDefFile>
 
-    <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
-        <IsPackable>false</IsPackable>
-        <TargetVsixContainerName>IKVM.Clang.vsix</TargetVsixContainerName>
-        <GeneratePkgDefFile>true</GeneratePkgDefFile>
-        <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
-        <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
-        <IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
-        <CreateVsixContainer>true</CreateVsixContainer>
-        <DeployExtension>true</DeployExtension>
-        <StartAction>Program</StartAction>
-        <StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
-        <StartArguments>/rootSuffix Exp /log</StartArguments>
-    </PropertyGroup>
+		<IsManagedProjectSystemProject>true</IsManagedProjectSystemProject>
+		<CreateVsixContainer>True</CreateVsixContainer>
+		<TargetVsixContainerName>IKVM.Clang.vsix</TargetVsixContainerName>
+		<IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
+		<IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
+		<IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
+		<DeployExtension Condition=" '$(BuildingInsideVisualStudio)' != 'true' ">false</DeployExtension>
+		<Experimental>false</Experimental>
+		<Experimental Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</Experimental>
+		<AllUsers>false</AllUsers>
+		<AllUsers Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</AllUsers>
+	</PropertyGroup>
 
-    <PropertyGroup>
-        <Experimental>false</Experimental>
-        <Experimental Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</Experimental>
-        <AllUsers>false</AllUsers>
-        <AllUsers Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</AllUsers>
-    </PropertyGroup>
+	<ItemGroup>
+		<None Remove="IKVM.Clang.imagemanifest" />
+		<None Remove="IKVM.Clang.manifest.json" />
+		<None Remove="Images\ClangProjectIcon_32x.png" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.VisualStudio.ProjectSystem" Version="17.9.380" />
-        <PackageReference Include="Microsoft.VisualStudio.ProjectSystem.Sdk" Version="17.9.380" />
-        <PackageReference Include="Microsoft.VisualStudio.ProjectSystem.SDK.Tools" Version="17.9.380">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.VisualStudio.Shell.15.0" Version="17.14.40264" />
-        <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265">
-            <ExcludeAssets>runtime</ExcludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.14.2120">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="17.14.40260" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" ExcludeAssets="runtime" />
+		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="18.5.40034">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.ProjectSystem.SDK" Version="17.9.380" />
+		<PackageReference Include="Microsoft.VisualStudio.ProjectSystem.Sdk.Tools" Version="17.9.380">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
-    <ItemGroup>
-        <Compile Update="VSPackage.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>VSPackage.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources.Designer.cs">
-            <DependentUpon>Resources.resx</DependentUpon>
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-        </Compile>
-    </ItemGroup>
+	<ItemGroup>
+		<Compile Update="VSPackage.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>VSPackage.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-    <ItemGroup>
-        <EmbeddedResource Update="Resources.resx">
-            <SubType>Designer</SubType>
-            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="VSPackage.resx">
-            <MergeWithCTO>true</MergeWithCTO>
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>VSPackage.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-    </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="VSPackage.resx">
+			<MergeWithCTO>true</MergeWithCTO>
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>VSPackage.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
-    <ItemGroup>
-        <None Update="IKVM.Clang.manifest.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="IKVM.Clang.md">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
+	<ItemGroup>
+		<None Update="IKVM.Clang.md">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
-    <ItemGroup>
-        <Content Include="Grammars\package.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <IncludeInVSIX>true</IncludeInVSIX>
-            <VSIXSubPath>Grammars</VSIXSubPath>
-        </Content>
-        <Content Include="Grammars\objc.tmLanguage.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <IncludeInVSIX>true</IncludeInVSIX>
-            <VSIXSubPath>Grammars</VSIXSubPath>
-        </Content>
-        <Content Include="Grammars\objcpp.tmLanguage.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <IncludeInVSIX>true</IncludeInVSIX>
-            <VSIXSubPath>Grammars</VSIXSubPath>
-        </Content>
-        <Content Include="Grammars\asm.tmLanguage.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <IncludeInVSIX>true</IncludeInVSIX>
-            <VSIXSubPath>Grammars</VSIXSubPath>
-        </Content>
-    </ItemGroup>
+	<ItemGroup>
+		<Content Include="Grammars\package.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<IncludeInVSIX>true</IncludeInVSIX>
+			<VSIXSubPath>Grammars</VSIXSubPath>
+		</Content>
+		<Content Include="Grammars\objc.tmLanguage.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<IncludeInVSIX>true</IncludeInVSIX>
+			<VSIXSubPath>Grammars</VSIXSubPath>
+		</Content>
+		<Content Include="Grammars\objcpp.tmLanguage.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<IncludeInVSIX>true</IncludeInVSIX>
+			<VSIXSubPath>Grammars</VSIXSubPath>
+		</Content>
+		<Content Include="Grammars\asm.tmLanguage.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<IncludeInVSIX>true</IncludeInVSIX>
+			<VSIXSubPath>Grammars</VSIXSubPath>
+		</Content>
+		<Content Include="IKVM.Clang.imagemanifest">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<IncludeInVSIX>true</IncludeInVSIX>
+		</Content>
+		<Content Include="IKVM.Clang.manifest.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Resource Include="Images\ClangProjectIcon_32x.png" />
+	</ItemGroup>
 
-    <ItemGroup>
-        <!-- Include PNGs on disk so the image manifest can resolve them by relative path -->
-        <Resource Include="Images\ClangProjectIcon_16x.png">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <IncludeInVSIX>true</IncludeInVSIX>
-            <VSIXSubPath>Images</VSIXSubPath>
-        </Resource>
-        <Content Include="Images\ClangProjectIcon_32x.png">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <IncludeInVSIX>true</IncludeInVSIX>
-            <VSIXSubPath>Images</VSIXSubPath>
-        </Content>
-        <!-- Include the image manifest in the VSIX so VS registers it at install time -->
-        <Content Include="Images\ClangMonikers.imagemanifest">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <IncludeInVSIX>true</IncludeInVSIX>
-        </Content>
-    </ItemGroup>
-
-    <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
-    <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
-
-    <Target Name="GetVsixVersion" Returns="$(FileVersion)" />
-    <Target Name="GetVsixExperimental" Returns="$(Experimental)" />
-    <Target Name="GetVsixAllUsers" Returns="$(AllUsers)" />
-
+	<Target Name="GetVsixVersion" Returns="$(FileVersion)" />
+	<Target Name="GetVsixExperimental" Returns="$(Experimental)" />
+	<Target Name="GetVsixAllUsers" Returns="$(AllUsers)" />
 </Project>

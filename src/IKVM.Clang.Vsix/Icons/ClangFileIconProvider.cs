@@ -1,11 +1,10 @@
-using System.ComponentModel.Composition;
-using System.IO;
-
-using IKVM.Clang.Vsix.Images;
+using IKVM.Clang.Vsix.Imaging;
 using IKVM.Clang.Vsix.ProjectSystem;
 
-using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.ProjectSystem;
+
+using System.ComponentModel.Composition;
+using System.IO;
 
 namespace IKVM.Clang.Vsix.Icons
 {
@@ -16,7 +15,7 @@ namespace IKVM.Clang.Vsix.Icons
     /// </summary>
     [Export(typeof(IProjectTreePropertiesProvider))]
     [AppliesTo(ClangProjectCapabilities.AppliesTo)]
-    [Order(0)]
+    [Order(1000)]
     internal sealed class ClangFileIconProvider : IProjectTreePropertiesProvider
     {
 
@@ -25,7 +24,7 @@ namespace IKVM.Clang.Vsix.Icons
             // Project root node: identified by the ProjectRoot flag already set in the property values
             if (propertyValues.Flags.Contains(ProjectTreeFlags.ProjectRoot))
             {
-                var projectMoniker = KnownMonikers.CPPProjectNode.ToProjectSystemType();
+                var projectMoniker = ClangMonikers.ProjectIcon.ToProjectSystemType();
                 propertyValues.Icon = projectMoniker;
                 propertyValues.ExpandedIcon = projectMoniker;
                 return;

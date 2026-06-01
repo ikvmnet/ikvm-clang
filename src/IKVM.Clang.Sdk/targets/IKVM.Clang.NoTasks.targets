@@ -1,0 +1,42 @@
+<Project>
+	<PropertyGroup>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+	</PropertyGroup>
+
+	<!--
+    This file contains targets which invoke the jobs in 'NoTask' mode.
+    -->
+
+	<PropertyGroup>
+		<___IkvmClangExeCs>$([System.IO.File]::ReadAllText('$([System.IO.Path]::Combine('$(MSBuildThisFileDirectory)', '..', '..', 'IKVM.Clang.Sdk.Tasks', 'ClangExe.cs'))'))</___IkvmClangExeCs>
+		<___IkvmLlvmArExeCs>$([System.IO.File]::ReadAllText('$([System.IO.Path]::Combine('$(MSBuildThisFileDirectory)', '..', '..', 'IKVM.Clang.Sdk.Tasks', 'LlvmArExe.cs'))'))</___IkvmLlvmArExeCs>
+	</PropertyGroup>
+
+	<ItemGroup>
+	</ItemGroup>
+
+	<UsingTask TaskName="ClangExe" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<Task>
+			<Code Type="Class" Language="cs">
+				<![CDATA[
+#define NETSTANDARD2_0
+
+$([MSBuild]::Unescape('$(___IkvmClangExeCs)'))
+            ]]>
+			</Code>
+		</Task>
+	</UsingTask>
+
+	<UsingTask TaskName="LlvmArExe" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<Task>
+			<Code Type="Class" Language="cs">
+				<![CDATA[
+#define NETSTANDARD2_0
+
+$([MSBuild]::Unescape('$(___IkvmLlvmArExeCs)'))
+            ]]>
+			</Code>
+		</Task>
+	</UsingTask>
+
+</Project>

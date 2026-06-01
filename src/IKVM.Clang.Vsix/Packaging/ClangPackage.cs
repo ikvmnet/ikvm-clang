@@ -15,6 +15,7 @@ namespace IKVM.Clang.Vsix.Packaging
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideTextMateGrammars("Grammars")]
+    [ProvideImageManifest("IKVM.Clang.imagemanifest")]
     public sealed class ClangPackage : AsyncPackage
     {
 

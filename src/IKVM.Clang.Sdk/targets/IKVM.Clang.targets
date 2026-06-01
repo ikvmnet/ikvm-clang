@@ -24,7 +24,8 @@
         </Otherwise>
     </Choose>
 
-    <Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.Tasks.targets" />
+    <Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.Tasks.targets" Condition=" '$(UseClangTasks)' != 'false' " />
+	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.NoTasks.targets" Condition=" '$(UseClangTasks)' == 'false' " />
 
     <Import Project="$(ClangTargetsPath)" />
 </Project>

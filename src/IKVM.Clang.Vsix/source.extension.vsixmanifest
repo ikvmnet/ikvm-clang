@@ -2,7 +2,7 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="IKVM.Clang.175fc96e-c263-4111-8146-43365d6f80e8" Version="|%CurrentProject%;GetVsixVersion|" Language="en-US" Publisher="IKVM" />
-        <DisplayName>IKVM.Clang</DisplayName>
+        <DisplayName>Clang Project Extension</DisplayName>
         <Description>Extension for Visual Studio for working with Clang.</Description>
         <MoreInfo>http://github.com/ikvmnet/ikvm-clang</MoreInfo>
         <Tags>c;c++;clang;llvm</Tags>
@@ -33,8 +33,10 @@
     </Dependencies>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="File" Path="IKVM.Clang.pkgdef" />
+		<Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
         <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
-        <Asset Type="Microsoft.VisualStudio.ImageManifest" d:Source="File" Path="Images\ClangMonikers.imagemanifest" />
+		<Asset Type="Microsoft.VisualStudio.ImageManifest" d:Source="File" Path="IKVM.Clang.imagemanifest" />
     </Assets>
     <Prerequisites>
         <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,)" DisplayName="Visual Studio core editor" />
