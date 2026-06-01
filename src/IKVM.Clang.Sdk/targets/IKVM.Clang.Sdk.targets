@@ -1,35 +1,108 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <PropertyGroup>
-        <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    </PropertyGroup>
+	<PropertyGroup>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+	</PropertyGroup>
 
-    <Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.targets" />
+	<!--
+    Default item inclusion controls.
+    Set EnableDefaultItems=false (or the individual properties) to opt out of automatic globbing.
+    -->
+	<PropertyGroup>
+		<EnableDefaultItems Condition=" '$(EnableDefaultItems)' == '' ">true</EnableDefaultItems>
+		<EnableDefaultCompileItems Condition=" '$(EnableDefaultCompileItems)' == '' ">true</EnableDefaultCompileItems>
+		<EnableDefaultHeaderItems Condition=" '$(EnableDefaultHeaderItems)' == '' ">true</EnableDefaultHeaderItems>
+		<EnableDefaultNoneItems Condition=" '$(EnableDefaultNoneItems)' == '' ">true</EnableDefaultNoneItems>
+	</PropertyGroup>
 
-    <!--
+	<PropertyGroup>
+
+		<!-- Set DefaultItemExcludes property for items that should be excluded from the default Compile, etc items.
+			 This is in the .targets because it needs to come after the final BaseOutputPath has been evaluated. -->
+
+		<!-- bin folder, by default -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);$(BaseOutputPath)/**</DefaultItemExcludes>
+		<!-- obj folder, by default -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);$(BaseIntermediateOutputPath)/**</DefaultItemExcludes>
+
+		<!-- Set DefaultItemExcludes property for items that should be excluded from the default Compile, etc items.
+			 This is in the .targets because it needs to come after the final BaseOutputPath has been evaluated. -->
+		<DefaultItemExcludes Condition="'$(PublishDir)' != '' And '$([MSBuild]::NormalizePath($(MSBuildProjectDirectory), $(PublishDir)))' != '$([MSBuild]::NormalizePath($(MSBuildProjectDirectory)))'">$(DefaultItemExcludes);$(PublishDir)/**</DefaultItemExcludes>
+
+		<!-- bin folder, by default -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);$(BaseOutputPath)/**</DefaultItemExcludes>
+		<!-- obj folder, by default -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);$(BaseIntermediateOutputPath)/**</DefaultItemExcludes>
+
+		<!-- Various files that should generally always be ignored -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);**/*.user</DefaultItemExcludes>
+		<DefaultItemExcludes>$(DefaultItemExcludes);**/*.*proj</DefaultItemExcludes>
+		<DefaultItemExcludes>$(DefaultItemExcludes);**/*.sln</DefaultItemExcludes>
+		<DefaultItemExcludes>$(DefaultItemExcludes);**/*.vssscc</DefaultItemExcludes>
+
+		<!-- WARNING: This pattern is there to ignore folders such as .git and .vs, but it will also match items included with a
+			 relative path outside the project folder (for example "..\Shared\Shared.cs").  So be sure only to apply it to items
+			 that are in the project folder. Support both DefaultItemExcludesInProjectFolder and DefaultExcludesInProjectFolder
+			 properties because of a naming mistake. -->
+		<DefaultExcludesInProjectFolder>$(DefaultExcludesInProjectFolder);$(DefaultItemExcludesInProjectFolder);**/.*/**</DefaultExcludesInProjectFolder>
+
+	</PropertyGroup>
+
+	<ItemGroup Condition=" '$(EnableDefaultItems)' == 'true' And '$(EnableDefaultCompileItems)' == 'true' ">
+		<!-- C source files -->
+		<Compile Include="**\*.c" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<!-- C++ source files -->
+		<Compile Include="**\*.cpp" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.cc" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.cxx" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.c++" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.cppm" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.ixx" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<!-- Objective-C / Objective-C++ source files -->
+		<Compile Include="**\*.m" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.mm" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<!-- Assembly source files -->
+		<Compile Include="**\*.s" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.S" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.asm" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(EnableDefaultItems)' == 'true' And '$(EnableDefaultHeaderItems)' == 'true' ">
+		<!-- C/C++ header files -->
+		<Header Include="**\*.h" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Header Include="**\*.hpp" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Header Include="**\*.hh" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Header Include="**\*.hxx" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Header Include="**\*.h++" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Header Include="**\*.ipp" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+	</ItemGroup>
+
+	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.targets" />
+
+	<!--
     Prepare to import project extensions which usually come from packages.  Package management systems will create a file at: $(MSBuildProjectExtensionsPath)\$(MSBuildProjectFile).<SomethingUnique>.targets
     Each package management system should use a unique moniker to avoid collisions.  It is a wild-card import so the package
     management system can write out multiple files but the order of the import is alphabetic because MSBuild sorts the list.
     -->
-    <PropertyGroup>
-        <ImportProjectExtensionTargets Condition="'$(ImportProjectExtensionTargets)' == ''">true</ImportProjectExtensionTargets>
-    </PropertyGroup>
+	<PropertyGroup>
+		<ImportProjectExtensionTargets Condition="'$(ImportProjectExtensionTargets)' == ''">true</ImportProjectExtensionTargets>
+	</PropertyGroup>
 
-    <Import Project="$(MSBuildProjectExtensionsPath)$(MSBuildProjectFile).*.targets" Condition="'$(ImportProjectExtensionTargets)' == 'true' and exists('$(MSBuildProjectExtensionsPath)')" />
+	<Import Project="$(MSBuildProjectExtensionsPath)$(MSBuildProjectFile).*.targets" Condition="'$(ImportProjectExtensionTargets)' == 'true' and exists('$(MSBuildProjectExtensionsPath)')" />
 
-    <PropertyGroup>
-        <ImportDirectoryBuildTargets Condition="'$(ImportDirectoryBuildTargets)' == ''">true</ImportDirectoryBuildTargets>
-    </PropertyGroup>
+	<PropertyGroup>
+		<ImportDirectoryBuildTargets Condition="'$(ImportDirectoryBuildTargets)' == ''">true</ImportDirectoryBuildTargets>
+	</PropertyGroup>
 
-    <!--
+	<!--
     Determine the path to the directory build targets file if the user did not disable $(ImportDirectoryBuildTargets) and
     they did not already specify an absolute path to use via $(DirectoryBuildTargetsPath)
     -->
-    <PropertyGroup Condition="'$(ImportDirectoryBuildTargets)' == 'true' and '$(DirectoryBuildTargetsPath)' == ''">
-        <_DirectoryBuildTargetsFile Condition="'$(_DirectoryBuildTargetsFile)' == ''">Directory.Build.targets</_DirectoryBuildTargetsFile>
-        <_DirectoryBuildTargetsBasePath Condition="'$(_DirectoryBuildTargetsBasePath)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), '$(_DirectoryBuildTargetsFile)'))</_DirectoryBuildTargetsBasePath>
-        <DirectoryBuildTargetsPath Condition="'$(_DirectoryBuildTargetsBasePath)' != '' and '$(_DirectoryBuildTargetsFile)' != ''">$([System.IO.Path]::Combine('$(_DirectoryBuildTargetsBasePath)', '$(_DirectoryBuildTargetsFile)'))</DirectoryBuildTargetsPath>
-    </PropertyGroup>
+	<PropertyGroup Condition="'$(ImportDirectoryBuildTargets)' == 'true' and '$(DirectoryBuildTargetsPath)' == ''">
+		<_DirectoryBuildTargetsFile Condition="'$(_DirectoryBuildTargetsFile)' == ''">Directory.Build.targets</_DirectoryBuildTargetsFile>
+		<_DirectoryBuildTargetsBasePath Condition="'$(_DirectoryBuildTargetsBasePath)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildProjectDirectory), '$(_DirectoryBuildTargetsFile)'))</_DirectoryBuildTargetsBasePath>
+		<DirectoryBuildTargetsPath Condition="'$(_DirectoryBuildTargetsBasePath)' != '' and '$(_DirectoryBuildTargetsFile)' != ''">$([System.IO.Path]::Combine('$(_DirectoryBuildTargetsBasePath)', '$(_DirectoryBuildTargetsFile)'))</DirectoryBuildTargetsPath>
+	</PropertyGroup>
 
-    <Import Project="$(DirectoryBuildTargetsPath)" Condition="'$(ImportDirectoryBuildTargets)' == 'true' and exists('$(DirectoryBuildTargetsPath)')"/>
+	<Import Project="$(DirectoryBuildTargetsPath)" Condition="'$(ImportDirectoryBuildTargets)' == 'true' and exists('$(DirectoryBuildTargetsPath)')"/>
 
 </Project>
