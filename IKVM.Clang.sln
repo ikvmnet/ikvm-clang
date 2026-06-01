@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.6.11822.322 stable
+VisualStudioVersion = 18.6.11822.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IKVM.Clang.Vsix", "src\IKVM.Clang.Vsix\IKVM.Clang.Vsix.csproj", "{E4C045D0-C23C-443F-B96C-C546B60D93AC}"
 EndProject
@@ -32,6 +32,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IKVM.Clang.Sdk.Tests", "src\IKVM.Clang.Sdk.Tests\IKVM.Clang.Sdk.Tests.csproj", "{C2ED8CD9-CAD8-4F58-B5A6-2F7C5CF810E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IKVM.Clang.Sdk.Tasks", "src\IKVM.Clang.Sdk.Tasks\IKVM.Clang.Sdk.Tasks.csproj", "{0C061CC8-1BBA-45BA-A3AF-2FC6AF3E4391}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IKVM.Clang.Templates", "src\IKVM.Clang.Templates\IKVM.Clang.Templates.csproj", "{A6AC4E59-B613-3009-E823-17E853A250E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{0C061CC8-1BBA-45BA-A3AF-2FC6AF3E4391}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C061CC8-1BBA-45BA-A3AF-2FC6AF3E4391}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C061CC8-1BBA-45BA-A3AF-2FC6AF3E4391}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6AC4E59-B613-3009-E823-17E853A250E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6AC4E59-B613-3009-E823-17E853A250E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6AC4E59-B613-3009-E823-17E853A250E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6AC4E59-B613-3009-E823-17E853A250E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

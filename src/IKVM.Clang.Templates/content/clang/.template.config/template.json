@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "IKVM.NET",
+  "classifications": [
+    "Console",
+    "Clang",
+    "Native"
+  ],
+  "identity": "IKVM.Clang.Console",
+  "name": "Clang Console Application",
+  "shortName": "clang",
+  "tags": {
+    "language": "C++",
+    "type": "project"
+  },
+  "sourceName": "ClangApp",
+  "preferNameDirectory": true,
+  "symbols": {
+    "Framework": {
+      "type": "parameter",
+      "description": "The target framework for the project.",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net10.0",
+          "description": "Target net10.0"
+        }
+      ],
+      "replaces": "net10.0",
+      "defaultValue": "net10.0"
+    }
+  }
+}

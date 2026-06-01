@@ -9,6 +9,9 @@
         <PackageProjectReference Include="..\IKVM.Clang.Sdk\IKVM.Clang.Sdk.csproj">
             <PackageTargetPath>.</PackageTargetPath>
         </PackageProjectReference>
+        <PackageProjectReference Include="..\IKVM.Clang.Templates\IKVM.Clang.Templates.csproj">
+            <PackageTargetPath>.</PackageTargetPath>
+        </PackageProjectReference>
     </ItemGroup>
 
 </Project>

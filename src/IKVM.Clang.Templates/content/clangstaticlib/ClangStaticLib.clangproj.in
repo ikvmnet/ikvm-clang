@@ -1,0 +1,8 @@
+﻿<Project Sdk="IKVM.Clang.Sdk/#PackageVersion#">
+
+    <PropertyGroup>
+        <OutputType>Lib</OutputType>
+        <TargetIdentifiers>x86_64-pc-windows-msvc</TargetIdentifiers>
+    </PropertyGroup>
+
+</Project>
