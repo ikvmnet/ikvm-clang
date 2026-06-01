@@ -134,7 +134,6 @@
 			<_ProjectTemplatesItems Include="$(IntermediateOutputPath)ProjectTemplates\**\*" />
 			<Content Include="@(_ProjectTemplatesItems)">
 				<VSIXSubPath>ProjectTemplates\%(RecursiveDir)</VSIXSubPath>
-				<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 				<IncludeInVSIX>true</IncludeInVSIX>
 			</Content>
 		</ItemGroup>
