@@ -27,7 +27,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- Transform values for .clangproj.in files -->
 		<TransformValues Include="PackageVersion">
 			<Value>$(PackageVersion)</Value>
 		</TransformValues>
