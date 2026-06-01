@@ -3,6 +3,8 @@
 		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
 	</PropertyGroup>
 
+	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.targets" />
+
 	<!--
     Default item inclusion controls.
     Set EnableDefaultItems=false (or the individual properties) to opt out of automatic globbing.
@@ -70,8 +72,6 @@
 		<Header Include="**\*.h++" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
 		<Header Include="**\*.ipp" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
 	</ItemGroup>
-
-	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.targets" />
 
 	<!--
     Prepare to import project extensions which usually come from packages.  Package management systems will create a file at: $(MSBuildProjectExtensionsPath)\$(MSBuildProjectFile).<SomethingUnique>.targets
