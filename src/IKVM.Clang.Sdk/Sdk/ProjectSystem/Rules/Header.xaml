@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Rule
+    Name="Header"
+    DisplayName="Header"
+    PageTemplate="tool"
+    Description="C/C++ header file"
+    xmlns="http://schemas.microsoft.com/build/2009/properties">
+    <Rule.DataSource>
+        <DataSource Persistence="ProjectFile" Label="Configuration" ItemType="Header" HasConfigurationCondition="false" />
+    </Rule.DataSource>
+
+    <Rule.Categories>
+        <Category Name="Advanced" DisplayName="Advanced" />
+    </Rule.Categories>
+
+    <BoolProperty Name="Visible" Visible="false" />
+    <StringProperty Name="DependentUpon" Visible="false" />
+    <StringProperty Name="Link" Visible="false" />
+
+    <BoolProperty 
+        Name="CopyToIncludeDirectory"
+        DisplayName="Copy to Include Directory"
+        Description="Copy this header to the intermediate headers output folder and expose it to dependent projects."
+        Category="Advanced"
+        Default="true" />
+
+    <EnumProperty Name="SubType" Visible="false">
+        <EnumValue Name="Designer" />
+        <EnumValue Name="Component" />
+        <EnumValue Name="Control" />
+        <EnumValue Name="Form" />
+        <EnumValue Name="Code" />
+    </EnumProperty>
+</Rule>

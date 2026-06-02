@@ -36,7 +36,7 @@
     <ContentType
         Name="CppHeader"
         DisplayName="C/C++ Header"
-        ItemType="Include">
+        ItemType="Header">
     </ContentType>
 
     <ContentType
@@ -328,7 +328,8 @@
     <ItemType Name="PackageLayout" DisplayName="App Package Layout" />
     <ItemType Name="Page" DisplayName="XAML Page"/>
     <ItemType Name="ApplicationDefinition" DisplayName="XAML Application Definition"/>
-    <ItemType Name="Compile" DisplayName="C/C++ compiler"/>
+    <ItemType Name="Compile" DisplayName="C/C++ compiler" />
+    <ItemType Name="Header" DisplayName="C/C++ header" />
     <ItemType Name="ClInclude" DisplayName="C/C++ header"/>
     <ItemType Name="Midl" DisplayName="MIDL tool"/>
     <ItemType Name="ResourceCompile" DisplayName="Resource compiler"/>

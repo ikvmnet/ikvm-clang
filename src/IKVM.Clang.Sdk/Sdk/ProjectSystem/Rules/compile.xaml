@@ -4,19 +4,75 @@
 	PageTemplate="tool"
 	Description="Clang source file"
 	xmlns="http://schemas.microsoft.com/build/2009/properties">
-    <Rule.DataSource>
-        <DataSource Persistence="ProjectFile" Label="Configuration" ItemType="Compile" HasConfigurationCondition="false" />
-    </Rule.DataSource>
+	<Rule.DataSource>
+		<DataSource Persistence="ProjectFile" Label="Configuration" ItemType="Compile" HasConfigurationCondition="false" />
+	</Rule.DataSource>
 
-    <BoolProperty Name="Visible" Visible="false" />
-    <StringProperty Name="DependentUpon" Visible="false" />
-    <StringProperty Name="Link" Visible="false" />
-    <EnumProperty Name="SubType" Visible="false">
-        <EnumValue Name="Designer" />
-        <EnumValue Name="Component" />
-        <EnumValue Name="Control" />
-        <EnumValue Name="Form" />
-        <EnumValue Name="Code" />
-    </EnumProperty>
+	<Rule.Categories>
+		<Category Name="General" DisplayName="General" />
+		<Category Name="Advanced" DisplayName="Advanced" />
+	</Rule.Categories>
+
+	<BoolProperty Name="Visible" Visible="false" />
+	<StringProperty Name="DependentUpon" Visible="false" />
+	<StringProperty Name="Link" Visible="false" />
+	<EnumProperty Name="SubType" Visible="false">
+		<EnumValue Name="Designer" />
+		<EnumValue Name="Component" />
+		<EnumValue Name="Control" />
+		<EnumValue Name="Form" />
+		<EnumValue Name="Code" />
+	</EnumProperty>
+
+	<!-- Language override -->
+	<EnumProperty Name="Language"
+				  DisplayName="Language"
+				  Description="Override the language for this specific file."
+				  Category="General">
+		<EnumValue Name="" DisplayName="(Default)" />
+		<EnumValue Name="c" DisplayName="C" />
+		<EnumValue Name="c++" DisplayName="C++" />
+		<EnumValue Name="objective-c" DisplayName="Objective-C" />
+		<EnumValue Name="objective-c++" DisplayName="Objective-C++" />
+		<EnumValue Name="assembler-with-cpp" DisplayName="Assembly" />
+	</EnumProperty>
+
+	<!-- Language standard override -->
+	<StringProperty Name="LanguageStandard"
+					DisplayName="Language Standard"
+					Description="Per-file language standard override (e.g., c11, c17, c++14, c++17, c++20, gnu11, gnu++17)."
+					Category="General" />
+
+	<!-- Debug symbols override -->
+	<BoolProperty Name="DebugSymbols"
+				  DisplayName="Generate Debug Symbols"
+				  Description="Override debug symbol generation for this file."
+				  Category="General" />
+
+	<!-- Position independent code -->
+	<BoolProperty Name="PositionIndependentCode"
+				  DisplayName="Position Independent Code"
+				  Description="Generate position-independent code (-fPIC) for this file."
+				  Category="General" />
+
+	<!-- Include directories -->
+	<StringProperty Name="IncludeDirectories"
+					DisplayName="Additional Include Directories"
+					Description="Semicolon-separated list of additional include directories for this file only."
+					Category="Advanced"
+					Subtype="folder" />
+
+	<!-- Preprocessor definitions -->
+	<StringProperty Name="PreprocessorDefinitions"
+					DisplayName="Preprocessor Definitions"
+					Description="Semicolon-separated preprocessor definitions (NAME or NAME=VALUE) for this file only."
+					Category="Advanced" />
+
+	<!-- Additional compile options -->
+	<StringProperty Name="AdditionalCompileOptions"
+					DisplayName="Additional Compiler Options"
+					Description="Extra command-line flags for compiling this file only."
+					Category="Advanced" />
+
 </Rule>
     

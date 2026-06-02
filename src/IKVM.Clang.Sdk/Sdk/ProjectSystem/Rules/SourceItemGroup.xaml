@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This file defines default metadata for source item groups -->
+<ProjectSchemaDefinitions xmlns="http://schemas.microsoft.com/build/2009/properties">
+
+  <!-- Make Compile items visible in Solution Explorer even when included via glob -->
+  <ItemGroup Name="Compile">
+    <Property Name="Visible" Default="true" />
+  </ItemGroup>
+
+  <!-- Make Header items visible in Solution Explorer even when included via glob -->
+  <ItemGroup Name="Header">
+    <Property Name="Visible" Default="true" />
+  </ItemGroup>
+
+</ProjectSchemaDefinitions>

@@ -38,7 +38,10 @@
 
     <ItemGroup>
         <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\ProjectItemsSchema.xaml;">
-            
+
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\SourceItemGroup.xaml;">
+
         </PropertyPageSchema>
         <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\General.xaml">
             <Context>Project</Context>
@@ -59,6 +62,12 @@
             <Context>File</Context>
         </PropertyPageSchema>
         <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\Compile.BrowseObject.xaml;">
+            <Context>BrowseObject</Context>
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\Header.xaml;">
+            <Context>File</Context>
+        </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\Header.BrowseObject.xaml;">
             <Context>BrowseObject</Context>
         </PropertyPageSchema>
     </ItemGroup>
