@@ -14,7 +14,7 @@
 		<EnableDefaultNoneItems Condition=" '$(EnableDefaultNoneItems)' == '' ">true</EnableDefaultNoneItems>
 	</PropertyGroup>
 
-	<PropertyGroup>
+	<PropertyGroup Condition=" '$(BaseOutputPath)' != '' And '$(BaseIntermediateOutputPath)' != '' ">
 
 		<!-- Set DefaultItemExcludes property for items that should be excluded from the default Compile, etc items.
 			 This is in the .targets because it needs to come after the final BaseOutputPath has been evaluated. -->
