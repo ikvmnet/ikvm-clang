@@ -30,7 +30,7 @@
     </PropertyGroup>
 
     <Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.props" />
-	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.Sdk.DefaultItems.props" />
+	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.Sdk.DefaultItems.props" Condition="'$(TargetIdentifier)'!=''" />
 
     <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.VisualStudioVersion.v*.Common.props" Condition="'$(VisualStudioVersion)' == ''" />
 
