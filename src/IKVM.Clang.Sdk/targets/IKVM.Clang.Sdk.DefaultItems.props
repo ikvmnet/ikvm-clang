@@ -1,0 +1,45 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    </PropertyGroup>
+
+	<!--
+    Default item inclusion controls.
+    Set EnableDefaultItems=false (or the individual properties) to opt out of automatic globbing.
+    -->
+	<PropertyGroup>
+		<EnableDefaultItems Condition=" '$(EnableDefaultItems)' == '' ">true</EnableDefaultItems>
+		<EnableDefaultCompileItems Condition=" '$(EnableDefaultCompileItems)' == '' ">true</EnableDefaultCompileItems>
+		<EnableDefaultHeaderItems Condition=" '$(EnableDefaultHeaderItems)' == '' ">true</EnableDefaultHeaderItems>
+		<EnableDefaultNoneItems Condition=" '$(EnableDefaultNoneItems)' == '' ">true</EnableDefaultNoneItems>
+	</PropertyGroup>
+
+	<PropertyGroup>
+
+		<!-- Set DefaultItemExcludes property for items that should be excluded from the default Compile, etc items.
+			 This is in the .targets because it needs to come after the final BaseOutputPath has been evaluated. -->
+
+		<!-- bin folder, by default -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);$(BaseOutputPath)/**</DefaultItemExcludes>
+		<!-- obj folder, by default -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);$(BaseIntermediateOutputPath)/**</DefaultItemExcludes>
+
+		<!-- Set DefaultItemExcludes property for items that should be excluded from the default Compile, etc items.
+			 This is in the .targets because it needs to come after the final BaseOutputPath has been evaluated. -->
+		<DefaultItemExcludes Condition="'$(PublishDir)' != '' And '$([MSBuild]::NormalizePath($(MSBuildProjectDirectory), $(PublishDir)))' != '$([MSBuild]::NormalizePath($(MSBuildProjectDirectory)))'">$(DefaultItemExcludes);$(PublishDir)/**</DefaultItemExcludes>
+
+		<!-- Various files that should generally always be ignored -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);**/*.user</DefaultItemExcludes>
+		<DefaultItemExcludes>$(DefaultItemExcludes);**/*.*proj</DefaultItemExcludes>
+		<DefaultItemExcludes>$(DefaultItemExcludes);**/*.sln</DefaultItemExcludes>
+		<DefaultItemExcludes>$(DefaultItemExcludes);**/*.vssscc</DefaultItemExcludes>
+
+		<!-- WARNING: This pattern is there to ignore folders such as .git and .vs, but it will also match items included with a
+			 relative path outside the project folder (for example "..\Shared\Shared.cs").  So be sure only to apply it to items
+			 that are in the project folder. Support both DefaultItemExcludesInProjectFolder and DefaultExcludesInProjectFolder
+			 properties because of a naming mistake. -->
+		<DefaultExcludesInProjectFolder>$(DefaultExcludesInProjectFolder);$(DefaultItemExcludesInProjectFolder);**/.*/**</DefaultExcludesInProjectFolder>
+
+	</PropertyGroup>
+	
+</Project>

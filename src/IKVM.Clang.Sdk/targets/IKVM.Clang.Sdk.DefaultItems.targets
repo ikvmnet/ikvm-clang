@@ -1,0 +1,35 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+	</PropertyGroup>
+
+	<ItemGroup Condition=" '$(EnableDefaultItems)' == 'true' And '$(EnableDefaultCompileItems)' == 'true' ">
+		<!-- C source files -->
+		<Compile Include="**\*.c" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<!-- C++ source files -->
+		<Compile Include="**\*.cpp" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.cc" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.cxx" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.c++" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.cppm" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.ixx" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<!-- Objective-C / Objective-C++ source files -->
+		<Compile Include="**\*.m" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.mm" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<!-- Assembly source files -->
+		<Compile Include="**\*.s" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.S" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Compile Include="**\*.asm" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(EnableDefaultItems)' == 'true' And '$(EnableDefaultHeaderItems)' == 'true' ">
+		<!-- C/C++ header files -->
+		<Header Include="**\*.h" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Header Include="**\*.hpp" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Header Include="**\*.hh" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Header Include="**\*.hxx" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Header Include="**\*.h++" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<Header Include="**\*.ipp" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+	</ItemGroup>
+
+</Project>
