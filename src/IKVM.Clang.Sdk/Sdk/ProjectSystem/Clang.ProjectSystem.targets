@@ -15,13 +15,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectCapability Include="OutputGroups;AllTargetOutputGroups;VisualStudioWellKnownOutputGroups" />
+        <!-- Core project identity -->
         <ProjectCapability Include="Clang" />
+
+        <!-- SDK-style features -->
         <ProjectCapability Include="UseFileGlobs"/>
         <ProjectCapability Include="OpenProjectFile"/>
         <ProjectCapability Include="HandlesOwnReload"/>
-        <ProjectCapability Include="ProjectImportsTree" />
+
+        <!-- Native/unmanaged project -->
         <ProjectCapability Include="native" />
+
+        <!-- VS feature support -->
+        <ProjectCapability Include="ProjectImportsTree" />
     </ItemGroup>
 
     <!--
