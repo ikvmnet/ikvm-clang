@@ -1,11 +1,12 @@
 ﻿{
-    "$schema": "http://json.schemastore.org/vsix-publish",
-    "publisher": "IKVM",
-    "identity": { "internalName": "clang" },
-    "categories": [ "build", "coding" ],
-    "overview": "IKVM.Clang.md",
-    "priceCategory": "free",
-    "private": true,
-    "qna": true,
-    "repo": "https://github.com/ikvmnet/ikvm-clang"
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "publisher": "IKVM",
+  "identity": { "internalName": "clang" },
+  "categories": [ "build", "coding" ],
+  "overview": "IKVM.Clang.md",
+  "priceCategory": "free",
+  "private": true,
+  "qna": true,
+  "repo": "https://github.com/ikvmnet/ikvm-clang",
+  "icon": "Images/ClangProjectIcon_128x.png"
 }
