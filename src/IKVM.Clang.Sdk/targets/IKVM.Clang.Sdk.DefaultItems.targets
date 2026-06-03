@@ -14,15 +14,15 @@
 		<EnableDefaultNoneItems Condition=" '$(EnableDefaultNoneItems)' == '' ">true</EnableDefaultNoneItems>
 	</PropertyGroup>
 
-	<PropertyGroup Condition=" '$(BaseOutputPath)' != '' And '$(BaseIntermediateOutputPath)' != '' ">
+	<PropertyGroup>
 
 		<!-- Set DefaultItemExcludes property for items that should be excluded from the default Compile, etc items.
 			 This is in the .targets because it needs to come after the final BaseOutputPath has been evaluated. -->
 
 		<!-- bin folder, by default -->
-		<DefaultItemExcludes>$(DefaultItemExcludes);$(BaseOutputPath)\**</DefaultItemExcludes>
+		<DefaultItemExcludes Condition=" '$(BaseOutputPath)' != '' ">$(DefaultItemExcludes);$(BaseOutputPath)\**</DefaultItemExcludes>
 		<!-- obj folder, by default -->
-		<DefaultItemExcludes>$(DefaultItemExcludes);$(BaseIntermediateOutputPath)\**</DefaultItemExcludes>
+		<DefaultItemExcludes Condition=" '$(BaseIntermediateOutputPath)' != '' ">$(DefaultItemExcludes);$(BaseIntermediateOutputPath)\**</DefaultItemExcludes>
 
 		<!-- Set DefaultItemExcludes property for items that should be excluded from the default Compile, etc items.
 			 This is in the .targets because it needs to come after the final BaseOutputPath has been evaluated. -->
