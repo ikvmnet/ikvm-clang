@@ -7,8 +7,17 @@
 	</Symbols>
 	<Images>
 		<Image Guid="$(MonikerGuid)" ID="$(ProjectIcon)">
+			<Source Uri="$(Images)/ClangProjectIcon_16x.png">
+				<Size Value="16" />
+			</Source>
+			<Source Uri="$(Images)/ClangProjectIcon_24x.png">
+				<Size Value="24" />
+			</Source>
 			<Source Uri="$(Images)/ClangProjectIcon_32x.png">
 				<Size Value="32" />
+			</Source>
+			<Source Uri="$(Images)/ClangProjectIcon_256x.png">
+				<Size Value="256" />
 			</Source>
 		</Image>
 	</Images>

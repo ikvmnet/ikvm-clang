@@ -4,7 +4,7 @@
 	</PropertyGroup>
 
 	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.targets" />
-	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.Sdk.DefaultItems.targets" Condition="'$(TargetIdentifier)'!=''" />
+	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.Sdk.DefaultItems.targets" />
 
 	<!--
     Prepare to import project extensions which usually come from packages.  Package management systems will create a file at: $(MSBuildProjectExtensionsPath)\$(MSBuildProjectFile).<SomethingUnique>.targets

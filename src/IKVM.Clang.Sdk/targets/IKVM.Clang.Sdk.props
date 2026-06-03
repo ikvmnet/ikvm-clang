@@ -29,8 +29,8 @@
         <DefaultProjectTypeGuid Condition=" '$(DefaultProjectTypeGuid)' == '' ">{C16F8DA6-AF2B-48DF-A3C0-8B93BDB1BB12}</DefaultProjectTypeGuid>
     </PropertyGroup>
 
-    <Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.props" />
-	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.Sdk.DefaultItems.props" Condition="'$(TargetIdentifier)'!=''" />
+	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.props" />
+	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.Sdk.DefaultItems.props" />
 
     <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.VisualStudioVersion.v*.Common.props" Condition="'$(VisualStudioVersion)' == ''" />
 
