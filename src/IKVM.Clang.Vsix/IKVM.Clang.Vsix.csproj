@@ -30,6 +30,9 @@
 		<TransformValues Include="PackageVersion">
 			<Value>$(PackageVersion)</Value>
 		</TransformValues>
+		<TransformValues Include="NuGetPath">
+			<Value>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(OutputPath)\nuget'))</Value>
+		</TransformValues>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -105,7 +108,7 @@
 
 		<Resource Include="Images\ClangProjectIcon_32x.png" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<Transform Include="..\IKVM.Clang.Templates\content\**\*.in">
 			<TargetPath>$(IntermediateOutputPath)ProjectTemplates\%(RecursiveDir)%(Filename)</TargetPath>
@@ -137,6 +140,32 @@
 			</Content>
 		</ItemGroup>
 		<Message Text="Added VSIX template file: %(Content.Identity)" Condition="$([System.String]::Copy('%(Content.Identity)').Contains('$(IntermediateOutputPath)ProjectTemplates'))" Importance="high" />
+	</Target>
+
+	<ItemGroup>
+		<PackageProjectReference Include="..\IKVM.Clang.Sdk\IKVM.Clang.Sdk.csproj">
+			<PackageTargetPath>nuget</PackageTargetPath>
+		</PackageProjectReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\IKVM.Clang.Sdk.Tests\Project\**" Exclude="..\IKVM.Clang.Sdk.Tests\Project\global.json;..\IKVM.Clang.Sdk.Tests\Project\nuget.config">
+			<Link>TestProject\%(RecursiveDir)%(Filename)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<Transform Include="TestProject\**\*.in">
+			<TargetPath>$(IntermediateOutputPath)TestProject\%(RecursiveDir)%(Filename)</TargetPath>
+		</Transform>
+	</ItemGroup>
+
+	<Target Name="IncludeTestProjectTransformedFiles" DependsOnTargets="Transform" BeforeTargets="PrepareForBuild">
+		<ItemGroup>
+			<_TestProjectTemplatesItems Include="$(IntermediateOutputPath)TestProject\**\*" />
+			<None Include="@(_TestProjectTemplatesItems)">
+				<TargetPath>TestProject\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+				<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			</None>
+		</ItemGroup>
 	</Target>
 
 	<Target Name="GetVsixVersion" Returns="$(FileVersion)" />
