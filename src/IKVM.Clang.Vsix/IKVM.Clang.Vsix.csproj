@@ -38,6 +38,10 @@
 	<ItemGroup>
 		<None Remove="IKVM.Clang.imagemanifest" />
 		<None Remove="IKVM.Clang.manifest.json" />
+		<None Remove="Images\ClangProjectIcon_128x.png" />
+		<None Remove="Images\ClangProjectIcon_16x.png" />
+		<None Remove="Images\ClangProjectIcon_24x.png" />
+		<None Remove="Images\ClangProjectIcon_256x.png" />
 		<None Remove="Images\ClangProjectIcon_32x.png" />
 	</ItemGroup>
 
@@ -105,6 +109,10 @@
 		<Content Include="IKVM.Clang.manifest.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+		<Resource Include="Images\ClangProjectIcon_128x.png" />
+		<Resource Include="Images\ClangProjectIcon_16x.png" />
+		<Resource Include="Images\ClangProjectIcon_24x.png" />
+		<Resource Include="Images\ClangProjectIcon_256x.png" />
 
 		<Resource Include="Images\ClangProjectIcon_32x.png" />
 	</ItemGroup>
