@@ -24,8 +24,6 @@
         </MSBuild>
     </Target>
 
-    <Target Name="Restore" />
-
     <Target Name="_SetBuildInnerTarget" Returns="@(InnerOutput)">
         <PropertyGroup>
             <InnerTargets>$(InnerTargets);Build</InnerTargets>

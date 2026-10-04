@@ -30,6 +30,16 @@
     </PropertyGroup>
 
 	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.props" />
+
+	<!--
+    Import project extensions which usually come from packages.  Package management systems will create a file at: $(MSBuildProjectExtensionsPath)\$(MSBuildProjectFile).<SomethingUnique>.props
+    -->
+	<PropertyGroup>
+		<ImportProjectExtensionProps Condition="'$(ImportProjectExtensionProps)' == ''">true</ImportProjectExtensionProps>
+	</PropertyGroup>
+
+	<Import Project="$(MSBuildProjectExtensionsPath)$(MSBuildProjectFile).*.props" Condition="'$(ImportProjectExtensionProps)' == 'true' and exists('$(MSBuildProjectExtensionsPath)')" />
+
 	<Import Project="$(MSBuildThisFileDirectory)IKVM.Clang.Sdk.DefaultItems.props" />
 
     <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.VisualStudioVersion.v*.Common.props" Condition="'$(VisualStudioVersion)' == ''" />
