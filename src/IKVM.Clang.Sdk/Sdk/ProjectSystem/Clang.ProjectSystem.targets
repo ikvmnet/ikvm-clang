@@ -28,6 +28,9 @@
 
         <!-- VS feature support -->
         <ProjectCapability Include="ProjectImportsTree" />
+
+        <!-- NuGet restore of PackageReference items (as Microsoft.Cpp.props declares for native PackageReference support) -->
+        <ProjectCapability Include="PackageReferences" />
     </ItemGroup>
 
     <!--
