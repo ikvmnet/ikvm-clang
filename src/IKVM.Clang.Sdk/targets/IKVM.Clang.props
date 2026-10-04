@@ -20,6 +20,16 @@
 
 		<BaseOutputPath Condition="'$(BaseOutputPath)' == ''">bin\</BaseOutputPath>
 		<BaseOutputPath Condition="!HasTrailingSlash('$(BaseOutputPath)')">$(BaseOutputPath)\</BaseOutputPath>
+
+		<!-- Where package managers (NuGet restore) write the project extension files imported by the SDK props and targets. -->
+		<MSBuildProjectExtensionsPath Condition="'$(MSBuildProjectExtensionsPath)' == ''">$(BaseIntermediateOutputPath)</MSBuildProjectExtensionsPath>
+		<MSBuildProjectExtensionsPath Condition="'$([System.IO.Path]::IsPathRooted($(MSBuildProjectExtensionsPath)))' == 'false'">$([System.IO.Path]::Combine('$(MSBuildProjectDirectory)', '$(MSBuildProjectExtensionsPath)'))</MSBuildProjectExtensionsPath>
+		<MSBuildProjectExtensionsPath Condition="!HasTrailingSlash('$(MSBuildProjectExtensionsPath)')">$(MSBuildProjectExtensionsPath)\</MSBuildProjectExtensionsPath>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<!-- NuGet restores a project without TargetFramework(s) against its TargetFrameworkMoniker; Clang projects are native. -->
+		<TargetFrameworkMoniker Condition=" '$(TargetFrameworkMoniker)' == '' ">native,Version=v0.0</TargetFrameworkMoniker>
 	</PropertyGroup>
 
     <PropertyGroup>
