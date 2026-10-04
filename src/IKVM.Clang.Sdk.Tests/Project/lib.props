@@ -132,7 +132,7 @@
         <Dependencies Include="stubs-debug" />
         <Dependencies Include="c-debug" />
         <Dependencies Include="dlmalloc" />
-        <Dependencies Include="compiler_rt" />
+        <Dependencies Include="clang_rt.builtins" />
         <Dependencies Include="c++-noexcept" />
         <Dependencies Include="c++abi-debug-noexcept" />
         <Dependencies Include="sockets" />
