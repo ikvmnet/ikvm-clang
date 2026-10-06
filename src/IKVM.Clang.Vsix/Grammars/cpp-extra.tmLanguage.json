@@ -1,0 +1,8 @@
+{
+    "name": "C++ (additional file types)",
+    "scopeName": "source.cpp.ikvm-clang",
+    "fileTypes": [ "cppm", "ixx", "hxx", "ipp" ],
+    "patterns": [
+        { "include": "source.cpp" }
+    ]
+}

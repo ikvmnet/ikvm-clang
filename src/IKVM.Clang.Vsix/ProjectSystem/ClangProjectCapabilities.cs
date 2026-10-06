@@ -24,11 +24,14 @@ namespace IKVM.Clang.Vsix.ProjectSystem
             HandlesOwnReload + "; " +
             OpenProjectFile + "; " +
             PreserveFormatting + "; " +
+            ProjectConfigurationsDeclaredDimensions + "; " +
             UseProjectEvaluationCache;
 
         const string OpenProjectFile = nameof(OpenProjectFile);
         const string HandlesOwnReload = Microsoft.VisualStudio.ProjectSystem.ProjectCapabilities.HandlesOwnReload;
         const string PreserveFormatting = nameof(PreserveFormatting);
+        // the dimensions, Configuration and Platform included, come from the providers in ProjectSystem\Configuration
+        const string ProjectConfigurationsDeclaredDimensions = Microsoft.VisualStudio.ProjectSystem.ProjectCapabilities.ProjectConfigurationsDeclaredDimensions;
         const string UseProjectEvaluationCache = Microsoft.VisualStudio.ProjectSystem.ProjectCapabilities.UseProjectEvaluationCache;
 
     }
