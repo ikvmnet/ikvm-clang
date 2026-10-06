@@ -66,15 +66,6 @@
         <ClangTargetIsMsvc Condition=" '$(ClangTargetIsMsvc)' == '' ">false</ClangTargetIsMsvc>
     </PropertyGroup>
 
-    <!--
-    Code for ELF platforms is position independent, so that a static library can be linked into a shared one. Windows
-    does not take -fPIC, Apple platforms always build position independent code, and on WebAssembly it selects dynamic
-    linking.
-    -->
-    <PropertyGroup>
-        <PositionIndependentCode Condition=" '$(PositionIndependentCode)' == '' And '$(ClangTargetOS)' == 'unix' ">true</PositionIndependentCode>
-    </PropertyGroup>
-
     <!-- only the MSVC environment's linker writes debug information to its own file; elsewhere it is in the binary -->
     <PropertyGroup Condition=" '$(ClangTargetIsMsvc)' == 'true' And ('$(OutputType)' == 'exe' Or '$(OutputType)' == 'dll') ">
         <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' ">.pdb</DebugSymbolsExt>
@@ -558,6 +549,7 @@
 
             <_Args Include="-std" Value="$(_LanguageStandard)" Separator="=" Condition=" '$(_LanguageStandard)' != '' " />
             <_Args Include="-fPIC" Condition=" '$(_PositionIndependentCode)' == 'true' " />
+            <_Args Include="-fno-pic" Condition=" '$(_PositionIndependentCode)' == 'false' " />
             <_Args Include="-fms-compatibility" Condition=" '$(_MsCompatibility)' == 'true' " />
             <_Args Include="-fms-compatibility-version" Value="$(_MsCompatibilityVersion)" Separator="=" Condition=" '$(_MsCompatibilityVersion)' != '' " />
 
