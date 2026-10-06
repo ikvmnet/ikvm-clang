@@ -129,17 +129,20 @@ Common triples:
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `TargetIdentifiers` | *(required)* | Semicolon-separated LLVM target triples |
+| `TargetIdentifier` | *(host)* | The LLVM target triple to build for; without one, clang builds for the host |
+| `TargetIdentifiers` | *(empty)* | Semicolon-separated LLVM target triples, each built in turn |
 | `OutputType` | `dll` | Output kind: `exe`, `dll`, or `lib` |
 | `TargetName` | project name | Base name for the output file |
 | `ClangToolExe` | `clang` / `clang.exe` | Clang executable path or name |
 | `LlvmArToolExe` | `llvm-ar` / `llvm-ar.exe` | LLVM archiver executable path or name |
 | `DebugSymbols` | `true` in Debug | Emit debug symbols |
+| `Optimization` | `2` in Release | Optimization level, passed as `-O<level>`: `0`, `1`, `2`, `3`, `s`, `z` or `g` |
+| `DefineNDEBUG` | `true` in Release | Define `NDEBUG`, which turns off `assert` |
 | `LanguageStandard` | *(clang default)* | C/C++ language standard, e.g. `c17`, `c++20` |
-| `PositionIndependentCode` | *(false)* | Pass `-fPIC` to the compiler |
+| `PositionIndependentCode` | `true` on ELF targets (Linux and other Unix) | Pass `-fPIC` to the compiler |
 | `MsCompatibility` | *(false)* | Pass `-fms-compatibility` |
 | `UseLd` | `lld` | Linker driver for `exe`/`dll` targets |
-| `Subsystem` | `console` (Windows exe) | Windows subsystem (`console` or `windows`) |
+| `Subsystem` | *(linker default)* | Windows subsystem passed to the MSVC linker (`console` or `windows`) |
 | `AdditionalCompileOptions` | *(empty)* | Extra flags forwarded to every `clang` invocation |
 | `AdditionalLinkOptions` | *(empty)* | Extra flags forwarded to the linker invocation |
 
@@ -154,6 +157,7 @@ Common triples:
 | `Language` | Override language: `c`, `c++`, `objective-c`, `objective-c++` |
 | `LanguageStandard` | Per-file language standard override |
 | `DebugSymbols` | Per-file debug symbol override |
+| `Optimization` | Per-file optimization level override |
 | `PositionIndependentCode` | Per-file `-fPIC` override |
 | `IncludeDirectories` | Semicolon-separated extra include search paths |
 | `PreprocessorDefinitions` | Semicolon-separated `NAME` or `NAME=VALUE` defines |

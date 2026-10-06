@@ -49,6 +49,12 @@
 				  Description="Override debug symbol generation for this file."
 				  Category="General" />
 
+	<!-- Optimization level override -->
+	<StringProperty Name="Optimization"
+					DisplayName="Optimization"
+					Description="Per-file optimization level, passed as -O&lt;level&gt; (0, 1, 2, 3, s, z or g)."
+					Category="General" />
+
 	<!-- Position independent code -->
 	<BoolProperty Name="PositionIndependentCode"
 				  DisplayName="Position Independent Code"
