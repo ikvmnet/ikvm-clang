@@ -35,6 +35,7 @@ namespace IKVM.Clang.Vsix.Clangd
         readonly LspStream _server;
         readonly ClangCompileDatabase _database;
         readonly Action<string> _log;
+        readonly Action<string>? _trace;
 
         /// <summary>
         /// Context the user picked for each file, by full path.
@@ -53,8 +54,9 @@ namespace IKVM.Clang.Vsix.Clangd
         /// Creates the proxy between the client end of Visual Studio's connection and clangd's standard input and
         /// output.
         /// </summary>
-        public ClangdProxy(Stream client, Stream serverInput, Stream serverOutput, ClangCompileDatabase database, Action<string>? log = null)
+        public ClangdProxy(Stream client, Stream serverInput, Stream serverOutput, ClangCompileDatabase database, Action<string>? log = null, Action<string>? trace = null)
         {
+            _trace = trace;
             _client = new LspStream(client ?? throw new ArgumentNullException(nameof(client)));
             _server = new LspStream(new DuplexStream(serverOutput, serverInput));
             _database = database ?? throw new ArgumentNullException(nameof(database));
@@ -83,6 +85,7 @@ namespace IKVM.Clang.Vsix.Clangd
         {
             while (await _client.ReadAsync(cancellationToken) is JObject message)
             {
+                Trace("VS -> proxy", message);
                 var method = (string?)message["method"];
 
                 if (method == "initialize")
@@ -99,12 +102,15 @@ namespace IKVM.Clang.Vsix.Clangd
 
                 if (method == GetProjectContextsMethod)
                 {
-                    await _client.WriteAsync(new JObject()
+                    var response = new JObject()
                     {
                         ["jsonrpc"] = "2.0",
                         ["id"] = message["id"],
                         ["result"] = GetProjectContexts(message["params"]?["_vs_textDocument"]?["uri"]),
-                    }, cancellationToken);
+                    };
+
+                    Trace("proxy -> VS", response);
+                    await _client.WriteAsync(response, cancellationToken);
                     continue;
                 }
 
@@ -119,6 +125,8 @@ namespace IKVM.Clang.Vsix.Clangd
         {
             while (await _server.ReadAsync(cancellationToken) is JObject message)
             {
+                Trace("clangd -> VS", message);
+
                 // clangd does not provide project contexts; this proxy does
                 if (_initializeId is not null && message["method"] is null && JToken.DeepEquals(message["id"], _initializeId) && message["result"]?["capabilities"] is JObject capabilities)
                     capabilities["_vs_projectContextProvider"] = true;
@@ -212,12 +220,15 @@ namespace IKVM.Clang.Vsix.Clangd
             if (changes.Count == 0)
                 return;
 
-            await _server.WriteAsync(new JObject()
+            var notification = new JObject()
             {
                 ["jsonrpc"] = "2.0",
                 ["method"] = "workspace/didChangeConfiguration",
                 ["params"] = new JObject() { ["settings"] = new JObject() { ["compilationDatabaseChanges"] = changes } },
-            }, cancellationToken);
+            };
+
+            Trace("proxy -> clangd", notification);
+            await _server.WriteAsync(notification, cancellationToken);
         }
 
         void OnDatabaseChanged(object sender, ClangCompileDatabaseChangedEventArgs args)
@@ -236,6 +247,12 @@ namespace IKVM.Clang.Vsix.Clangd
                     _log($"Failed to send compile commands to clangd: {e}");
                 }
             });
+        }
+
+        void Trace(string direction, JObject message)
+        {
+            if (_trace is not null)
+                _trace($"{direction}: {message.ToString(Newtonsoft.Json.Formatting.None)}");
         }
 
         static JObject ToCommand(string workingDirectory, IReadOnlyList<string> arguments)

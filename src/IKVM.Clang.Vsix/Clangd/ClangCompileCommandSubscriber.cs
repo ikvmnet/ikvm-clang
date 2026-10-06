@@ -48,8 +48,10 @@ namespace IKVM.Clang.Vsix.Clangd
         /// <inheritdoc />
         public Task LoadAsync()
         {
-            var target = new ActionBlock<IProjectVersionedValue<IConfigurationGroup<ConfiguredProject>>>(i => OnActiveGroupChanged(i.Value));
-            _groupLink = _activeConfigurationGroupService.ActiveConfiguredProjectGroupSource.SourceBlock.LinkTo(target, new DataflowLinkOptions() { PropagateCompletion = true });
+            // the configurations, not the configured projects: the group of configured projects only holds those that
+            // something else has loaded, and nothing loads the other target identifiers unless this does
+            var target = new ActionBlock<IProjectVersionedValue<IConfigurationGroup<ProjectConfiguration>>>(i => OnActiveGroupChangedAsync(i.Value));
+            _groupLink = _activeConfigurationGroupService.ActiveConfigurationGroupSource.SourceBlock.LinkTo(target, new DataflowLinkOptions() { PropagateCompletion = true });
             return Task.CompletedTask;
         }
 
@@ -72,11 +74,19 @@ namespace IKVM.Clang.Vsix.Clangd
         }
 
         /// <summary>
-        /// Subscribes to the configured projects that joined the active group and drops those that left it.
+        /// Loads the configured projects of the active group, one per target identifier, subscribes to those that
+        /// joined it and drops those that left it.
         /// </summary>
-        void OnActiveGroupChanged(IConfigurationGroup<ConfiguredProject> group)
+        async Task OnActiveGroupChangedAsync(IConfigurationGroup<ProjectConfiguration> group)
         {
-            var configured = group.ToList();
+            // the active configuration, whose target identifier is the first listed, is the default context
+            var active = _project.Services.ActiveConfiguredProjectProvider?.ActiveProjectConfiguration;
+            var configurations = group.OrderBy(i => i.Equals(active) ? 0 : 1).ToList();
+
+            var configured = new List<ConfiguredProject>();
+            foreach (var configuration in configurations)
+                configured.Add(await _project.LoadConfiguredProjectAsync(configuration));
+
             var contexts = configured.Select((i, n) => GetContext(i, n)).ToList();
 
             lock (_sync)
@@ -111,6 +121,7 @@ namespace IKVM.Clang.Vsix.Clangd
             }
 
             _database.RemoveContexts(_project.FullPath, contexts);
+            ClangdTrace.Write($"active configurations of {_project.FullPath}: {string.Join(", ", configured.Select(i => i.ProjectConfiguration.Name))}");
         }
 
         /// <summary>
@@ -138,8 +149,9 @@ namespace IKVM.Clang.Vsix.Clangd
                     continue;
 
                 item.Value.TryGetValue("WorkingDirectory", out var workingDirectory);
+                item.Value.TryGetValue("ResourceDirectory", out var resourceDirectory);
 
-                IReadOnlyList<string> arguments;
+                List<string> arguments;
                 try
                 {
                     arguments = JArray.Parse(commandLine).Select(i => (string)i!).ToList();
@@ -149,9 +161,15 @@ namespace IKVM.Clang.Vsix.Clangd
                     continue;
                 }
 
+                // clangd otherwise uses its own builtin headers, which belong to whatever version of LLVM it came from,
+                // rather than those of the compiler the project builds with
+                if (string.IsNullOrEmpty(resourceDirectory) == false && arguments.Count > 0 && arguments.Any(i => i.StartsWith("-resource-dir", StringComparison.Ordinal)) == false)
+                    arguments.Insert(1, "-resource-dir=" + resourceDirectory);
+
                 entries.Add(new ClangCompileCommandEntry(item.Key, context, workingDirectory ?? "", arguments));
             }
 
+            ClangdTrace.Write($"{entries.Count} compile commands for {context.Label}");
             _database.SetContext(context, entries);
         }
 

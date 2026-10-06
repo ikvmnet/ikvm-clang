@@ -79,11 +79,19 @@ namespace IKVM.Clang.Vsix.Clangd
         /// <inheritdoc />
         public Task<Connection?> ActivateAsync(CancellationToken token)
         {
-            var clangd = ClangdLocator.Find();
+            // the compilers the SDK resolved for the projects; clangd from the same LLVM matches them best
+            var compilerDirectories = _database.GetDefaultEntries()
+                .Select(i => i.Arguments.Count > 0 ? i.Arguments[0] : "")
+                .Where(i => Path.IsPathRooted(i))
+                .Select(i => Path.GetDirectoryName(i)!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var clangd = ClangdLocator.Find(compilerDirectories);
             if (clangd is null)
                 throw new FileNotFoundException(
                     $"clangd was not found. Install LLVM, add clangd to PATH, or set {ClangdLocator.PathVariable} to the path of clangd.exe. Looked at: " +
-                    string.Join(", ", ClangdLocator.GetCandidates().Distinct(StringComparer.OrdinalIgnoreCase)));
+                    string.Join(", ", ClangdLocator.GetCandidates(compilerDirectories).Distinct(StringComparer.OrdinalIgnoreCase)));
 
             var process = Process.Start(new ProcessStartInfo(clangd)
             {
@@ -95,7 +103,8 @@ namespace IKVM.Clang.Vsix.Clangd
                 RedirectStandardError = true,
             }) ?? throw new InvalidOperationException($"Could not start {clangd}.");
 
-            process.ErrorDataReceived += (_, e) => { if (e.Data is not null) Trace.WriteLine(e.Data, "clangd"); };
+            ClangdTrace.Write($"started {clangd} (process {process.Id})");
+            process.ErrorDataReceived += (_, e) => { if (e.Data is not null) ClangdTrace.Write("clangd stderr: " + e.Data); };
             process.BeginErrorReadLine();
 
             // Visual Studio talks to one end of a pipe pair, the proxy to the other
@@ -105,7 +114,7 @@ namespace IKVM.Clang.Vsix.Clangd
             var fromProxy = new AnonymousPipeClientStream(PipeDirection.In, toClient.ClientSafePipeHandle);
 
             var cancellation = new CancellationTokenSource();
-            var proxy = new ClangdProxy(new DuplexStream(fromClient, toClient), process.StandardInput.BaseStream, process.StandardOutput.BaseStream, _database, m => Trace.WriteLine(m, "clangd"));
+            var proxy = new ClangdProxy(new DuplexStream(fromClient, toClient), process.StandardInput.BaseStream, process.StandardOutput.BaseStream, _database, ClangdTrace.Write, ClangdTrace.IsEnabled ? ClangdTrace.Write : null);
             _ = Task.Run(async () =>
             {
                 try
@@ -118,7 +127,7 @@ namespace IKVM.Clang.Vsix.Clangd
                 }
                 catch (Exception e)
                 {
-                    Trace.WriteLine($"clangd proxy failed: {e}", "clangd");
+                    ClangdTrace.Write($"proxy failed: {e}");
                 }
                 finally
                 {

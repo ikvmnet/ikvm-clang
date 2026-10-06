@@ -23,4 +23,5 @@ results to clangd.
     <StringProperty Name="CommandLine" ReadOnly="True" Visible="False" />
     <StringProperty Name="WorkingDirectory" ReadOnly="True" Visible="False" />
     <StringProperty Name="TargetIdentifier" ReadOnly="True" Visible="False" />
+    <StringProperty Name="ResourceDirectory" ReadOnly="True" Visible="False" />
 </Rule>

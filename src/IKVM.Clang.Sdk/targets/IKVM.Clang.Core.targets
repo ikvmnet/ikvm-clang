@@ -297,6 +297,32 @@
 
     <!--
     
+    ResolveClangTools
+    
+    Finds clang, and llvm-ar from the same LLVM installation, so that builds and the compile commands handed to tools
+    such as clangd all use the same compiler. ClangToolPath and LlvmArToolPath name directories to take them from;
+    otherwise they are looked for on the PATH, in the default LLVM installation, and in Visual Studio's C++ Clang
+    tools. Sets ClangCompilerPath, ClangResourceDirectory (where clang's builtin headers are) and LlvmArPath.
+    
+    -->
+
+    <Target Name="ResolveClangTools">
+        <ResolveLlvmTool ToolName="$(ClangToolExe)" ToolPath="$(ClangToolPath)" VsInstallRoot="$(VsInstallRoot)" QueryResourceDirectory="true">
+            <Output TaskParameter="FullPath" PropertyName="ClangCompilerPath" />
+            <Output TaskParameter="ResourceDirectory" PropertyName="ClangResourceDirectory" />
+        </ResolveLlvmTool>
+
+        <PropertyGroup>
+            <_ClangToolDirectory Condition=" $([System.IO.Path]::IsPathRooted('$(ClangCompilerPath)')) ">$([System.IO.Path]::GetDirectoryName('$(ClangCompilerPath)'))</_ClangToolDirectory>
+        </PropertyGroup>
+
+        <ResolveLlvmTool ToolName="$(LlvmArToolExe)" ToolPath="$(LlvmArToolPath)" PreferredDirectory="$(_ClangToolDirectory)" VsInstallRoot="$(VsInstallRoot)">
+            <Output TaskParameter="FullPath" PropertyName="LlvmArPath" />
+        </ResolveLlvmTool>
+    </Target>
+
+    <!--
+    
     ComputeClangCompileCommands
     
     Works out the clang command line for each Compile item without compiling anything. CoreCompile runs these
@@ -307,9 +333,9 @@
     -->
 
     <PropertyGroup>
-        <ClangCompiler Condition=" '$(ClangCompiler)' == '' ">$(ClangToolExe)</ClangCompiler>
         <ComputeClangCompileCommandsDependsOn>
             $(ComputeClangCompileCommandsDependsOn);
+            ResolveClangTools;
             ImportProjectReferenceItems;
             PrepareCompile;
         </ComputeClangCompileCommandsDependsOn>
@@ -425,7 +451,7 @@
             <_Args Include="-o" Value="$(_ObjectPath)" Separator=" " />
         </ItemGroup>
 
-        <ClangCompileCommand Source="$(_SourcePath)" Directory="$(MSBuildProjectDirectory)" Compiler="$(ClangCompiler)" Arguments="@(_Args)">
+        <ClangCompileCommand Source="$(_SourcePath)" Directory="$(MSBuildProjectDirectory)" Compiler="$(ClangCompilerPath)" Arguments="@(_Args)">
             <Output TaskParameter="Command" ItemName="_ClangCompileCommand" />
             <Output TaskParameter="ArgumentList" ItemName="_ClangCompileArgument" />
         </ClangCompileCommand>
@@ -435,6 +461,7 @@
                 <ObjectPath>$(_ObjectPath)</ObjectPath>
                 <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
                 <ArgumentList>@(_ClangCompileArgument)</ArgumentList>
+                <ResourceDirectory>$(ClangResourceDirectory)</ResourceDirectory>
             </ClangCompileCommand>
             <_ClangCompileCommand Remove="@(_ClangCompileCommand)" />
             <_ClangCompileArgument Remove="@(_ClangCompileArgument)" />
@@ -446,7 +473,8 @@
     GetClangCompileCommands
     
     Externally callable target that returns the compile command of each source file, with CommandLine (a JSON array
-    of the compiler and its arguments), WorkingDirectory and TargetIdentifier metadata.
+    of the compiler and its arguments), WorkingDirectory, TargetIdentifier and ResourceDirectory (where the
+    compiler's builtin headers are) metadata.
     
     -->
 
@@ -476,7 +504,7 @@
             <_Args Include="%(ClangCompileCommand.ArgumentList)" />
         </ItemGroup>
 
-        <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
+        <ClangExe ToolExe="$(ClangCompilerPath)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
 
         <ItemGroup>
             <FileWrites Include="%(ClangCompileCommand.ObjectPath)" />
@@ -496,6 +524,7 @@
     <PropertyGroup>
         <CoreLinkDependsOn>
             $(CoreLinkDependsOn);
+            ResolveClangTools;
             Compile;
             ImportProjectReferenceItems;
         </CoreLinkDependsOn>
@@ -560,7 +589,7 @@
             <_Args Include="-o" Value="$(ExecutableIntermediateOutputPath)" Separator=" " />
         </ItemGroup>
 
-        <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
+        <ClangExe ToolExe="$(ClangCompilerPath)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
 
         <ItemGroup>
             <FileWrites Include="$(ExecutableIntermediateOutputPath)" />
@@ -576,12 +605,13 @@
 
         <ItemGroup>
             <_Args Remove="@(_Args)" />
-            <_Args Include="r" />
+            <!-- c: create the archive without llvm-ar reporting it, which the build would show as a warning -->
+            <_Args Include="rc" />
             <_Args Include="$(LibraryIntermediateOutputPath)" Separator=" " />
             <_Args Include="@(Compile->'%(ObjectPath)')" />
         </ItemGroup>
 
-        <LlvmArExe ToolExe="$(LlvmArToolExe)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
+        <LlvmArExe ToolExe="$(LlvmArPath)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
 
         <ItemGroup>
             <FileWrites Include="$(LibraryIntermediateOutputPath)" />

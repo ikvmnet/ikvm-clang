@@ -101,6 +101,8 @@ namespace IKVM.Clang.Vsix.ProjectSystem.Configuration
 
         IEnumerable<KeyValuePair<string, IEnumerable<string>>> ToDimensions(IReadOnlyList<string> values)
         {
+            Clangd.ClangdTrace.Write($"dimension {DimensionName}: {string.Join(";", values)}");
+
             if (values.Count == 0)
                 return Enumerable.Empty<KeyValuePair<string, IEnumerable<string>>>();
 
