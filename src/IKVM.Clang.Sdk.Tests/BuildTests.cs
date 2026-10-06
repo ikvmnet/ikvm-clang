@@ -120,7 +120,7 @@ namespace IKVM.Clang.Sdk.Tests
 
             var obj = Path.Combine(project, "obj", "Debug");
             var expected = OperatingSystem.IsWindows() ? new[] { "a.obj", "host.lib" } : new[] { "a.o", "libhost.a" };
-            Directory.GetFiles(obj).Select(Path.GetFileName).Where(i => i!.EndsWith(".cmd") == false && i.EndsWith(".d") == false && i.EndsWith(".txt") == false)
+            Directory.GetFiles(obj).Select(Path.GetFileName).Where(i => i!.EndsWith(".cmd") == false && i.EndsWith(".d") == false && i.EndsWith(".txt") == false && i.EndsWith(".cache") == false)
                 .Should().BeEquivalentTo(expected);
         }
 
@@ -151,6 +151,33 @@ namespace IKVM.Clang.Sdk.Tests
             File.ReadAllText(Path.Combine(project, "obj", "Debug", Elf, "a.o.cmd")).Should().Contain("-fPIC");
             Build(project, "-t:Build", $"-p:TargetIdentifier={Elf}", "-p:PositionIndependentCode=false");
             File.ReadAllText(Path.Combine(project, "obj", "Debug", Elf, "a.o.cmd")).Should().Contain("-fno-pic");
+        }
+
+        [TestMethod]
+        public void NamesOutputsByWhatClangBuilds()
+        {
+            // UEFI builds COFF objects, as Windows does, though its triple says nothing of Windows
+            var project = TestProjects.Create("formats", "<OutputType>Lib</OutputType><TargetIdentifiers>x86_64-unknown-uefi;x86_64-linux-gnu</TargetIdentifiers>", "",
+                ("a.c", "int a(void) { return 1; }\n"));
+
+            Build(project, "-t:Build");
+            TestProjects.Outputs(project, "x86_64-unknown-uefi").Should().BeEquivalentTo("a.obj", "formats.lib");
+            TestProjects.Outputs(project, "x86_64-linux-gnu").Should().BeEquivalentTo("a.o", "libformats.a");
+        }
+
+        [TestMethod]
+        public void TargetClangCannotBuildForFailsTheBuild()
+        {
+            var project = TestProjects.Create("nonsense", "<OutputType>Lib</OutputType><TargetIdentifier>nonsense-unknown-nowhere</TargetIdentifier>", "",
+                ("a.c", "int a(void) { return 1; }\n"));
+
+            var (exitCode, output) = TestProjects.MSBuild(project, "-t:Build");
+            TestContext.WriteLine(output);
+            exitCode.Should().NotBe(0);
+            output.Should().Contain("ICLANG3001").And.Contain("nonsense-unknown-nowhere");
+
+            // but it can still be cleaned
+            TestProjects.MSBuild(project, "-t:Clean").ExitCode.Should().Be(0);
         }
 
         [TestMethod]

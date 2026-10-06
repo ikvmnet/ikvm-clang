@@ -17,5 +17,6 @@
     <UsingTask TaskName="ResolveLlvmToolset" AssemblyFile="$(IkvmClangSdkTaskAssembly)" TaskFactory="$(IkvmClangSdkTaskFactory)" />
     <UsingTask TaskName="ClangCompile" AssemblyFile="$(IkvmClangSdkTaskAssembly)" TaskFactory="$(IkvmClangSdkTaskFactory)" />
     <UsingTask TaskName="AssignReferenceTargetIdentifier" AssemblyFile="$(IkvmClangSdkTaskAssembly)" TaskFactory="$(IkvmClangSdkTaskFactory)" />
+    <UsingTask TaskName="ResolveClangTarget" AssemblyFile="$(IkvmClangSdkTaskAssembly)" TaskFactory="$(IkvmClangSdkTaskFactory)" />
 
 </Project>
