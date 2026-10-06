@@ -137,7 +137,7 @@ Common triples:
 | `LlvmArToolExe` | `llvm-ar` / `llvm-ar.exe` | LLVM archiver executable path or name |
 | `DebugSymbols` | `true` in Debug | Emit debug symbols |
 | `Optimization` | `2` in Release | Optimization level, passed as `-O<level>`: `0`, `1`, `2`, `3`, `s`, `z` or `g` |
-| `DefineNDEBUG` | `true` in Release | Define `NDEBUG`, which turns off `assert` |
+| `Assertions` | `false` in Release | When `false`, define `NDEBUG`, which removes `assert` |
 | `LanguageStandard` | *(clang default)* | C/C++ language standard, e.g. `c17`, `c++20` |
 | `PositionIndependentCode` | `true` on ELF targets (Linux and other Unix) | Pass `-fPIC` to the compiler |
 | `MsCompatibility` | *(false)* | Pass `-fms-compatibility` |
