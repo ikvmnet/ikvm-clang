@@ -6,6 +6,9 @@ using Microsoft.VisualStudio.ProjectSystem.Properties;
 namespace IKVM.Clang.Vsix.ProjectSystem
 {
 
+    /// <summary>
+    /// Strongly typed access to the properties of a Clang project configuration, as described by its XAML rules.
+    /// </summary>
     [Export]
     [AppliesTo(ClangProjectCapabilities.AppliesTo)]
     internal partial class ProjectProperties : StronglyTypedPropertyAccess

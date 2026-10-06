@@ -1,4 +1,7 @@
 ﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+    The platform does not select the target: that is TargetIdentifiers. AnyCPU matches the platform the SDK defaults to.
+    -->
     <ItemGroup Label="ProjectConfigurations">
         <ProjectConfiguration Include="Debug|AnyCPU">
             <Configuration>Debug</Configuration>
@@ -11,7 +14,7 @@
     </ItemGroup>
 
     <PropertyGroup>
-        <SupportedOutputTypes>Exe;SharedLibrary;StaticLibrary</SupportedOutputTypes>
+        <SupportedOutputTypes>Exe;Dll;Lib</SupportedOutputTypes>
     </PropertyGroup>
 
     <ItemGroup>
@@ -63,7 +66,7 @@
         <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\None.xaml">
             <Context>File;BrowseObject</Context>
         </PropertyPageSchema>
-        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\Compile.xaml;">
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\Compile.xaml">
             <Context>File</Context>
         </PropertyPageSchema>
         <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\Compile.BrowseObject.xaml">
@@ -77,9 +80,4 @@
         </PropertyPageSchema>
     </ItemGroup>
 
-    <Target Name="Run">
-        <Message Text="$(RunCommandArguments)" />
-        <Exec Command='$(RunCommand) "$(MSBuildProjectDirectory)\$(StartItem)" $(RunCommandArguments)' WorkingDirectory="$(RunWorkingDirectory)" />
-    </Target>
-    
 </Project>

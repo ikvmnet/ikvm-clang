@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Rule
-    Name="Header"
+    Name="HeaderBrowseObject"
     DisplayName="Header File"
     PageTemplate="generic"
     Description="Properties for C/C++ header files."

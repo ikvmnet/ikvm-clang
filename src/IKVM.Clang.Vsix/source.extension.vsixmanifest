@@ -3,28 +3,30 @@
     <Metadata>
         <Identity Id="IKVM.Clang.175fc96e-c263-4111-8146-43365d6f80e8" Version="|%CurrentProject%;GetVsixVersion|" Language="en-US" Publisher="IKVM" />
         <DisplayName>Clang Project Extension</DisplayName>
-        <Description>Extension for Visual Studio for working with Clang.</Description>
-        <MoreInfo>http://github.com/ikvmnet/ikvm-clang</MoreInfo>
+        <Description>Brings Clang project support to Visual Studio. Create, build, and manage .clangproj projects that compile C, C++, Objective-C and assembly sources with Clang and LLVM using the IKVM.Clang SDK.</Description>
+        <MoreInfo>https://github.com/ikvmnet/ikvm-clang</MoreInfo>
+        <License>LICENSE</License>
+        <Icon>Images\ClangProjectIcon_128x.png</Icon>
         <Tags>c;c++;clang;llvm</Tags>
         <Preview>true</Preview>
     </Metadata>
-    <Installation Experimental="|%CurrentProject%;GetVsixExperimental|" InstalledByMsi="false" AllUsers="|%CurrentProject%;GetVsixAllUsers|">
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,)">
+    <Installation Experimental="|%CurrentProject%;GetVsixExperimental|" InstalledByMsi="false" AllUsers="false">
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.14,)">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,)">
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.14,)">
             <ProductArchitecture>arm64</ProductArchitecture>
         </InstallationTarget>
-        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0,)">
+        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.14,)">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
-        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.0,)">
+        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.14,)">
             <ProductArchitecture>arm64</ProductArchitecture>
         </InstallationTarget>
-        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0,)">
+        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.14,)">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
-        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0,)">
+        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.14,)">
             <ProductArchitecture>arm64</ProductArchitecture>
         </InstallationTarget>
     </Installation>
@@ -33,13 +35,12 @@
     </Dependencies>
 	<Assets>
 		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="File" Path="IKVM.Clang.pkgdef" />
 		<Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" AssemblyName="|%CurrentProject%;AssemblyName|" />
 		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
 		<Asset Type="Microsoft.VisualStudio.ImageManifest" d:Source="File" Path="IKVM.Clang.imagemanifest" />
 		<Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="%CurrentProject%" d:TargetPath="|%CurrentProject%;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
 	</Assets>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.14,)" DisplayName="Visual Studio core editor" />
     </Prerequisites>
 </PackageManifest>
