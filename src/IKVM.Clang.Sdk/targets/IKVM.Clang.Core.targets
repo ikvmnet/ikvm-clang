@@ -40,52 +40,72 @@
         <OutputType Condition=" '$(OutputType)' == '' ">Dll</OutputType>
         <TargetTriple Condition=" '$(TargetTriple)' == '' ">$(TargetIdentifier)</TargetTriple>
         <DebugSymbols Condition=" '$(DebugSymbols)' == '' And '$(Configuration)' == 'Debug' ">true</DebugSymbols>
-        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.pdb</DebugSymbolsExt>
-        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.g</DebugSymbolsExt>
-        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.dsym</DebugSymbolsExt>
-        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' And $(TargetTriple.Contains('wasm32')) ">.g</DebugSymbolsExt>
+    </PropertyGroup>
+
+    <!--
+    ClangTargetOS names the kind of platform being built for, which decides output file names: windows, apple, wasm,
+    or unix for Linux and other ELF platforms. It comes from TargetTriple, or, when there is none and clang builds for
+    the host, from the host. ClangTargetIsMsvc says whether the MSVC environment is targeted, which is when the linker
+    writes a separate .pdb.
+    -->
+    <PropertyGroup>
+        <_ClangTriple>$(TargetTriple.ToLowerInvariant())</_ClangTriple>
+        <ClangTargetOS Condition=" '$(ClangTargetOS)' == '' And '$(_ClangTriple)' != '' And $(_ClangTriple.StartsWith('wasm')) ">wasm</ClangTargetOS>
+        <ClangTargetOS Condition=" '$(ClangTargetOS)' == '' And '$(_ClangTriple)' != '' And ($(_ClangTriple.Contains('-windows')) Or $(_ClangTriple.Contains('mingw')) Or $(_ClangTriple.Contains('cygwin')) Or $(_ClangTriple.Contains('-win32'))) ">windows</ClangTargetOS>
+        <ClangTargetOS Condition=" '$(ClangTargetOS)' == '' And '$(_ClangTriple)' != '' And ($(_ClangTriple.Contains('-apple')) Or $(_ClangTriple.Contains('darwin')) Or $(_ClangTriple.Contains('-macos')) Or $(_ClangTriple.Contains('-ios'))) ">apple</ClangTargetOS>
+        <ClangTargetOS Condition=" '$(ClangTargetOS)' == '' And '$(_ClangTriple)' != '' ">unix</ClangTargetOS>
+        <ClangTargetOS Condition=" '$(ClangTargetOS)' == '' And $([MSBuild]::IsOSPlatform('Windows')) ">windows</ClangTargetOS>
+        <ClangTargetOS Condition=" '$(ClangTargetOS)' == '' And $([MSBuild]::IsOSPlatform('OSX')) ">apple</ClangTargetOS>
+        <ClangTargetOS Condition=" '$(ClangTargetOS)' == '' ">unix</ClangTargetOS>
+        <ClangTargetIsMsvc Condition=" '$(ClangTargetIsMsvc)' == '' And '$(_ClangTriple)' != '' And $(_ClangTriple.Contains('-msvc')) ">true</ClangTargetIsMsvc>
+        <ClangTargetIsMsvc Condition=" '$(ClangTargetIsMsvc)' == '' And '$(_ClangTriple)' == '' And $([MSBuild]::IsOSPlatform('Windows')) ">true</ClangTargetIsMsvc>
+        <ClangTargetIsMsvc Condition=" '$(ClangTargetIsMsvc)' == '' ">false</ClangTargetIsMsvc>
+    </PropertyGroup>
+
+    <!-- only the MSVC environment's linker writes debug information to its own file; elsewhere it is in the binary -->
+    <PropertyGroup Condition=" '$(ClangTargetIsMsvc)' == 'true' And ('$(OutputType)' == 'exe' Or '$(OutputType)' == 'dll') ">
+        <DebugSymbolsExt Condition=" '$(DebugSymbolsExt)' == '' ">.pdb</DebugSymbolsExt>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(OutputType)' == 'exe' ">
         <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' "></ExecutablePrefix>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' "></ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-windows-'))">.exe</ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-linux-'))"></ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-apple-'))"></ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('wasm32'))">.wasm</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And '$(ClangTargetOS)' == 'windows'">.exe</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And '$(ClangTargetOS)' == 'unix'"></ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And '$(ClangTargetOS)' == 'apple'"></ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And '$(ClangTargetOS)' == 'wasm'">.wasm</ExecutableExt>
         <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' ">$(ExecutablePrefix)$(TargetName)$(ExecutableExt)</ExecutableFileName>
         <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
         <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' "></DebugSymbolsPrefix>
-        <Subsystem Condition=" '$(Subsystem)' == '' And $(TargetTriple.Contains('-windows-')) ">console</Subsystem>
         <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">true</CopyProjectReferenceOutputToOutput>
         <UseLd Condition=" '$(UseLd)' == '' ">lld</UseLd>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(OutputType)' == 'dll' ">
         <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' "></ExecutablePrefix>
-        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('-windows-'))"></ExecutablePrefix>
-        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('-linux-'))">lib</ExecutablePrefix>
-        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('-apple-'))">lib</ExecutablePrefix>
-        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And $(TargetTriple.Contains('wasm32'))">lib</ExecutablePrefix>
+        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And '$(ClangTargetOS)' == 'windows'"></ExecutablePrefix>
+        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And '$(ClangTargetOS)' == 'unix'">lib</ExecutablePrefix>
+        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And '$(ClangTargetOS)' == 'apple'">lib</ExecutablePrefix>
+        <ExecutablePrefix Condition=" '$(ExecutablePrefix)' == '' And '$(ClangTargetOS)' == 'wasm'">lib</ExecutablePrefix>
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' "></ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-windows-'))">.dll</ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-linux-'))">.so</ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('-apple-'))">.dylib</ExecutableExt>
-        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And $(TargetTriple.Contains('wasm32'))">.so</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And '$(ClangTargetOS)' == 'windows'">.dll</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And '$(ClangTargetOS)' == 'unix'">.so</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And '$(ClangTargetOS)' == 'apple'">.dylib</ExecutableExt>
+        <ExecutableExt Condition=" '$(ExecutableExt)' == '' And '$(ClangTargetOS)' == 'wasm'">.so</ExecutableExt>
         <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' ">$(ExecutablePrefix)$(TargetName)$(ExecutableExt)</ExecutableFileName>
         <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
-        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</LibraryPrefix>
-        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</LibraryPrefix>
-        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('wasm32')) ">lib</LibraryPrefix>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.lib</LibraryExt>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.so</LibraryExt>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.dylib</LibraryExt>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('wasm32')) ">.so</LibraryExt>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And '$(ClangTargetOS)' == 'unix' ">lib</LibraryPrefix>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And '$(ClangTargetOS)' == 'apple' ">lib</LibraryPrefix>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And '$(ClangTargetOS)' == 'wasm' ">lib</LibraryPrefix>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And '$(ClangTargetOS)' == 'windows' ">.lib</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And '$(ClangTargetOS)' == 'unix' ">.so</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And '$(ClangTargetOS)' == 'apple' ">.dylib</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And '$(ClangTargetOS)' == 'wasm' ">.so</LibraryExt>
         <LibraryFileName Condition=" '$(LibraryFileName)' == '' ">$(LibraryPrefix)$(TargetName)$(LibraryExt)</LibraryFileName>
         <LibraryIntermediateOutputPath Condition=" '$(LibraryFileName)' != '' ">$(IntermediateOutputPath)$(LibraryFileName)</LibraryIntermediateOutputPath>
-        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</DebugSymbolsPrefix>
-        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</DebugSymbolsPrefix>
-        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('wasm32')) ">lib</DebugSymbolsPrefix>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And '$(ClangTargetOS)' == 'unix' ">lib</DebugSymbolsPrefix>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And '$(ClangTargetOS)' == 'apple' ">lib</DebugSymbolsPrefix>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And '$(ClangTargetOS)' == 'wasm' ">lib</DebugSymbolsPrefix>
         <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">false</CopyProjectReferenceOutputToOutput>
         <UseLd Condition=" '$(UseLd)' == '' ">lld</UseLd>
     </PropertyGroup>
@@ -95,25 +115,25 @@
         <ExecutableExt Condition=" '$(ExecutableExt)' == '' "></ExecutableExt>
         <ExecutableFileName Condition=" '$(ExecutableFileName)' == '' "></ExecutableFileName>
         <ExecutableIntermediateOutputPath Condition=" '$(ExecutableFileName)' != '' ">$(IntermediateOutputPath)$(ExecutableFileName)</ExecutableIntermediateOutputPath>
-        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</LibraryPrefix>
-        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</LibraryPrefix>
-        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And $(TargetTriple.Contains('wasm32')) ">lib</LibraryPrefix>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.lib</LibraryExt>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-linux-')) ">.a</LibraryExt>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('-apple-')) ">.a</LibraryExt>
-        <LibraryExt Condition=" '$(LibraryExt)' == '' And $(TargetTriple.Contains('wasm32')) ">.a</LibraryExt>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And '$(ClangTargetOS)' == 'unix' ">lib</LibraryPrefix>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And '$(ClangTargetOS)' == 'apple' ">lib</LibraryPrefix>
+        <LibraryPrefix Condition=" '$(LibraryPrefix)' == '' And '$(ClangTargetOS)' == 'wasm' ">lib</LibraryPrefix>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And '$(ClangTargetOS)' == 'windows' ">.lib</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And '$(ClangTargetOS)' == 'unix' ">.a</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And '$(ClangTargetOS)' == 'apple' ">.a</LibraryExt>
+        <LibraryExt Condition=" '$(LibraryExt)' == '' And '$(ClangTargetOS)' == 'wasm' ">.a</LibraryExt>
         <LibraryFileName Condition=" '$(LibraryFileName)' == '' ">$(LibraryPrefix)$(TargetName)$(LibraryExt)</LibraryFileName>
         <LibraryIntermediateOutputPath Condition=" '$(LibraryFileName)' != '' ">$(IntermediateOutputPath)$(LibraryFileName)</LibraryIntermediateOutputPath>
-        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-linux-')) ">lib</DebugSymbolsPrefix>
-        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('-apple-')) ">lib</DebugSymbolsPrefix>
-        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And $(TargetTriple.Contains('wasm32'))">lib</DebugSymbolsPrefix>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And '$(ClangTargetOS)' == 'unix' ">lib</DebugSymbolsPrefix>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And '$(ClangTargetOS)' == 'apple' ">lib</DebugSymbolsPrefix>
+        <DebugSymbolsPrefix Condition=" '$(DebugSymbolsPrefix)' == '' And '$(ClangTargetOS)' == 'wasm'">lib</DebugSymbolsPrefix>
         <CopyProjectReferenceOutputToOutput Condition=" '$(CopyProjectReferenceOutputToOutput)' == '' ">false</CopyProjectReferenceOutputToOutput>
     </PropertyGroup>
 
     <PropertyGroup>
-        <ObjectExt Condition=" '$(ObjectExt)' == '' And $(TargetTriple.Contains('-windows-')) ">.obj</ObjectExt>
+        <ObjectExt Condition=" '$(ObjectExt)' == '' And '$(ClangTargetOS)' == 'windows' ">.obj</ObjectExt>
         <ObjectExt Condition=" '$(ObjectExt)' == '' ">.o</ObjectExt>
-        <DebugSymbolsFileName Condition=" '$(DebugSymbolsFileName)' == '' ">$(DebugSymbolsPrefix)$(TargetName)$(DebugSymbolsExt)</DebugSymbolsFileName>
+        <DebugSymbolsFileName Condition=" '$(DebugSymbolsFileName)' == '' And '$(DebugSymbolsExt)' != '' ">$(DebugSymbolsPrefix)$(TargetName)$(DebugSymbolsExt)</DebugSymbolsFileName>
         <DebugSymbolsIntermediateOutputPath Condition=" '$(DebugSymbolsFileName)' != '' ">$(IntermediateOutputPath)$(DebugSymbolsFileName)</DebugSymbolsIntermediateOutputPath>
         <HeadersPathName Condition=" '$(HeadersPathName)' == '' ">headers\</HeadersPathName>
         <HeadersIntermediateOutputPath Condition=" '$(HeadersPathName)' != '' ">$(IntermediateOutputPath)$(HeadersPathName)</HeadersIntermediateOutputPath>
@@ -171,6 +191,7 @@
         <ResolveProjectReferencesDependsOn>
             $(ResolveProjectReferencesDependsOn);
             AssignProjectConfiguration;
+            _AssignReferenceTargetIdentifiers;
         </ResolveProjectReferencesDependsOn>
     </PropertyGroup>
 
@@ -182,9 +203,58 @@
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
             Condition=" '%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' and '@(ProjectReferenceWithConfiguration)' != ''"
             ContinueOnError="false"
-            RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
+            RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove);$(_GlobalPropertiesToRemoveFromProjectReferences)"
             RebaseOutputs="true">
         </MSBuild>
+    </Target>
+
+    <!--
+
+    _AssignReferenceTargetIdentifiers
+
+    Passes this project's target identifier to each reference explicitly (see AssignReferenceTargetIdentifier), and
+    asks each referenced project which target identifiers it builds, to report a reference with several that a project
+    building for the host cannot choose between.
+
+    -->
+
+    <Target Name="_AssignReferenceTargetIdentifiers" DependsOnTargets="AssignProjectConfiguration" Condition=" '@(ProjectReferenceWithConfiguration)' != '' ">
+        <MSBuild
+            Projects="@(ProjectReferenceWithConfiguration)"
+            Targets="GetTargetIdentifiers"
+            SkipNonexistentTargets="true"
+            BuildInParallel="$(BuildInParallel)"
+            Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform)"
+            RemoveProperties="TargetIdentifier;%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove);$(_GlobalPropertiesToRemoveFromProjectReferences)">
+            <Output TaskParameter="TargetOutputs" ItemName="_ReferenceTargetIdentifiers" />
+        </MSBuild>
+
+        <AssignReferenceTargetIdentifier References="@(ProjectReferenceWithConfiguration)" Reports="@(_ReferenceTargetIdentifiers)" TargetIdentifier="$(TargetIdentifier)">
+            <Output TaskParameter="AssignedReferences" ItemName="_ProjectReferenceWithTargetIdentifier" />
+        </AssignReferenceTargetIdentifier>
+
+        <ItemGroup>
+            <ProjectReferenceWithConfiguration Remove="@(ProjectReferenceWithConfiguration)" />
+            <ProjectReferenceWithConfiguration Include="@(_ProjectReferenceWithTargetIdentifier)" />
+        </ItemGroup>
+    </Target>
+
+    <!--
+
+    GetTargetIdentifiers
+
+    Externally callable target that reports what this project builds: for a project with a single target, its
+    TargetIdentifier. (The cross-targeting build reports TargetIdentifiers instead.)
+
+    -->
+
+    <Target Name="GetTargetIdentifiers" Returns="@(_TargetIdentifiersReport)">
+        <ItemGroup>
+            <_TargetIdentifiersReport Include="$(MSBuildProjectFullPath)">
+                <TargetIdentifiers></TargetIdentifiers>
+                <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
+            </_TargetIdentifiersReport>
+        </ItemGroup>
     </Target>
 
     <Target Name="ResolveProjectReferencesDesignTime">
@@ -223,7 +293,7 @@
     
     -->
 
-    <Target Name="GetProjectReferenceOutputItems" DependsOnTargets="AssignProjectConfiguration" Returns="@(GetProjectReferenceOutputItems)">
+    <Target Name="GetProjectReferenceOutputItems" DependsOnTargets="AssignProjectConfiguration;_AssignReferenceTargetIdentifiers" Returns="@(GetProjectReferenceOutputItems)">
         <MSBuild
             Projects="@(ProjectReferenceWithConfiguration)"
             Targets="GetOutputItem"
@@ -232,7 +302,7 @@
             Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
             Condition="'%(ProjectReferenceWithConfiguration.BuildReference)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(BuildProjectReferences)' != 'true') And '$(VisualStudioVersion)' != '10.0' And '@(ProjectReferenceWithConfiguration)' != ''"
             ContinueOnError="false"
-            RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove)$(_GlobalPropertiesToRemoveFromProjectReferences)"
+            RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove);$(_GlobalPropertiesToRemoveFromProjectReferences)"
             RebaseOutputs="false">
             <Output TaskParameter="TargetOutputs" ItemName="_GetProjectReferenceOutputItems" Condition=" '%(ProjectReferenceWithConfiguration.ReferenceTargetItems)' == 'true' "/>
         </MSBuild>
@@ -467,7 +537,7 @@
             <_Args Remove="@(_Args)" />
             <_Args Include="-c" />
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
-            <_Args Include="--target" Value="$(TargetTriple)" Separator="=" />
+            <_Args Include="--target" Value="$(TargetTriple)" Separator="=" Condition=" '$(TargetTriple)' != '' " />
             <_Args Include="-g" Condition=" '$(_DebugSymbols)' == 'true' " />
 
             <_Args Include="-std" Value="$(_LanguageStandard)" Separator="=" Condition=" '$(_LanguageStandard)' != '' " />
@@ -583,21 +653,18 @@
         </CoreCompileDependsOn>
     </PropertyGroup>
 
-    <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)" Inputs="@(ClangCompileCommand)" Outputs="%(ClangCompileCommand.ObjectPath)">
-        <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('%(ClangCompileCommand.ObjectPath)'))" />
+    <!--
+    Compiles the sources that are out of date, ClangMaxParallelism at a time (by default one per processor). A source is
+    out of date when its object is missing or older than it or any file it includes, as clang listed them when it was
+    last compiled, or when its command line changed.
+    -->
+    <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)">
+        <ClangCompile Condition=" '@(ClangCompileCommand)' != '' " Commands="@(ClangCompileCommand)" Compiler="$(ClangPath)" MaxParallelism="$(ClangMaxParallelism)" EnvironmentVariables="@(LlvmEnvironmentVariables)">
+            <Output TaskParameter="FileWrites" ItemName="FileWrites" />
+            <Output TaskParameter="Compiled" PropertyName="_ClangCompiled" />
+        </ClangCompile>
 
-        <ItemGroup>
-            <_Args Remove="@(_Args)" />
-            <_Args Include="%(ClangCompileCommand.ArgumentList)" />
-        </ItemGroup>
-
-        <ClangExe ToolExe="$(ClangPath)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
-
-        <ItemGroup>
-            <FileWrites Include="%(ClangCompileCommand.ObjectPath)" />
-        </ItemGroup>
-
-        <CallTarget Targets="$(TargetsTriggeredByCompilation)" Condition="'$(TargetsTriggeredByCompilation)' != ''" />
+        <CallTarget Targets="$(TargetsTriggeredByCompilation)" Condition=" '$(TargetsTriggeredByCompilation)' != '' And '$(_ClangCompiled)' == 'true' " />
     </Target>
 
     <!--
@@ -638,19 +705,22 @@
         <Error Condition=" '$(_ClangLinkWithCxx)' != 'true' And '$(ClangPath)' == '' " Code="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'Clang')->'%(Code)')" Text="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'Clang')->'%(Message)')" />
     </Target>
 
-    <Target Name="CoreLinkExecutable" DependsOnTargets="$(CoreLinkDependsOn);_PrepareLinkDriver" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(ExecutableIntermediateOutputPath);$(LibraryIntermediateOutputPath)" Condition=" '$(OutputType)' == 'exe' Or '$(OutputType)' == 'dll' ">
-        <MakeDir Directories="$(IntermediateOutputPath)" />
-
+    <!--
+    Works out the link command, and records it in a file whose time changes only when the command does, so that the
+    link reruns when any option changes; and collects the libraries of referenced projects, so that it reruns when one
+    of those is rebuilt.
+    -->
+    <Target Name="_ComputeClangLinkArguments" DependsOnTargets="$(CoreLinkDependsOn);_PrepareLinkDriver" Condition=" '$(OutputType)' == 'exe' Or '$(OutputType)' == 'dll' ">
         <ItemGroup>
-            <_Args Remove="@(_Args)" />
-            <_Args Include="-shared" Condition=" '$(OutputType)' == 'dll' " />
-            <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
-            <_Args Include="--target" Value="$(TargetTriple)" Separator="=" />
-            <_Args Include="-fuse-ld" Value="$(UseLd)" Separator="=" Condition=" '$(UseLd)' != '' " />
-            <_Args Include="--ld-path" Value="$(LinkerPath)" Separator="=" Condition=" '$(LinkerPath)' != '' " />
-            <_Args Include="-g" Condition=" '$(DebugSymbols)' == 'true' " />
+            <_ClangLinkArgs Remove="@(_ClangLinkArgs)" />
+            <_ClangLinkArgs Include="-shared" Condition=" '$(OutputType)' == 'dll' " />
+            <_ClangLinkArgs Include="-v" Condition=" '$(Verbose)' == 'true' " />
+            <_ClangLinkArgs Include="--target" Value="$(TargetTriple)" Separator="=" Condition=" '$(TargetTriple)' != '' " />
+            <_ClangLinkArgs Include="-fuse-ld" Value="$(UseLd)" Separator="=" Condition=" '$(UseLd)' != '' " />
+            <_ClangLinkArgs Include="--ld-path" Value="$(LinkerPath)" Separator="=" Condition=" '$(LinkerPath)' != '' " />
+            <_ClangLinkArgs Include="-g" Condition=" '$(DebugSymbols)' == 'true' " />
 
-            <_Args Include="-Wl,/subsystem:$(Subsystem)" Condition=" '$(Subsystem)' != '' " />
+            <_ClangLinkArgs Include="-Wl,/subsystem:$(Subsystem)" Condition=" '$(Subsystem)' != '' And '$(ClangTargetIsMsvc)' == 'true' " />
 
             <_SystemRootDirectories Remove="@(_SystemRootDirectories)" />
             <_SystemRootDirectories Include="@(SystemRootDirectories)" />
@@ -659,7 +729,7 @@
             <_SystemRootDirectoriesTemp Include="@(_SystemRootDirectories->Distinct())" />
             <_SystemRootDirectoriesArgs Remove="@(_SystemRootDirectoriesArgs)" />
             <_SystemRootDirectoriesArgs Include="@(_SystemRootDirectoriesTemp->'--sysroot')" Value="%(_SystemRootDirectoriesTemp.Identity)" Separator=" " />
-            <_Args Include="@(_SystemRootDirectoriesArgs)" />
+            <_ClangLinkArgs Include="@(_SystemRootDirectoriesArgs)" />
 
             <_IncludeSystemRootDirectories Remove="@(_IncludeSystemRootDirectories)" />
             <_IncludeSystemRootDirectories Include="@(IncludeSystemRootDirectories)" />
@@ -668,7 +738,7 @@
             <_IncludeSystemRootDirectoriesTemp Include="@(_IncludeSystemRootDirectories->Distinct())" />
             <_IncludeSystemRootDirectoriesArgs Remove="@(_IncludeSystemRootDirectoriesArgs)" />
             <_IncludeSystemRootDirectoriesArgs Include="@(_IncludeSystemRootDirectoriesTemp->'-isysroot')" Value="%(_IncludeSystemRootDirectoriesTemp.Identity)" Separator=" " />
-            <_Args Include="@(_IncludeSystemRootDirectoriesArgs)" />
+            <_ClangLinkArgs Include="@(_IncludeSystemRootDirectoriesArgs)" />
 
             <_LibraryDirectories Remove="@(_LibraryDirectories)" />
             <_LibraryDirectories Include="@(LibraryDirectories)" />
@@ -677,7 +747,7 @@
             <_LibraryDirectoriesTemp Include="@(_LibraryDirectories->Distinct())" />
             <_LibraryDirectoriesArgs Remove="@(_LibraryDirectoriesArgs)" />
             <_LibraryDirectoriesArgs Include="@(_LibraryDirectoriesTemp->'-L')" Value="%(_LibraryDirectoriesTemp.Identity)" Separator="" />
-            <_Args Include="@(_LibraryDirectoriesArgs)" />
+            <_ClangLinkArgs Include="@(_LibraryDirectoriesArgs)" />
 
             <_Dependencies Remove="@(_Dependencies)" />
             <_Dependencies Include="@(Dependencies)" />
@@ -686,41 +756,87 @@
             <_DependenciesTemp Include="@(_Dependencies->Distinct())" />
             <_DependenciesArgs Remove="@(_DependenciesArgs)" />
             <_DependenciesArgs Include="@(_DependenciesTemp->'-l')" Value="%(_DependenciesTemp.Identity)" Separator="" />
-            <_Args Include="@(_DependenciesArgs)" />
+            <_ClangLinkArgs Include="@(_DependenciesArgs)" />
 
             <_AdditionalOptions Remove="@(_AdditionalOptions)" />
             <_AdditionalOptions Include="@(AdditionalLinkOptions)" />
             <_AdditionalOptions Include="$(AdditionalLinkOptions)" />
-            <_Args Include="@(_AdditionalOptions)" />
+            <_ClangLinkArgs Include="@(_AdditionalOptions)" />
 
-            <_Args Include="@(Compile->'%(ObjectPath)')" />
+            <_ClangLinkArgs Include="@(Compile->'%(ObjectPath)')" />
 
-            <_Args Include="-o" Value="$(ExecutableIntermediateOutputPath)" Separator=" " />
+            <_ClangLinkArgs Include="-o" Value="$(ExecutableIntermediateOutputPath)" Separator=" " />
         </ItemGroup>
 
-        <ClangExe ToolExe="$(_ClangLinkDriver)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
+        <ItemGroup>
+            <_ClangLinkLibraryInputs Remove="@(_ClangLinkLibraryInputs)" />
+            <_ClangLinkLibraryInputs Include="@(GetProjectReferenceOutputItems->WithMetadataValue('Link', 'True')->'%(LibraryPath)')" Condition=" '%(GetProjectReferenceOutputItems.LibraryPath)' != '' " />
+        </ItemGroup>
+
+        <PropertyGroup>
+            <_ClangLinkCommandFile>$(IntermediateOutputPath)$(TargetName).link.cmd</_ClangLinkCommandFile>
+        </PropertyGroup>
+
+        <ClangCompileCommand Source="$(ExecutableIntermediateOutputPath)" Directory="$(MSBuildProjectDirectory)" Compiler="$(_ClangLinkDriver)" Arguments="@(_ClangLinkArgs)">
+            <Output TaskParameter="Command" ItemName="_ClangLinkCommand" />
+        </ClangCompileCommand>
+
+        <MakeDir Directories="$(IntermediateOutputPath)" />
+        <WriteLinesToFile File="$(_ClangLinkCommandFile)" Lines="@(_ClangLinkCommand->'%(CommandLine)')" Overwrite="true" WriteOnlyWhenDifferent="true" />
+
+        <ItemGroup>
+            <FileWrites Include="$(_ClangLinkCommandFile)" />
+        </ItemGroup>
+    </Target>
+
+    <Target Name="CoreLinkExecutable" DependsOnTargets="_ComputeClangLinkArguments" Inputs="@(Compile->'%(ObjectPath)');@(_ClangLinkLibraryInputs);$(_ClangLinkCommandFile)" Outputs="$(ExecutableIntermediateOutputPath);$(LibraryIntermediateOutputPath)" Condition=" '$(OutputType)' == 'exe' Or '$(OutputType)' == 'dll' ">
+        <ClangExe ToolExe="$(_ClangLinkDriver)" Arguments="@(_ClangLinkArgs)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
 
         <ItemGroup>
             <FileWrites Include="$(ExecutableIntermediateOutputPath)" />
             <FileWrites Include="$(LibraryIntermediateOutputPath)" />
-            <FileWrites Include="$(DebugSymbolsIntermediateOutputPath)" />
+            <FileWrites Include="$(DebugSymbolsIntermediateOutputPath)" Condition=" '$(DebugSymbolsIntermediateOutputPath)' != '' " />
         </ItemGroup>
 
         <CallTarget Targets="$(TargetsTriggeredByLinking)" Condition="'$(TargetsTriggeredByLinking)' != ''" />
     </Target>
 
-    <Target Name="CoreLinkLibrary" DependsOnTargets="$(CoreLinkDependsOn);_CheckLlvmAr" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(LibraryIntermediateOutputPath)" Condition=" '$(OutputType)' == 'lib' ">
-        <MakeDir Directories="$(IntermediateOutputPath)" />
-
+    <!--
+    Works out the archive command and records it, as for linking, so that adding or removing a source re-creates the
+    archive.
+    -->
+    <Target Name="_ComputeClangArchiveArguments" DependsOnTargets="$(CoreLinkDependsOn);_CheckLlvmAr" Condition=" '$(OutputType)' == 'lib' ">
         <ItemGroup>
-            <_Args Remove="@(_Args)" />
+            <_ClangArchiveArgs Remove="@(_ClangArchiveArgs)" />
             <!-- c: create the archive without llvm-ar reporting it, which the build would show as a warning -->
-            <_Args Include="rc" />
-            <_Args Include="$(LibraryIntermediateOutputPath)" Separator=" " />
-            <_Args Include="@(Compile->'%(ObjectPath)')" />
+            <_ClangArchiveArgs Include="rc" />
+            <_ClangArchiveArgs Include="$(LibraryIntermediateOutputPath)" />
+            <_ClangArchiveArgs Include="@(Compile->'%(ObjectPath)')" />
+            <_ClangArchiveArgs Include="@(AdditionalArchiveOptions)" />
+            <_ClangArchiveArgs Include="$(AdditionalArchiveOptions)" />
         </ItemGroup>
 
-        <LlvmArExe ToolExe="$(LlvmArPath)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
+        <PropertyGroup>
+            <_ClangArchiveCommandFile>$(IntermediateOutputPath)$(TargetName).ar.cmd</_ClangArchiveCommandFile>
+        </PropertyGroup>
+
+        <ClangCompileCommand Source="$(LibraryIntermediateOutputPath)" Directory="$(MSBuildProjectDirectory)" Compiler="$(LlvmArPath)" Arguments="@(_ClangArchiveArgs)">
+            <Output TaskParameter="Command" ItemName="_ClangArchiveCommand" />
+        </ClangCompileCommand>
+
+        <MakeDir Directories="$(IntermediateOutputPath)" />
+        <WriteLinesToFile File="$(_ClangArchiveCommandFile)" Lines="@(_ClangArchiveCommand->'%(CommandLine)')" Overwrite="true" WriteOnlyWhenDifferent="true" />
+
+        <ItemGroup>
+            <FileWrites Include="$(_ClangArchiveCommandFile)" />
+        </ItemGroup>
+    </Target>
+
+    <Target Name="CoreLinkLibrary" DependsOnTargets="_ComputeClangArchiveArguments" Inputs="@(Compile->'%(ObjectPath)');$(_ClangArchiveCommandFile)" Outputs="$(LibraryIntermediateOutputPath)" Condition=" '$(OutputType)' == 'lib' ">
+        <!-- llvm-ar adds to an existing archive, which would keep the objects of removed sources -->
+        <Delete Files="$(LibraryIntermediateOutputPath)" />
+
+        <LlvmArExe ToolExe="$(LlvmArPath)" Arguments="@(_ClangArchiveArgs)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
 
         <ItemGroup>
             <FileWrites Include="$(LibraryIntermediateOutputPath)" />
@@ -746,6 +862,8 @@
             <Header Update="@(Header)">
                 <IncludePath Condition=" '%(Header.IncludePath)' == '' ">%(RecursiveDir)%(Filename)%(Extension)</IncludePath>
             </Header>
+            <_HeaderToCopy Remove="@(_HeaderToCopy)" />
+            <_HeaderToCopy Include="@(Header)" Condition=" '%(Header.CopyToIncludeDirectory)' == 'true' " />
         </ItemGroup>
     </Target>
 
@@ -756,10 +874,10 @@
         </CopyHeadersDependsOn>
     </PropertyGroup>
 
-    <Target Name="CopyHeaders" DependsOnTargets="$(CopyHeadersDependsOn)" Inputs="@(Header)" Outputs="@(Header->'$(HeadersIntermediateOutputPath)%(IncludePath)')">
+    <Target Name="CopyHeaders" DependsOnTargets="$(CopyHeadersDependsOn)" Inputs="@(_HeaderToCopy)" Outputs="@(_HeaderToCopy->'$(HeadersIntermediateOutputPath)%(IncludePath)')">
         <Copy
-            SourceFiles="@(Header)"
-            DestinationFiles="@(Header->'$(HeadersIntermediateOutputPath)%(IncludePath)')"
+            SourceFiles="@(_HeaderToCopy)"
+            DestinationFiles="@(_HeaderToCopy->'$(HeadersIntermediateOutputPath)%(IncludePath)')"
             SkipUnchangedFiles="$(SkipCopyUnchangedFiles)"
             OverwriteReadOnlyFiles="$(OverwriteReadOnlyFiles)"
             Retries="$(CopyRetryCount)"
@@ -786,7 +904,51 @@
         </GetCopyToOutputDirectoryItemsDependsOn>
     </PropertyGroup>
 
-    <Target Name="GetCopyToOutputDirectoryItems" DependsOnTargets="$(GetCopyToOutputDirectoryItemsDependsOn)" Returns="@(OutputItemsWithTargetPath)">
+    <!--
+
+    GetSharedLibraryOutputItems
+
+    Externally callable target that returns the shared libraries a program using this project needs at run time: this
+    project's own, if it is one, and those of its references, all the way down. Each has a TargetPath.
+
+    -->
+
+    <Target Name="GetSharedLibraryOutputItems" DependsOnTargets="AssignProjectConfiguration;_AssignReferenceTargetIdentifiers" Returns="@(SharedLibraryOutputItems)">
+        <MSBuild
+            Projects="@(ProjectReferenceWithConfiguration)"
+            Targets="GetSharedLibraryOutputItems"
+            SkipNonexistentTargets="true"
+            BuildInParallel="$(BuildInParallel)"
+            Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
+            RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove);$(_GlobalPropertiesToRemoveFromProjectReferences)"
+            Condition=" '@(ProjectReferenceWithConfiguration)' != '' ">
+            <Output TaskParameter="TargetOutputs" ItemName="SharedLibraryOutputItems" />
+        </MSBuild>
+
+        <ItemGroup Condition=" '$(OutputType)' == 'dll' ">
+            <SharedLibraryOutputItems Include="$([System.IO.Path]::GetFullPath('$(ExecutableIntermediateOutputPath)'))" Condition=" Exists('$(ExecutableIntermediateOutputPath)') ">
+                <TargetPath>$(ExecutableFileName)</TargetPath>
+            </SharedLibraryOutputItems>
+            <SharedLibraryOutputItems Include="$([System.IO.Path]::GetFullPath('$(DebugSymbolsIntermediateOutputPath)'))" Condition=" '$(DebugSymbolsIntermediateOutputPath)' != '' And Exists('$(DebugSymbolsIntermediateOutputPath)') ">
+                <TargetPath>$(DebugSymbolsFileName)</TargetPath>
+            </SharedLibraryOutputItems>
+        </ItemGroup>
+    </Target>
+
+    <!-- the shared libraries of references, for an executable to find next to it when it runs -->
+    <Target Name="_GetReferencedSharedLibraries" DependsOnTargets="AssignProjectConfiguration;_AssignReferenceTargetIdentifiers" Condition=" '$(CopyProjectReferenceOutputToOutput)' == 'true' And '@(ProjectReferenceWithConfiguration)' != '' ">
+        <MSBuild
+            Projects="@(ProjectReferenceWithConfiguration)"
+            Targets="GetSharedLibraryOutputItems"
+            SkipNonexistentTargets="true"
+            BuildInParallel="$(BuildInParallel)"
+            Properties="%(ProjectReferenceWithConfiguration.SetConfiguration);%(ProjectReferenceWithConfiguration.SetPlatform);%(ProjectReferenceWithConfiguration.SetTargetIdentifier);"
+            RemoveProperties="%(ProjectReferenceWithConfiguration.GlobalPropertiesToRemove);$(_GlobalPropertiesToRemoveFromProjectReferences)">
+            <Output TaskParameter="TargetOutputs" ItemName="_ReferencedSharedLibraries" />
+        </MSBuild>
+    </Target>
+
+    <Target Name="GetCopyToOutputDirectoryItems" DependsOnTargets="$(GetCopyToOutputDirectoryItemsDependsOn);_GetReferencedSharedLibraries" Returns="@(OutputItemsWithTargetPath)">
         <Error Condition=" '$(ExecutableIntermediateOutputPath)' == '$(DebugSymbolsIntermediateOutputPath)' And Exists('$(ExecutableIntermediateOutputPath)') And Exists('$(DebugSymbolsIntermediateOutputPath)')" Text="Output file name and debug file name are equal." />
         <ItemGroup>
             <OutputItemsWithTargetPath Include="$(ExecutableIntermediateOutputPath)" Condition=" '$(ExecutableIntermediateOutputPath)' != '' And Exists('$(ExecutableIntermediateOutputPath)')">
@@ -795,6 +957,7 @@
             <OutputItemsWithTargetPath Include="$(DebugSymbolsIntermediateOutputPath)" Condition=" '$(DebugSymbolsIntermediateOutputPath)' != '' And Exists('$(DebugSymbolsIntermediateOutputPath)')">
                 <TargetPath>$(DebugSymbolsFileName)</TargetPath>
             </OutputItemsWithTargetPath>
+            <OutputItemsWithTargetPath Include="@(_ReferencedSharedLibraries->Distinct())" />
         </ItemGroup>
     </Target>
 
@@ -833,7 +996,9 @@
             <Clean Include="$(ExecutableIntermediateOutputPath)" Condition=" '$(ExecutableIntermediateOutputPath)' != '' " />
             <Clean Include="$(LibraryIntermediateOutputPath)" Condition=" '$(LibraryIntermediateOutputPath)' != '' " />
             <Clean Include="$(DebugSymbolsIntermediateOutputPath)" Condition=" '$(DebugSymbolsIntermediateOutputPath)' != '' " />
-            <Clean Include="@(Header->'$(HeadersIntermediateOutputPath)%(IncludePath)')" Condition=" '$(HeadersIntermediateOutputPath)' != '' " />
+            <Clean Include="@(_HeaderToCopy->'$(HeadersIntermediateOutputPath)%(IncludePath)')" Condition=" '$(HeadersIntermediateOutputPath)' != '' " />
+            <Clean Include="@(Compile->'%(ObjectPath).d');@(Compile->'%(ObjectPath).cmd')" />
+            <Clean Include="$(IntermediateOutputPath)$(TargetName).link.cmd;$(IntermediateOutputPath)$(TargetName).ar.cmd" />
             <Clean Include="$(OutputPath)$(ExecutableFileName)" Condition=" '$(ExecutableFileName)' != '' " />
             <Clean Include="$(OutputPath)$(DebugSymbolsFileName)" Condition=" '$(DebugSymbolsFileName)' != '' " />
         </ItemGroup>
