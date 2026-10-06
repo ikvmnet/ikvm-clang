@@ -16,6 +16,9 @@
 			<Source Uri="$(Images)/ClangProjectIcon_32x.png">
 				<Size Value="32" />
 			</Source>
+			<Source Uri="$(Images)/ClangProjectIcon_128x.png">
+				<Size Value="128" />
+			</Source>
 			<Source Uri="$(Images)/ClangProjectIcon_256x.png">
 				<Size Value="256" />
 			</Source>

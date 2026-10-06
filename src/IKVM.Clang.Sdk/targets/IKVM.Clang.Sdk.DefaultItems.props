@@ -18,7 +18,8 @@
 		<Compile Include="**\*.mm" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
 		<!-- Assembly source files -->
 		<Compile Include="**\*.s" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
-		<Compile Include="**\*.S" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
+		<!-- *.S differs from *.s only on case-sensitive file systems; elsewhere it would include every file twice -->
+		<Compile Include="**\*.S" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" Condition=" $([MSBuild]::IsOSUnixLike()) And !$([MSBuild]::IsOSPlatform('OSX')) " />
 		<Compile Include="**\*.asm" Exclude="$(DefaultItemExcludes);$(DefaultExcludesInProjectFolder)" />
 	</ItemGroup>
 

@@ -1,17 +1,20 @@
 using IKVM.Clang.Vsix.Imaging;
 using IKVM.Clang.Vsix.ProjectSystem;
 
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.ProjectSystem;
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
 
 namespace IKVM.Clang.Vsix.Icons
 {
 
     /// <summary>
-    /// Provides file and project icons in Solution Explorer for Clang source file types
-    /// and for the Clang project root node itself.
+    /// Provides icons in Solution Explorer for the Clang project root node and for the source and header file types
+    /// that IKVM.Clang.Sdk includes by default.
     /// </summary>
     [Export(typeof(IProjectTreePropertiesProvider))]
     [AppliesTo(ClangProjectCapabilities.AppliesTo)]
@@ -19,60 +22,46 @@ namespace IKVM.Clang.Vsix.Icons
     internal sealed class ClangFileIconProvider : IProjectTreePropertiesProvider
     {
 
-        static readonly ProjectImageMoniker s_cppSourceFileMoniker = Microsoft.VisualStudio.Imaging.KnownMonikers.CPPSourceFile.ToProjectSystemType();
-        static readonly ProjectImageMoniker s_cppHeaderFileMoniker = Microsoft.VisualStudio.Imaging.KnownMonikers.CPPHeaderFile.ToProjectSystemType();
-        static readonly ProjectImageMoniker s_binaryFileMoniker = Microsoft.VisualStudio.Imaging.KnownMonikers.BinaryFile.ToProjectSystemType();
-        static readonly ProjectImageMoniker s_projectIconMoniker = ClangMonikers.ProjectIcon.ToProjectSystemType();
+        static readonly ProjectImageMoniker ProjectIcon = ClangMonikers.ProjectIcon.ToProjectSystemType();
 
-        static ProjectImageMoniker? GetMonikerForExtension(string itemName)
+        /// <summary>
+        /// Icon for each file extension. Keep in step with the default items in <c>IKVM.Clang.Sdk.DefaultItems.props</c>.
+        /// </summary>
+        static readonly Dictionary<string, ProjectImageMoniker> FileIcons = Build(new[]
         {
-            if (itemName.EndsWith(".c", StringComparison.OrdinalIgnoreCase))
-                return s_cppSourceFileMoniker;
+            (KnownMonikers.CFile, new[] { ".c", ".m" }),
+            (KnownMonikers.CPPSourceFile, new[] { ".cpp", ".cc", ".cxx", ".c++", ".cppm", ".ixx", ".mm" }),
+            (KnownMonikers.CPPHeaderFile, new[] { ".h", ".hpp", ".hh", ".hxx", ".h++", ".ipp" }),
+            (KnownMonikers.ASMFile, new[] { ".s", ".asm" }),
+        });
 
-            if (itemName.EndsWith(".cpp", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".cc", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".cxx", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".c++", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".cppm", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".ixx", StringComparison.OrdinalIgnoreCase))
-                return s_cppSourceFileMoniker;
+        static Dictionary<string, ProjectImageMoniker> Build((Microsoft.VisualStudio.Imaging.Interop.ImageMoniker Moniker, string[] Extensions)[] entries)
+        {
+            var map = new Dictionary<string, ProjectImageMoniker>(StringComparer.OrdinalIgnoreCase);
+            foreach (var (moniker, extensions) in entries)
+                foreach (var extension in extensions)
+                    map[extension] = moniker.ToProjectSystemType();
 
-            if (itemName.EndsWith(".h", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".hpp", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".hh", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".hxx", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".h++", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".ipp", StringComparison.OrdinalIgnoreCase))
-                return s_cppHeaderFileMoniker;
-
-            if (itemName.EndsWith(".m", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".mm", StringComparison.OrdinalIgnoreCase))
-                return s_cppSourceFileMoniker;
-
-            if (itemName.EndsWith(".s", StringComparison.OrdinalIgnoreCase) ||
-                itemName.EndsWith(".asm", StringComparison.OrdinalIgnoreCase))
-                return s_binaryFileMoniker;
-
-            return null;
+            return map;
         }
 
-        public void CalculatePropertyValues(IProjectTreeCustomizablePropertyContext context, IProjectTreeCustomizablePropertyValues propertyValues)
+        /// <inheritdoc />
+        public void CalculatePropertyValues(IProjectTreeCustomizablePropertyContext propertyContext, IProjectTreeCustomizablePropertyValues propertyValues)
         {
             if (propertyValues.Flags.Contains(ProjectTreeFlags.ProjectRoot))
             {
-                propertyValues.Icon = s_projectIconMoniker;
-                propertyValues.ExpandedIcon = s_projectIconMoniker;
+                propertyValues.Icon = ProjectIcon;
+                propertyValues.ExpandedIcon = ProjectIcon;
                 return;
             }
 
-            if (context.IsFolder || string.IsNullOrEmpty(context.ItemName))
+            if (propertyContext.IsFolder || string.IsNullOrEmpty(propertyContext.ItemName))
                 return;
 
-            var moniker = GetMonikerForExtension(context.ItemName);
-            if (moniker != null)
+            if (FileIcons.TryGetValue(Path.GetExtension(propertyContext.ItemName), out var icon))
             {
-                propertyValues.Icon = moniker;
-                propertyValues.ExpandedIcon = moniker;
+                propertyValues.Icon = icon;
+                propertyValues.ExpandedIcon = icon;
             }
         }
 

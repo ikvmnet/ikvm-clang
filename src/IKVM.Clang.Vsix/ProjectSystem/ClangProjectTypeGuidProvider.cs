@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.Composition;
 
 using Microsoft.VisualStudio.ProjectSystem;
@@ -6,21 +6,16 @@ using Microsoft.VisualStudio.ProjectSystem;
 namespace IKVM.Clang.Vsix.ProjectSystem
 {
 
+    /// <summary>
+    /// Reports the Clang project type GUID, which Visual Studio writes into solution files for Clang projects.
+    /// </summary>
     [Export(typeof(IItemTypeGuidProvider))]
     [AppliesTo(ClangProjectCapabilities.AppliesTo)]
     internal class ClangProjectTypeGuidProvider : IItemTypeGuidProvider
     {
 
-        [ImportingConstructor]
-        public ClangProjectTypeGuidProvider()
-        {
-
-        }
-
-        public Guid ProjectTypeGuid
-        {
-            get { return ProjectType.ClangGuid; }
-        }
+        /// <inheritdoc />
+        public Guid ProjectTypeGuid => ProjectType.ClangGuid;
 
     }
 

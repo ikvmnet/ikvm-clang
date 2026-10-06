@@ -22,8 +22,6 @@
 		<DeployExtension Condition=" '$(BuildingInsideVisualStudio)' != 'true' ">false</DeployExtension>
 		<Experimental>false</Experimental>
 		<Experimental Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</Experimental>
-		<AllUsers>false</AllUsers>
-		<AllUsers Condition=" '$(BuildingInsideVisualStudio)' == 'true' ">true</AllUsers>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -38,25 +36,24 @@
 	<ItemGroup>
 		<None Remove="IKVM.Clang.imagemanifest" />
 		<None Remove="IKVM.Clang.manifest.json" />
-		<None Remove="Images\ClangProjectIcon_128x.png" />
-		<None Remove="Images\ClangProjectIcon_16x.png" />
-		<None Remove="Images\ClangProjectIcon_24x.png" />
-		<None Remove="Images\ClangProjectIcon_256x.png" />
-		<None Remove="Images\ClangProjectIcon_32x.png" />
+		<None Remove="Images\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.VisualStudio.ImageCatalog" Version="17.14.40260" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" ExcludeAssets="runtime" />
 		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="18.5.40034">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.VisualStudio.ProjectSystem.SDK" Version="17.9.380" />
+		<PackageReference Include="Microsoft.VisualStudio.ProjectSystem.SDK" Version="17.9.380" ExcludeAssets="runtime" />
 		<PackageReference Include="Microsoft.VisualStudio.ProjectSystem.Sdk.Tools" Version="17.9.380">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="System.ComponentModel.Composition" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -69,7 +66,6 @@
 
 	<ItemGroup>
 		<EmbeddedResource Update="VSPackage.resx">
-			<MergeWithCTO>true</MergeWithCTO>
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>VSPackage.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
@@ -109,12 +105,21 @@
 		<Content Include="IKVM.Clang.manifest.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<Resource Include="Images\ClangProjectIcon_128x.png" />
+		<Content Include="Images\ClangProjectIcon_128x.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<IncludeInVSIX>true</IncludeInVSIX>
+		</Content>
+		<Content Include="..\..\LICENSE">
+			<Link>LICENSE</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<IncludeInVSIX>true</IncludeInVSIX>
+		</Content>
 		<Resource Include="Images\ClangProjectIcon_16x.png" />
 		<Resource Include="Images\ClangProjectIcon_24x.png" />
-		<Resource Include="Images\ClangProjectIcon_256x.png" />
-
 		<Resource Include="Images\ClangProjectIcon_32x.png" />
+		<Resource Include="Images\ClangProjectIcon_128x.png" />
+		<Resource Include="Images\ClangProjectIcon_256x.png" />
+		<EmbeddedResource Include="Images\ClangProjectIcon.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -123,11 +128,20 @@
 		</Transform>
 	</ItemGroup>
 
+	<!-- start from an empty folder so templates or files removed from the source do not linger in the VSIX -->
+	<Target Name="CleanVsixTemplateFiles" BeforeTargets="Transform">
+		<RemoveDir Directories="$(IntermediateOutputPath)ProjectTemplates" />
+	</Target>
+
 	<Target Name="CopyVsixTemplateFiles" DependsOnTargets="Transform" BeforeTargets="PrepareForBuild">
 		<ItemGroup>
 			<_SourceFiles Include="ProjectTemplates\**\*" />
 		</ItemGroup>
 		<Copy SourceFiles="@(_SourceFiles)" DestinationFolder="$(IntermediateOutputPath)ProjectTemplates\%(RecursiveDir)" />
+		<ItemGroup>
+			<_VSTemplateSourceFiles Include="ProjectTemplates\**\*.vstemplate" />
+		</ItemGroup>
+		<Copy SourceFiles="Images\ClangProjectIcon_32x.png" DestinationFolder="$(IntermediateOutputPath)ProjectTemplates\%(_VSTemplateSourceFiles.RecursiveDir)" />
 		<ItemGroup>
 			<_LinkedSourceFiles Include="..\IKVM.Clang.Templates\content\**\*" Exclude="..\IKVM.Clang.Templates\content\**\*.in;..\IKVM.Clang.Templates\content\**\template.json;..\IKVM.Clang.Templates\content\**\.template.config\**" />
 		</ItemGroup>
@@ -147,7 +161,6 @@
 				<IncludeInVSIX>true</IncludeInVSIX>
 			</Content>
 		</ItemGroup>
-		<Message Text="Added VSIX template file: %(Content.Identity)" Condition="$([System.String]::Copy('%(Content.Identity)').Contains('$(IntermediateOutputPath)ProjectTemplates'))" Importance="high" />
 	</Target>
 
 	<ItemGroup>
@@ -157,7 +170,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\IKVM.Clang.Sdk.Tests\Project\**" Exclude="..\IKVM.Clang.Sdk.Tests\Project\global.json;..\IKVM.Clang.Sdk.Tests\Project\nuget.config">
+		<None Include="..\IKVM.Clang.Sdk.Tests\Project\**" Exclude="..\IKVM.Clang.Sdk.Tests\Project\global.json;..\IKVM.Clang.Sdk.Tests\Project\nuget.config;..\IKVM.Clang.Sdk.Tests\Project\**\bin\**;..\IKVM.Clang.Sdk.Tests\Project\**\obj\**;..\IKVM.Clang.Sdk.Tests\Project\.vs\**">
 			<Link>TestProject\%(RecursiveDir)%(Filename)%(Extension)</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
@@ -178,5 +191,4 @@
 
 	<Target Name="GetVsixVersion" Returns="$(FileVersion)" />
 	<Target Name="GetVsixExperimental" Returns="$(Experimental)" />
-	<Target Name="GetVsixAllUsers" Returns="$(AllUsers)" />
 </Project>

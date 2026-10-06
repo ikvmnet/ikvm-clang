@@ -11,8 +11,10 @@
         <AdditionalDesignTimeBuildInput Include="@(_PotentialContainingGlobalJsonDir->Combine('global.json'))" ContentSensitive="true" />
     </ItemGroup>
 
-    <Target Name="CompileDesignTime" DependsOnTargets="_CheckCompileDesignTimePrerequisite;Compile">
-        <Message Text="CompileDesignTime" />
-    </Target>
+    <!--
+    Design-time builds run on every evaluation, so they must not invoke the compiler. Nothing in a Clang project needs
+    design-time compile output, so this is intentionally empty.
+    -->
+    <Target Name="CompileDesignTime" />
 
 </Project>

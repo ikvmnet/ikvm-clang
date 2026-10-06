@@ -19,13 +19,16 @@
 
     <Target Name="GetVsixItems">
         <MSBuild Projects="..\IKVM.Clang.Vsix\IKVM.Clang.Vsix.csproj" Targets="Build;CreateVsixContainer;VSIXContainerProjectOutputGroup" RebaseOutputs="true">
-            <Output TaskParameter="TargetOutputs" ItemName="VsixItems" />
+            <Output TaskParameter="TargetOutputs" ItemName="_VsixContainerItems" />
         </MSBuild>
         <MSBuild Projects="..\IKVM.Clang.Vsix\IKVM.Clang.Vsix.csproj" Targets="GetCopyToOutputDirectoryItems" RebaseOutputs="true">
-            <Output TaskParameter="TargetOutputs" ItemName="VsixItems" />
+            <Output TaskParameter="TargetOutputs" ItemName="_VsixCopyItems" />
         </MSBuild>
         <ItemGroup>
-            <ContentWithTargetPath Include="@(VsixItems)" Condition=" '%(Extension)' != '.dll' ">
+            <!-- the VSIX itself, plus the Marketplace publish manifest and the overview it points to -->
+            <VsixItems Include="@(_VsixContainerItems)" Condition=" '%(Extension)' == '.vsix' " />
+            <VsixItems Include="@(_VsixCopyItems)" Condition=" '%(Filename)%(Extension)' == 'IKVM.Clang.manifest.json' Or '%(Filename)%(Extension)' == 'IKVM.Clang.md' " />
+            <ContentWithTargetPath Include="@(VsixItems)">
                 <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
                 <TargetPath>%(FileName)%(Extension)</TargetPath>
             </ContentWithTargetPath>

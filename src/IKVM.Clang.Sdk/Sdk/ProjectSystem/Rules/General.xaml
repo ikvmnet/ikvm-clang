@@ -18,9 +18,26 @@
             Label="Configuration" />
     </Rule.DataSource>
 
-    <StringProperty 
-        Name="StartItem"
-        DisplayName="Start Item">
+    <EnumProperty
+        Name="OutputType"
+        DisplayName="Output Type"
+        Description="The kind of binary the project produces."
+        Category="General">
+        <EnumValue Name="Exe" DisplayName="Executable" />
+        <EnumValue Name="Dll" DisplayName="Shared Library" />
+        <EnumValue Name="Lib" DisplayName="Static Library" />
+        <EnumProperty.DataSource>
+            <DataSource
+                Persistence="ProjectFile"
+                HasConfigurationCondition="False" />
+        </EnumProperty.DataSource>
+    </EnumProperty>
+
+    <StringProperty
+        Name="TargetIdentifiers"
+        DisplayName="Target Identifiers"
+        Description="Semicolon separated list of LLVM target triples to build, such as x86_64-pc-windows-msvc."
+        Category="General">
         <StringProperty.DataSource>
             <DataSource
                 Persistence="ProjectFile"
