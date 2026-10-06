@@ -40,7 +40,18 @@
 
     <Target Name="Clean" DependsOnTargets="_SetCleanInnerTarget;DispatchToInnerBuilds" />
 
-    <Target Name="Rebuild" DependsOnTargets="Clean;Build" />
+    <!-- each inner build cleans and builds itself; Clean then Build here would dispatch only once -->
+    <Target Name="_SetRebuildInnerTarget" Returns="@(InnerOutput)">
+        <PropertyGroup>
+            <InnerTargets>$(InnerTargets);Rebuild</InnerTargets>
+        </PropertyGroup>
+    </Target>
+
+    <Target Name="Rebuild" DependsOnTargets="_SetRebuildInnerTarget;DispatchToInnerBuilds" />
+
+    <!-- compile commands belong to the inner build of each target identifier; the outer build has none -->
+    <Target Name="GetClangCompileCommands" Returns="@(ClangCompileCommand)" />
+    <Target Name="GetLlvmToolset" Returns="@(LlvmToolset)" />
 
     <Import Project="$(CustomAfterIkvmClangCrossTargetingTargets)" Condition="'$(CustomAfterIkvmClangCrossTargetingTargets)' != '' and Exists('$(CustomAfterIkvmClangCrossTargetingTargets)')"/>
 </Project>

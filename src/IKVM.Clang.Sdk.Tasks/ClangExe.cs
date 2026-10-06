@@ -1,7 +1,7 @@
-﻿using System.Runtime.InteropServices;
-
 namespace IKVM.Clang.Sdk.Tasks
 {
+
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// Executes clang with a set of arguments.

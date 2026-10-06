@@ -6,7 +6,7 @@ MSBuild SDK for compiling C, C++, Objective-C, and assembly source files with th
 
 ## Requirements
 
-- [LLVM / Clang](https://releases.llvm.org/) with `clang` and `llvm-ar` accessible on `PATH`
+- [LLVM / Clang](https://releases.llvm.org/): `clang`, `clang++` and `llvm-ar`, plus `clangd` for language support in Visual Studio. They are found automatically; see [LLVM Tools](#llvm-tools)
 - MSBuild 17+ (ships with Visual Studio 2022, or via the .NET SDK)
 - Visual Studio 2022 17.0+ with the [IKVM.Clang](https://marketplace.visualstudio.com/items?itemName=IKVM.IKVM.Clang) extension for IDE support (optional)
 
@@ -38,6 +38,40 @@ Then build:
 ```shell
 dotnet build
 ```
+
+---
+
+## LLVM Tools
+
+The SDK finds the LLVM tools it runs, all from the same LLVM installation so that they match:
+
+| Tool | Used for |
+|------|----------|
+| `clang` | Compiling, and linking projects with only C, Objective-C and assembly sources |
+| `clang++` | Linking projects with C++ or Objective-C++ sources, so the C++ standard library is linked |
+| `llvm-ar` | Creating static libraries |
+| `clangd` | Language support in Visual Studio |
+| `lld` | Linking; found by clang itself, next to it |
+
+Without any settings, clang is looked for on `PATH` and in the usual installation directories: `C:\Program Files\LLVM\bin` and Visual Studio's C++ Clang tools on Windows, Homebrew's LLVM on macOS, and `/usr/lib/llvm-*/bin` on Linux. An installation with the whole suite is preferred over one with clang alone (such as Apple's `/usr/bin`). The other tools are then taken from clang's installation first.
+
+These properties override that:
+
+| Property | Meaning |
+|----------|---------|
+| `LlvmToolsPath` | Directory to take every tool from, such as the `bin` directory of an LLVM installation. Nothing else is searched. |
+| `ClangPath` | Full path of `clang`. The other tools are then looked for next to it first. |
+| `ClangCxxPath` | Full path of `clang++`. |
+| `LlvmArPath` | Full path of `llvm-ar`. |
+| `ClangdPath` | Full path of `clangd`. |
+| `LinkerPath` | Full path of the linker for clang to run (passed as `--ld-path`). |
+| `LinkWithClangCxx` | `true` or `false` to choose whether `clang++` links; by default it does when there are C++ or Objective-C++ sources. |
+
+The older `ClangToolPath`/`ClangToolExe` and `LlvmArToolPath`/`LlvmArToolExe` properties still work.
+
+A tool that cannot be found, or an override that names a file that does not exist, fails the build when that tool is needed, with an `ICLANG1001`, `ICLANG1002` or `ICLANG1003` error that says what to set. In Visual Studio the same problems appear as warnings in the Error List.
+
+The `GetLlvmToolset` target returns what was found, and `GetClangCompileCommands` the command line of each source file.
 
 ---
 
