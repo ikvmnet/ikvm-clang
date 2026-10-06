@@ -4,38 +4,47 @@
 	</PropertyGroup>
 
 	<!--
-    This file contains targets which invoke the jobs in 'NoTask' mode.
+    This file contains targets which invoke the jobs in 'NoTask' mode: the tasks are compiled from their sources in the
+    IKVM.Clang.Sdk.Tasks directory next to this SDK's, rather than loaded from the built task assembly. Every task is
+    given all of the sources, since they share helpers; each task source keeps its using directives inside its
+    namespace so that the sources can be joined.
     -->
 
 	<PropertyGroup>
-		<___IkvmClangExeCs>$([System.IO.File]::ReadAllText('$([System.IO.Path]::Combine('$(MSBuildThisFileDirectory)', '..', '..', 'IKVM.Clang.Sdk.Tasks', 'ClangExe.cs'))'))</___IkvmClangExeCs>
-		<___IkvmLlvmArExeCs>$([System.IO.File]::ReadAllText('$([System.IO.Path]::Combine('$(MSBuildThisFileDirectory)', '..', '..', 'IKVM.Clang.Sdk.Tasks', 'LlvmArExe.cs'))'))</___IkvmLlvmArExeCs>
+		<___IkvmClangTaskSourceDirectory>$([System.IO.Path]::Combine('$(MSBuildThisFileDirectory)', '..', '..', 'IKVM.Clang.Sdk.Tasks'))</___IkvmClangTaskSourceDirectory>
+		<___IkvmClangTaskSources>$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ClangArguments.cs'))</___IkvmClangTaskSources>
+		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ExeTask.cs'))</___IkvmClangTaskSources>
+		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ClangExe.cs'))</___IkvmClangTaskSources>
+		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\LlvmArExe.cs'))</___IkvmClangTaskSources>
+		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ClangCompileCommand.cs'))</___IkvmClangTaskSources>
+		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ResolveLlvmToolset.cs'))</___IkvmClangTaskSources>
 	</PropertyGroup>
 
-	<ItemGroup>
-	</ItemGroup>
-
 	<UsingTask TaskName="ClangExe" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
-		<Task>
-			<Code Type="Class" Language="cs">
-				<![CDATA[
-#define NETSTANDARD2_0
-
-$([MSBuild]::Unescape('$(___IkvmClangExeCs)'))
-            ]]>
-			</Code>
+		<Task Evaluate="true">
+			<Code Type="Class" Language="cs"><![CDATA[#nullable enable
+$([MSBuild]::Unescape('$(___IkvmClangTaskSources)'))]]></Code>
 		</Task>
 	</UsingTask>
 
 	<UsingTask TaskName="LlvmArExe" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
-		<Task>
-			<Code Type="Class" Language="cs">
-				<![CDATA[
-#define NETSTANDARD2_0
+		<Task Evaluate="true">
+			<Code Type="Class" Language="cs"><![CDATA[#nullable enable
+$([MSBuild]::Unescape('$(___IkvmClangTaskSources)'))]]></Code>
+		</Task>
+	</UsingTask>
 
-$([MSBuild]::Unescape('$(___IkvmLlvmArExeCs)'))
-            ]]>
-			</Code>
+	<UsingTask TaskName="ClangCompileCommand" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<Task Evaluate="true">
+			<Code Type="Class" Language="cs"><![CDATA[#nullable enable
+$([MSBuild]::Unescape('$(___IkvmClangTaskSources)'))]]></Code>
+		</Task>
+	</UsingTask>
+
+	<UsingTask TaskName="ResolveLlvmToolset" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<Task Evaluate="true">
+			<Code Type="Class" Language="cs"><![CDATA[#nullable enable
+$([MSBuild]::Unescape('$(___IkvmClangTaskSources)'))]]></Code>
 		</Task>
 	</UsingTask>
 

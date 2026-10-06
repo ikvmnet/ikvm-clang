@@ -22,6 +22,12 @@ namespace IKVM.Clang.Vsix.Clangd
     /// opened from Clang projects have (see <see cref="ClangEditorFactory"/>), so other C and C++ files are left to
     /// Visual Studio's own language service.
     /// </summary>
+    /// <remarks>
+    /// clangd is the one IKVM.Clang.Sdk resolved for the projects (its ClangdPath), reported by their design-time
+    /// builds. Activation waits until a project has reported a usable clangd; if none can, an info bar says why and how
+    /// to correct it, and activation completes as soon as a design-time build reports one. Waiting inside activation,
+    /// rather than starting the client late, means Visual Studio still hands clangd the documents already open.
+    /// </remarks>
     [Export(typeof(ILanguageClient))]
     [ContentType(ContentTypeNames.CCode)]
     [ContentType(ContentTypeNames.CppCode)]
@@ -32,16 +38,23 @@ namespace IKVM.Clang.Vsix.Clangd
     {
 
         readonly ClangCompileDatabase _database;
+        readonly ClangdInfoBar _infoBar;
+        readonly SemaphoreSlim _sync = new(1, 1);
         Process? _process;
         CancellationTokenSource? _cancellation;
+        bool _loaded;
+        TaskCompletionSource<string> _clangdReady = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
         /// <summary>
-        /// Creates the client.
+        /// Creates the client. The Error List reporter is imported only so that it exists, and reports toolset
+        /// problems, whenever Clang projects are open.
         /// </summary>
         [ImportingConstructor]
-        public ClangdLanguageClient(ClangCompileDatabase database)
+        public ClangdLanguageClient(ClangCompileDatabase database, ClangdInfoBar infoBar, ClangToolsetErrorList errorList)
         {
             _database = database ?? throw new ArgumentNullException(nameof(database));
+            _infoBar = infoBar ?? throw new ArgumentNullException(nameof(infoBar));
+            _ = errorList ?? throw new ArgumentNullException(nameof(errorList));
         }
 
         /// <inheritdoc />
@@ -72,36 +85,117 @@ namespace IKVM.Clang.Vsix.Clangd
         /// <inheritdoc />
         public async Task OnLoadedAsync()
         {
+            _loaded = true;
+            _database.ToolsetsChanged += (_, _) => _ = Task.Run(EvaluateAsync);
+            await EvaluateAsync();
+
             if (StartAsync is not null)
                 await StartAsync.InvokeAsync(this, EventArgs.Empty);
         }
 
-        /// <inheritdoc />
-        public Task<Connection?> ActivateAsync(CancellationToken token)
+        /// <summary>
+        /// Starts clangd if a project has reported one, or else explains why it cannot be started.
+        /// </summary>
+        async Task EvaluateAsync()
         {
-            // the compilers the SDK resolved for the projects; clangd from the same LLVM matches them best
-            var compilerDirectories = _database.GetDefaultEntries()
-                .Select(i => i.Arguments.Count > 0 ? i.Arguments[0] : "")
-                .Where(i => Path.IsPathRooted(i))
-                .Select(i => Path.GetDirectoryName(i)!)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-
-            var clangd = ClangdLocator.Find(compilerDirectories);
-            if (clangd is null)
-                throw new FileNotFoundException(
-                    $"clangd was not found. Install LLVM, add clangd to PATH, or set {ClangdLocator.PathVariable} to the path of clangd.exe. Looked at: " +
-                    string.Join(", ", ClangdLocator.GetCandidates(compilerDirectories).Distinct(StringComparer.OrdinalIgnoreCase)));
-
-            var process = Process.Start(new ProcessStartInfo(clangd)
+            await _sync.WaitAsync();
+            try
             {
-                Arguments = "--background-index --log=error",
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-            }) ?? throw new InvalidOperationException($"Could not start {clangd}.");
+                if (_loaded == false || _clangdReady.Task.IsCompleted)
+                    return;
+
+                // nothing reported yet: the design-time builds are still running
+                var toolsets = _database.GetToolsets();
+                if (toolsets.Count == 0)
+                    return;
+
+                var usable = toolsets.FirstOrDefault(i => i.HasClangd);
+                if (usable is not null)
+                {
+                    ClangdTrace.Write($"clangd is {usable.ClangdPath}, as resolved for {usable.Context.Label}");
+                    await _infoBar.CloseAsync();
+                    _clangdReady.TrySetResult(usable.ClangdPath);
+                    return;
+                }
+
+                await _infoBar.ShowAsync(Explain(toolsets), toolsets[0].Context.ProjectPath);
+            }
+            catch (Exception e)
+            {
+                ClangdTrace.Write($"could not start clangd: {e}");
+            }
+            finally
+            {
+                _sync.Release();
+            }
+        }
+
+        /// <summary>
+        /// Says why no project can provide clangd, and how to correct it.
+        /// </summary>
+        static string Explain(IReadOnlyList<ClangToolset> toolsets)
+        {
+            const string Off = "Code completion, navigation and diagnostics for Clang projects are off because clangd is not available. ";
+
+            var reported = toolsets.FirstOrDefault(i => i.IsReported);
+            if (reported is null)
+            {
+                var name = Path.GetFileNameWithoutExtension(toolsets[0].Context.ProjectPath);
+                return Off + $"{name} uses a version of IKVM.Clang.Sdk that does not report the LLVM tools it uses; update IKVM.Clang.Sdk to a newer version.";
+            }
+
+            var problem = reported.Problems.FirstOrDefault(i => i.Tool == "Clangd");
+            if (problem is not null)
+                return Off + problem.Message;
+
+            // the SDK found it, but it is gone since
+            return Off + $"clangd was expected at '{reported.ClangdPath}', which no longer exists. Reload the project to find the LLVM tools again, or set ClangdPath to the full path of clangd.";
+        }
+
+        /// <inheritdoc />
+        public async Task<Connection?> ActivateAsync(CancellationToken token)
+        {
+            while (true)
+            {
+                // completed from the thread pool, with asynchronous continuations, so waiting on it cannot deadlock
+#pragma warning disable VSTHRD003
+                var connection = await TryActivateAsync(await _clangdReady.Task.WithCancellation(token), token);
+#pragma warning restore VSTHRD003
+                if (connection is not null)
+                    return connection;
+            }
+        }
+
+        /// <summary>
+        /// Starts the given clangd and connects it, or returns <see langword="null"/>, ready to wait for another, if
+        /// it cannot be started.
+        /// </summary>
+        async Task<Connection?> TryActivateAsync(string clangd, CancellationToken token)
+        {
+            Process process;
+            try
+            {
+                process = Process.Start(new ProcessStartInfo(clangd)
+                {
+                    Arguments = "--background-index --log=error",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                }) ?? throw new InvalidOperationException("The process did not start.");
+            }
+            catch (Exception e)
+            {
+                // let a later design-time build try again, possibly with another clangd
+                ClangdTrace.Write($"could not start {clangd}: {e}");
+                await _sync.WaitAsync(token);
+                _clangdReady = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+                _sync.Release();
+
+                await _infoBar.ShowAsync($"Code completion, navigation and diagnostics for Clang projects are off because clangd could not be started from '{clangd}': {e.Message} Set ClangdPath or LlvmToolsPath in the project to a working LLVM installation.", null);
+                return null;
+            }
 
             ClangdTrace.Write($"started {clangd} (process {process.Id})");
             process.ErrorDataReceived += (_, e) => { if (e.Data is not null) ClangdTrace.Write("clangd stderr: " + e.Data); };
@@ -137,7 +231,7 @@ namespace IKVM.Clang.Vsix.Clangd
 
             _process = process;
             _cancellation = cancellation;
-            return Task.FromResult<Connection?>(new Connection(fromProxy, toProxy));
+            return new Connection(fromProxy, toProxy);
         }
 
         /// <inheritdoc />

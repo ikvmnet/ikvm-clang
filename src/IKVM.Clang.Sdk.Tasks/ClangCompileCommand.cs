@@ -1,13 +1,13 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-
 namespace IKVM.Clang.Sdk.Tasks
 {
+
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
 
     /// <summary>
     /// Describes how one source file is compiled: the arguments passed to clang, and the same command as a JSON

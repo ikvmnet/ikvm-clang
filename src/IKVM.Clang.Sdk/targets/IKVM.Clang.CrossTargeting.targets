@@ -44,6 +44,7 @@
 
     <!-- compile commands belong to the inner build of each target identifier; the outer build has none -->
     <Target Name="GetClangCompileCommands" Returns="@(ClangCompileCommand)" />
+    <Target Name="GetLlvmToolset" Returns="@(LlvmToolset)" />
 
     <Import Project="$(CustomAfterIkvmClangCrossTargetingTargets)" Condition="'$(CustomAfterIkvmClangCrossTargetingTargets)' != '' and Exists('$(CustomAfterIkvmClangCrossTargetingTargets)')"/>
 </Project>
