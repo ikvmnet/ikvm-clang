@@ -810,11 +810,34 @@
 
     <Target Name="CoreBuild" DependsOnTargets="$(CoreBuildDependsOn)" />
 
+    <!--
+
+    CoreClean
+
+    Adds the files the build produces to the Clean items: the object files, the linked or archived output and its
+    debug symbols, the copied headers, and the copies in the output directory. Clean also deletes everything earlier
+    builds recorded writing; these cover outputs that were never recorded.
+
+    -->
+
     <PropertyGroup>
         <CoreCleanDependsOn>
             $(CoreCleanDependsOn);
+            _AddClangOutputsToClean;
         </CoreCleanDependsOn>
     </PropertyGroup>
+
+    <Target Name="_AddClangOutputsToClean" DependsOnTargets="PrepareCompile;PrepareCopyHeaders">
+        <ItemGroup>
+            <Clean Include="@(Compile->'%(ObjectPath)')" />
+            <Clean Include="$(ExecutableIntermediateOutputPath)" Condition=" '$(ExecutableIntermediateOutputPath)' != '' " />
+            <Clean Include="$(LibraryIntermediateOutputPath)" Condition=" '$(LibraryIntermediateOutputPath)' != '' " />
+            <Clean Include="$(DebugSymbolsIntermediateOutputPath)" Condition=" '$(DebugSymbolsIntermediateOutputPath)' != '' " />
+            <Clean Include="@(Header->'$(HeadersIntermediateOutputPath)%(IncludePath)')" Condition=" '$(HeadersIntermediateOutputPath)' != '' " />
+            <Clean Include="$(OutputPath)$(ExecutableFileName)" Condition=" '$(ExecutableFileName)' != '' " />
+            <Clean Include="$(OutputPath)$(DebugSymbolsFileName)" Condition=" '$(DebugSymbolsFileName)' != '' " />
+        </ItemGroup>
+    </Target>
 
     <Target Name="CoreClean" DependsOnTargets="$(CoreCleanDependsOn)" />
 

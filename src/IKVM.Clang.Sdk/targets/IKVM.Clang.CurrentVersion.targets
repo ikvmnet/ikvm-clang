@@ -200,6 +200,30 @@
     <Target Name="AfterClean" />
 
     <!--
+
+    Rebuild
+
+    Cleans, then builds.
+
+    -->
+
+    <PropertyGroup>
+        <RebuildDependsOn>
+            BeforeRebuild;
+            Clean;
+            Build;
+            AfterRebuild;
+            $(RebuildDependsOn);
+        </RebuildDependsOn>
+    </PropertyGroup>
+
+    <Target Name="Rebuild" DependsOnTargets="$(RebuildDependsOn)" />
+
+    <Target Name="BeforeRebuild" />
+
+    <Target Name="AfterRebuild" />
+
+    <!--
     
     IncrementalClean
     
@@ -317,6 +341,10 @@
         <FindUnderPath Path="$(IntermediateOutputPath)" Files="@(FileWrites)" UpdateToAbsolutePaths="true">
             <Output TaskParameter="InPath" ItemName="_CleanCurrentFileWritesInIntermediate"/>
         </FindUnderPath>
+
+        <ItemGroup>
+            <_CleanCurrentFileWritesWithNoReferences Include="@(_CleanCurrentFileWritesInOutput);@(_CleanCurrentFileWritesInIntermediate)" />
+        </ItemGroup>
 
         <!-- Remove duplicates from files produced in this build. -->
         <RemoveDuplicates Inputs="@(_CleanCurrentFileWritesWithNoReferences)" >
