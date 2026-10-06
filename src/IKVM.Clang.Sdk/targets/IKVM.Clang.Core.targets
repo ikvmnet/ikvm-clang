@@ -42,7 +42,8 @@
         <DebugSymbols Condition=" '$(DebugSymbols)' == '' And '$(Configuration)' == 'Debug' ">true</DebugSymbols>
         <!-- passed as -O<level>: 0, 1, 2, 3, s, z or g; empty leaves it to clang, which does not optimize -->
         <Optimization Condition=" '$(Optimization)' == '' And '$(Configuration)' == 'Release' ">2</Optimization>
-        <DefineNDEBUG Condition=" '$(DefineNDEBUG)' == '' And '$(Configuration)' == 'Release' ">true</DefineNDEBUG>
+        <!-- false defines NDEBUG, which removes assert -->
+        <Assertions Condition=" '$(Assertions)' == '' And '$(Configuration)' == 'Release' ">false</Assertions>
     </PropertyGroup>
 
     <!--
@@ -603,7 +604,7 @@
             <_Args Include="@(_IncludeDirectoriesArgs)" />
 
             <_PreprocessorDefinitions Remove="@(_PreprocessorDefinitions)" />
-            <_PreprocessorDefinitions Include="NDEBUG" Condition=" '$(DefineNDEBUG)' == 'true' " />
+            <_PreprocessorDefinitions Include="NDEBUG" Condition=" '$(Assertions)' == 'false' " />
             <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />

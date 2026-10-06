@@ -144,7 +144,7 @@ namespace IKVM.Clang.Sdk.Tests
             Command("Release", "x86_64-unknown-linux-gnu", "a.o").Should().Contain("-fPIC");
 
             // and each can be changed
-            Build(project, "-t:Build", "-p:Configuration=Release", "-p:Optimization=s", "-p:DefineNDEBUG=false", "-p:PositionIndependentCode=false");
+            Build(project, "-t:Build", "-p:Configuration=Release", "-p:Optimization=s", "-p:Assertions=true", "-p:PositionIndependentCode=false");
             Command("Release", Target, "a.obj").Should().Contain("-Os").And.NotContain("-O2").And.NotContain("NDEBUG");
             Command("Release", "x86_64-unknown-linux-gnu", "a.o").Should().NotContain("-fPIC");
         }
