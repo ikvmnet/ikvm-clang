@@ -42,5 +42,8 @@
 
     <Target Name="Rebuild" DependsOnTargets="Clean;Build" />
 
+    <!-- compile commands belong to the inner build of each target identifier; the outer build has none -->
+    <Target Name="GetClangCompileCommands" Returns="@(ClangCompileCommand)" />
+
     <Import Project="$(CustomAfterIkvmClangCrossTargetingTargets)" Condition="'$(CustomAfterIkvmClangCrossTargetingTargets)' != '' and Exists('$(CustomAfterIkvmClangCrossTargetingTargets)')"/>
 </Project>

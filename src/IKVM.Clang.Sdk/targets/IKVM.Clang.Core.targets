@@ -297,24 +297,27 @@
 
     <!--
     
-    CoreCompile
+    ComputeClangCompileCommands
     
-    Invokes the Clang compiler for each Compile item to generate the output object file.
+    Works out the clang command line for each Compile item without compiling anything. CoreCompile runs these
+    commands, and GetClangCompileCommands returns them to tools such as the Visual Studio extension, which hands them
+    to clangd. Design-time builds call it, so it must not build: project references are only asked for their output
+    items.
     
     -->
 
     <PropertyGroup>
-        <CoreCompileDependsOn>
-            $(CoreCompileDependsOn);
-            ResolveProjectReferences;
+        <ClangCompiler Condition=" '$(ClangCompiler)' == '' ">$(ClangToolExe)</ClangCompiler>
+        <ComputeClangCompileCommandsDependsOn>
+            $(ComputeClangCompileCommandsDependsOn);
             ImportProjectReferenceItems;
             PrepareCompile;
-        </CoreCompileDependsOn>
+        </ComputeClangCompileCommandsDependsOn>
     </PropertyGroup>
 
-    <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)" Inputs="@(Compile)" Outputs="%(ObjectPath)">
-        <MakeDir Directories="$([System.IO.Path]::GetDirectoryname('%(Compile.ObjectPath)'))" />
+    <Target Name="ComputeClangCompileCommands" DependsOnTargets="$(ComputeClangCompileCommandsDependsOn);_ComputeClangCompileCommand" />
 
+    <Target Name="_ComputeClangCompileCommand" Outputs="%(Compile.Identity)" Condition=" '@(Compile)' != '' ">
         <PropertyGroup>
             <_SourcePath>%(Compile.Identity)</_SourcePath>
             <_ObjectPath>%(Compile.ObjectPath)</_ObjectPath>
@@ -422,10 +425,61 @@
             <_Args Include="-o" Value="$(_ObjectPath)" Separator=" " />
         </ItemGroup>
 
+        <ClangCompileCommand Source="$(_SourcePath)" Directory="$(MSBuildProjectDirectory)" Compiler="$(ClangCompiler)" Arguments="@(_Args)">
+            <Output TaskParameter="Command" ItemName="_ClangCompileCommand" />
+            <Output TaskParameter="ArgumentList" ItemName="_ClangCompileArgument" />
+        </ClangCompileCommand>
+
+        <ItemGroup>
+            <ClangCompileCommand Include="@(_ClangCompileCommand)">
+                <ObjectPath>$(_ObjectPath)</ObjectPath>
+                <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
+                <ArgumentList>@(_ClangCompileArgument)</ArgumentList>
+            </ClangCompileCommand>
+            <_ClangCompileCommand Remove="@(_ClangCompileCommand)" />
+            <_ClangCompileArgument Remove="@(_ClangCompileArgument)" />
+        </ItemGroup>
+    </Target>
+
+    <!--
+    
+    GetClangCompileCommands
+    
+    Externally callable target that returns the compile command of each source file, with CommandLine (a JSON array
+    of the compiler and its arguments), WorkingDirectory and TargetIdentifier metadata.
+    
+    -->
+
+    <Target Name="GetClangCompileCommands" DependsOnTargets="ComputeClangCompileCommands" Returns="@(ClangCompileCommand)" />
+
+    <!--
+    
+    CoreCompile
+    
+    Invokes the Clang compiler for each Compile item to generate the output object file.
+    
+    -->
+
+    <PropertyGroup>
+        <CoreCompileDependsOn>
+            $(CoreCompileDependsOn);
+            ResolveProjectReferences;
+            ComputeClangCompileCommands;
+        </CoreCompileDependsOn>
+    </PropertyGroup>
+
+    <Target Name="CoreCompile" DependsOnTargets="$(CoreCompileDependsOn)" Inputs="@(ClangCompileCommand)" Outputs="%(ClangCompileCommand.ObjectPath)">
+        <MakeDir Directories="$([System.IO.Path]::GetDirectoryName('%(ClangCompileCommand.ObjectPath)'))" />
+
+        <ItemGroup>
+            <_Args Remove="@(_Args)" />
+            <_Args Include="%(ClangCompileCommand.ArgumentList)" />
+        </ItemGroup>
+
         <ClangExe ToolExe="$(ClangToolExe)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
 
         <ItemGroup>
-            <FileWrites Include="$(_ObjectPath)" />
+            <FileWrites Include="%(ClangCompileCommand.ObjectPath)" />
         </ItemGroup>
 
         <CallTarget Targets="$(TargetsTriggeredByCompilation)" Condition="'$(TargetsTriggeredByCompilation)' != ''" />
