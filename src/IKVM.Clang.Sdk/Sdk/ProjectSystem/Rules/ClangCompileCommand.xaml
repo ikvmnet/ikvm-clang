@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+The compile command of each source file, as returned by the GetClangCompileCommands target. Including this rule in
+the project subscription service makes design-time builds run that target, and the Visual Studio extension passes the
+results to clangd.
+-->
+<Rule
+    Name="ClangCompileCommand"
+    DisplayName="Clang Compile Command"
+    PageTemplate="generic"
+    Description="Compile command of a source file"
+    xmlns="http://schemas.microsoft.com/build/2009/properties">
+    <Rule.DataSource>
+        <DataSource
+            Persistence="ProjectFile"
+            ItemType="ClangCompileCommand"
+            MSBuildTarget="GetClangCompileCommands"
+            SourceOfDefaultValue="AfterContext"
+            SourceType="TargetResults"
+            HasConfigurationCondition="False" />
+    </Rule.DataSource>
+
+    <StringProperty Name="CommandLine" ReadOnly="True" Visible="False" />
+    <StringProperty Name="WorkingDirectory" ReadOnly="True" Visible="False" />
+    <StringProperty Name="TargetIdentifier" ReadOnly="True" Visible="False" />
+</Rule>

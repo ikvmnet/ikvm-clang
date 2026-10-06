@@ -13,5 +13,6 @@
 
     <UsingTask TaskName="ClangExe" AssemblyFile="$(IkvmClangSdkTaskAssembly)" TaskFactory="$(IkvmClangSdkTaskFactory)" />
     <UsingTask TaskName="LlvmArExe" AssemblyFile="$(IkvmClangSdkTaskAssembly)" TaskFactory="$(IkvmClangSdkTaskFactory)" />
+    <UsingTask TaskName="ClangCompileCommand" AssemblyFile="$(IkvmClangSdkTaskAssembly)" TaskFactory="$(IkvmClangSdkTaskFactory)" />
 
 </Project>

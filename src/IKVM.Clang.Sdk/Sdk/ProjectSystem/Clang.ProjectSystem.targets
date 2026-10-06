@@ -78,6 +78,9 @@
         <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\Header.BrowseObject.xaml">
             <Context>BrowseObject</Context>
         </PropertyPageSchema>
+        <PropertyPageSchema Include="$(MSBuildThisFileDirectory)Rules\ClangCompileCommand.xaml">
+            <Context>ProjectSubscriptionService</Context>
+        </PropertyPageSchema>
     </ItemGroup>
 
 </Project>
