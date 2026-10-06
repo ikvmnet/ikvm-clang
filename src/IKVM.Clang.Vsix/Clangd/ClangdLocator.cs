@@ -22,22 +22,30 @@ namespace IKVM.Clang.Vsix.Clangd
 
         /// <summary>
         /// Returns the full path of clangd, or <see langword="null"/> if it cannot be found. Looks, in order, at
-        /// <see cref="PathVariable"/>, the directories on <c>PATH</c>, the default LLVM installation, and the LLVM
-        /// tools that ship with Visual Studio's C++ workload.
+        /// <see cref="PathVariable"/>, the directories of the compilers the projects build with (so that clangd
+        /// matches them), the directories on <c>PATH</c>, the default LLVM installation, and the LLVM tools that ship
+        /// with Visual Studio's C++ workload.
         /// </summary>
-        public static string? Find()
+        public static string? Find(IEnumerable<string> compilerDirectories)
         {
-            return GetCandidates().FirstOrDefault(File.Exists);
+            return GetCandidates(compilerDirectories).FirstOrDefault(File.Exists);
         }
 
         /// <summary>
         /// Places looked at by <see cref="Find"/>, for reporting when clangd is missing.
         /// </summary>
-        public static IEnumerable<string> GetCandidates()
+        public static IEnumerable<string> GetCandidates(IEnumerable<string> compilerDirectories)
         {
             var configured = Environment.GetEnvironmentVariable(PathVariable);
             if (string.IsNullOrWhiteSpace(configured) == false)
                 yield return Environment.ExpandEnvironmentVariables(configured);
+
+            foreach (var directory in compilerDirectories)
+            {
+                var path = TryCombine(directory, FileName);
+                if (path is not null)
+                    yield return path;
+            }
 
             foreach (var directory in (Environment.GetEnvironmentVariable("PATH") ?? "").Split(Path.PathSeparator))
             {
