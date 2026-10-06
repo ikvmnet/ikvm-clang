@@ -40,6 +40,9 @@
         <OutputType Condition=" '$(OutputType)' == '' ">Dll</OutputType>
         <TargetTriple Condition=" '$(TargetTriple)' == '' ">$(TargetIdentifier)</TargetTriple>
         <DebugSymbols Condition=" '$(DebugSymbols)' == '' And '$(Configuration)' == 'Debug' ">true</DebugSymbols>
+        <!-- passed as -O<level>: 0, 1, 2, 3, s, z or g; empty leaves it to clang, which does not optimize -->
+        <Optimization Condition=" '$(Optimization)' == '' And '$(Configuration)' == 'Release' ">2</Optimization>
+        <DefineNDEBUG Condition=" '$(DefineNDEBUG)' == '' And '$(Configuration)' == 'Release' ">true</DefineNDEBUG>
     </PropertyGroup>
 
     <!--
@@ -60,6 +63,15 @@
         <ClangTargetIsMsvc Condition=" '$(ClangTargetIsMsvc)' == '' And '$(_ClangTriple)' != '' And $(_ClangTriple.Contains('-msvc')) ">true</ClangTargetIsMsvc>
         <ClangTargetIsMsvc Condition=" '$(ClangTargetIsMsvc)' == '' And '$(_ClangTriple)' == '' And $([MSBuild]::IsOSPlatform('Windows')) ">true</ClangTargetIsMsvc>
         <ClangTargetIsMsvc Condition=" '$(ClangTargetIsMsvc)' == '' ">false</ClangTargetIsMsvc>
+    </PropertyGroup>
+
+    <!--
+    Code for ELF platforms is position independent, so that a static library can be linked into a shared one. Windows
+    does not take -fPIC, Apple platforms always build position independent code, and on WebAssembly it selects dynamic
+    linking.
+    -->
+    <PropertyGroup>
+        <PositionIndependentCode Condition=" '$(PositionIndependentCode)' == '' And '$(ClangTargetOS)' == 'unix' ">true</PositionIndependentCode>
     </PropertyGroup>
 
     <!-- only the MSVC environment's linker writes debug information to its own file; elsewhere it is in the binary -->
@@ -525,6 +537,8 @@
             <_Language Condition=" '$(_Language)' == '' And '%(Compile.Extension)' == '.asm' ">assembler-with-cpp</_Language>
             <_LanguageStandard>%(Compile.LanguageStandard)</_LanguageStandard>
             <_LanguageStandard Condition=" '$(_LanguageStandard)' == '' ">$(LanguageStandard)</_LanguageStandard>
+            <_Optimization>%(Compile.Optimization)</_Optimization>
+            <_Optimization Condition=" '$(_Optimization)' == '' ">$(Optimization)</_Optimization>
             <_PositionIndependentCode>%(Compile.PositionIndependentCode)</_PositionIndependentCode>
             <_PositionIndependentCode Condition=" '$(_PositionIndependentCode)' == '' ">$(PositionIndependentCode)</_PositionIndependentCode>
             <_MsCompatibility>%(Compile.MsCompatibility)</_MsCompatibility>
@@ -539,6 +553,7 @@
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
             <_Args Include="--target" Value="$(TargetTriple)" Separator="=" Condition=" '$(TargetTriple)' != '' " />
             <_Args Include="-g" Condition=" '$(_DebugSymbols)' == 'true' " />
+            <_Args Include="-O$(_Optimization)" Condition=" '$(_Optimization)' != '' " />
 
             <_Args Include="-std" Value="$(_LanguageStandard)" Separator="=" Condition=" '$(_LanguageStandard)' != '' " />
             <_Args Include="-fPIC" Condition=" '$(_PositionIndependentCode)' == 'true' " />
@@ -588,6 +603,7 @@
             <_Args Include="@(_IncludeDirectoriesArgs)" />
 
             <_PreprocessorDefinitions Remove="@(_PreprocessorDefinitions)" />
+            <_PreprocessorDefinitions Include="NDEBUG" Condition=" '$(DefineNDEBUG)' == 'true' " />
             <_PreprocessorDefinitions Include="@(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="$(PreprocessorDefinitions)" />
             <_PreprocessorDefinitions Include="%(Compile.PreprocessorDefinitions)" />

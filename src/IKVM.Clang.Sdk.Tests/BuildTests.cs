@@ -125,6 +125,31 @@ namespace IKVM.Clang.Sdk.Tests
         }
 
         [TestMethod]
+        public void ReleaseOptimizesAndElfIsPositionIndependent()
+        {
+            var project = TestProjects.Create("defaults", "<OutputType>Lib</OutputType><TargetIdentifiers>x86_64-pc-windows-msvc;x86_64-unknown-linux-gnu;wasm32-unknown-unknown</TargetIdentifiers>", "",
+                ("a.c", "int a(void) { return 1; }\n"));
+
+            string Command(string configuration, string target, string obj) => File.ReadAllText(Path.Combine(project, "obj", configuration, target, obj + ".cmd"));
+
+            Build(project, "-t:Build", "-p:Configuration=Debug");
+            Build(project, "-t:Build", "-p:Configuration=Release");
+
+            Command("Debug", Target, "a.obj").Should().NotContain("-O").And.NotContain("NDEBUG").And.Contain("-g");
+            Command("Release", Target, "a.obj").Should().Contain("-O2").And.Contain("-DNDEBUG").And.NotContain("-g");
+
+            Command("Debug", Target, "a.obj").Should().NotContain("-fPIC", "Windows does not take it");
+            Command("Debug", "wasm32-unknown-unknown", "a.o").Should().NotContain("-fPIC", "on WebAssembly it selects dynamic linking");
+            Command("Debug", "x86_64-unknown-linux-gnu", "a.o").Should().Contain("-fPIC");
+            Command("Release", "x86_64-unknown-linux-gnu", "a.o").Should().Contain("-fPIC");
+
+            // and each can be changed
+            Build(project, "-t:Build", "-p:Configuration=Release", "-p:Optimization=s", "-p:DefineNDEBUG=false", "-p:PositionIndependentCode=false");
+            Command("Release", Target, "a.obj").Should().Contain("-Os").And.NotContain("-O2").And.NotContain("NDEBUG");
+            Command("Release", "x86_64-unknown-linux-gnu", "a.o").Should().NotContain("-fPIC");
+        }
+
+        [TestMethod]
         public void CopiesOnlyHeadersMarkedForTheIncludeDirectory()
         {
             var project = TestProjects.Create("headers", $"<OutputType>Lib</OutputType><TargetIdentifier>{Target}</TargetIdentifier>",
