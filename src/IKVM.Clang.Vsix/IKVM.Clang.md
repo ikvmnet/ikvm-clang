@@ -40,8 +40,10 @@ Visual Studio extension that provides IDE support for building C, C++, Objective
 ## Requirements
 
 - LLVM/Clang installed and on PATH
-- clangd for language support: found on PATH, in the default LLVM installation, in Visual Studio's C++ Clang tools,
-  or at the path in the `IKVM_CLANG_CLANGD_PATH` environment variable
+- clangd for language support, from the same LLVM installation; IKVM.Clang.Sdk finds it, and its `ClangdPath` or
+  `LlvmToolsPath` properties override where
+- If a tool cannot be found, the Error List says so and how to correct it, and language support stays off (with an
+  info bar explaining why) until it is
 - Visual Studio 2022 version 17.14 or later
 
 ## Example Project

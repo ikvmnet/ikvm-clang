@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Microsoft.Build.Framework;
-
 namespace IKVM.Clang.Sdk.Tasks
 {
+
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+
+    using Microsoft.Build.Framework;
 
     /// <summary>
     /// Expands argument items into the individual command line arguments they stand for.

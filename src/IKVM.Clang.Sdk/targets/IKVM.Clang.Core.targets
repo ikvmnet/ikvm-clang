@@ -3,13 +3,36 @@
         <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     </PropertyGroup>
 
+    <!--
+    LLVM tools. ResolveLlvmToolset finds them; these properties control where:
+
+      LlvmToolsPath   a directory to take every tool from, such as the bin directory of an LLVM installation
+      ClangPath       full path of clang
+      ClangCxxPath    full path of clang++, which links projects with C++ or Objective-C++ sources
+      LlvmArPath      full path of llvm-ar, which creates static libraries
+      ClangdPath      full path of clangd, which Visual Studio runs for language support
+      LinkerPath      full path of the linker for clang to run (its ld-path option); otherwise clang finds lld next to it
+
+    A tool not given by full path comes from LlvmToolsPath, or else from the LLVM installation clang is found in, so
+    that the tools match. ClangToolPath with ClangToolExe, and LlvmArToolPath with LlvmArToolExe, are still honoured.
+    -->
     <PropertyGroup>
         <ClangToolName Condition=" '$(ClangToolName)' == '' And !$([MSBuild]::IsOSUnixLike())">clang.exe</ClangToolName>
         <ClangToolName Condition=" '$(ClangToolName)' == '' And  $([MSBuild]::IsOSUnixLike())">clang</ClangToolName>
         <ClangToolExe Condition=" '$(ClangToolExe)' == '' And '$(ClangToolName)' != '' ">$(ClangToolName)</ClangToolExe>
+        <ClangCxxToolName Condition=" '$(ClangCxxToolName)' == '' And !$([MSBuild]::IsOSUnixLike())">clang++.exe</ClangCxxToolName>
+        <ClangCxxToolName Condition=" '$(ClangCxxToolName)' == '' And  $([MSBuild]::IsOSUnixLike())">clang++</ClangCxxToolName>
         <LlvmArToolName Condition=" '$(LlvmArToolName)' == '' And !$([MSBuild]::IsOSUnixLike())">llvm-ar.exe</LlvmArToolName>
         <LlvmArToolName Condition=" '$(LlvmArToolName)' == '' And  $([MSBuild]::IsOSUnixLike())">llvm-ar</LlvmArToolName>
         <LlvmArToolExe Condition=" '$(LlvmArToolExe)' == '' And '$(LlvmArToolName)' != '' ">$(LlvmArToolName)</LlvmArToolExe>
+        <ClangdToolName Condition=" '$(ClangdToolName)' == '' And !$([MSBuild]::IsOSUnixLike())">clangd.exe</ClangdToolName>
+        <ClangdToolName Condition=" '$(ClangdToolName)' == '' And  $([MSBuild]::IsOSUnixLike())">clangd</ClangdToolName>
+
+        <!-- the older ToolPath (a directory) and ToolExe (a file name, or a full path) pairs -->
+        <ClangPath Condition=" '$(ClangPath)' == '' And '$(ClangToolPath)' != '' ">$([System.IO.Path]::Combine('$(ClangToolPath)', '$(ClangToolExe)'))</ClangPath>
+        <ClangPath Condition=" '$(ClangPath)' == '' And $([System.IO.Path]::IsPathRooted('$(ClangToolExe)')) ">$(ClangToolExe)</ClangPath>
+        <LlvmArPath Condition=" '$(LlvmArPath)' == '' And '$(LlvmArToolPath)' != '' ">$([System.IO.Path]::Combine('$(LlvmArToolPath)', '$(LlvmArToolExe)'))</LlvmArPath>
+        <LlvmArPath Condition=" '$(LlvmArPath)' == '' And $([System.IO.Path]::IsPathRooted('$(LlvmArToolExe)')) ">$(LlvmArToolExe)</LlvmArPath>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -297,29 +320,91 @@
 
     <!--
     
-    ResolveClangTools
+    ResolveLlvmToolset
     
-    Finds clang, and llvm-ar from the same LLVM installation, so that builds and the compile commands handed to tools
-    such as clangd all use the same compiler. ClangToolPath and LlvmArToolPath name directories to take them from;
-    otherwise they are looked for on the PATH, in the default LLVM installation, and in Visual Studio's C++ Clang
-    tools. Sets ClangCompilerPath, ClangResourceDirectory (where clang's builtin headers are) and LlvmArPath.
+    Finds the LLVM tools (see the properties at the top of this file). Sets ClangPath, ClangCxxPath, LlvmArPath and
+    ClangdPath to the tools found, or to nothing for those not found; LlvmToolsDirectory to clang's directory;
+    ClangResourceDirectory to where clang's builtin headers are; and LlvmToolsetProblem items, with Code and Message
+    metadata, for the tools that could not be found. Targets that run a tool check for it with the _CheckLlvmTool
+    targets; design-time builds only report the problems, through GetLlvmToolset.
     
     -->
 
-    <Target Name="ResolveClangTools">
-        <ResolveLlvmTool ToolName="$(ClangToolExe)" ToolPath="$(ClangToolPath)" VsInstallRoot="$(VsInstallRoot)" QueryResourceDirectory="true">
-            <Output TaskParameter="FullPath" PropertyName="ClangCompilerPath" />
-            <Output TaskParameter="ResourceDirectory" PropertyName="ClangResourceDirectory" />
-        </ResolveLlvmTool>
+    <Target Name="ResolveLlvmToolset">
+        <ResolveLlvmToolset
+            LlvmToolsPath="$(LlvmToolsPath)"
+            ClangPath="$(ClangPath)"
+            ClangCxxPath="$(ClangCxxPath)"
+            LlvmArPath="$(LlvmArPath)"
+            ClangdPath="$(ClangdPath)"
+            LinkerPath="$(LinkerPath)"
+            ClangFileName="$([System.IO.Path]::GetFileName('$(ClangToolExe)'))"
+            ClangCxxFileName="$(ClangCxxToolName)"
+            LlvmArFileName="$([System.IO.Path]::GetFileName('$(LlvmArToolExe)'))"
+            ClangdFileName="$(ClangdToolName)"
+            VsInstallRoot="$(VsInstallRoot)">
+            <Output TaskParameter="ClangPath" PropertyName="ClangPath" />
+            <Output TaskParameter="ClangCxxPath" PropertyName="ClangCxxPath" />
+            <Output TaskParameter="LlvmArPath" PropertyName="LlvmArPath" />
+            <Output TaskParameter="ClangdPath" PropertyName="ClangdPath" />
+            <Output TaskParameter="LinkerPath" PropertyName="LinkerPath" />
+            <Output TaskParameter="LlvmToolsDirectory" PropertyName="LlvmToolsDirectory" />
+            <Output TaskParameter="ClangResourceDirectory" PropertyName="ClangResourceDirectory" />
+            <Output TaskParameter="ProblemsJson" PropertyName="LlvmToolsetProblemsJson" />
+            <Output TaskParameter="Problems" ItemName="LlvmToolsetProblem" />
+        </ResolveLlvmToolset>
 
         <PropertyGroup>
-            <_ClangToolDirectory Condition=" $([System.IO.Path]::IsPathRooted('$(ClangCompilerPath)')) ">$([System.IO.Path]::GetDirectoryName('$(ClangCompilerPath)'))</_ClangToolDirectory>
+            <!-- compile commands name clang even when it was not found, so tools such as clangd can still use them -->
+            <_ClangCommandCompiler>$(ClangPath)</_ClangCommandCompiler>
+            <_ClangCommandCompiler Condition=" '$(_ClangCommandCompiler)' == '' ">$(ClangToolExe)</_ClangCommandCompiler>
         </PropertyGroup>
-
-        <ResolveLlvmTool ToolName="$(LlvmArToolExe)" ToolPath="$(LlvmArToolPath)" PreferredDirectory="$(_ClangToolDirectory)" VsInstallRoot="$(VsInstallRoot)">
-            <Output TaskParameter="FullPath" PropertyName="LlvmArPath" />
-        </ResolveLlvmTool>
     </Target>
+
+    <!--
+    The checks run before a tool is used: each fails the build with the reason the tool is missing and how to correct
+    it. Design-time builds never run them.
+    -->
+    <Target Name="_CheckClang" DependsOnTargets="ResolveLlvmToolset">
+        <Error Condition=" '$(ClangPath)' == '' " Code="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'Clang')->'%(Code)')" Text="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'Clang')->'%(Message)')" />
+    </Target>
+
+    <Target Name="_CheckLlvmAr" DependsOnTargets="ResolveLlvmToolset">
+        <Error Condition=" '$(LlvmArPath)' == '' " Code="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'LlvmAr')->'%(Code)')" Text="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'LlvmAr')->'%(Message)') llvm-ar creates static libraries." />
+    </Target>
+
+    <Target Name="_CheckLinker" DependsOnTargets="ResolveLlvmToolset">
+        <Error Condition=" '@(LlvmToolsetProblem->WithMetadataValue('Identity', 'Linker'))' != '' " Code="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'Linker')->'%(Code)')" Text="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'Linker')->'%(Message)')" />
+    </Target>
+
+    <!--
+    
+    GetLlvmToolset
+    
+    Externally callable target that returns the resolved LLVM tools as one item, named by the project, with ClangPath,
+    ClangCxxPath, LlvmArPath, ClangdPath, LinkerPath, LlvmToolsDirectory and ClangResourceDirectory metadata, and
+    Problems: a JSON array of the tools that could not be found, each with tool, code and message. Design-time builds
+    run it for the Visual Studio extension, which takes clangd from it and shows the problems.
+    
+    -->
+
+    <Target Name="GetLlvmToolset" DependsOnTargets="ResolveLlvmToolset" Returns="@(LlvmToolset)">
+        <ItemGroup>
+            <LlvmToolset Remove="@(LlvmToolset)" />
+            <LlvmToolset Include="$(MSBuildProjectFullPath)">
+                <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
+                <ClangPath>$(ClangPath)</ClangPath>
+                <ClangCxxPath>$(ClangCxxPath)</ClangCxxPath>
+                <LlvmArPath>$(LlvmArPath)</LlvmArPath>
+                <ClangdPath>$(ClangdPath)</ClangdPath>
+                <LinkerPath>$(LinkerPath)</LinkerPath>
+                <LlvmToolsDirectory>$(LlvmToolsDirectory)</LlvmToolsDirectory>
+                <ClangResourceDirectory>$(ClangResourceDirectory)</ClangResourceDirectory>
+                <Problems>$(LlvmToolsetProblemsJson)</Problems>
+            </LlvmToolset>
+        </ItemGroup>
+    </Target>
+
 
     <!--
     
@@ -335,7 +420,7 @@
     <PropertyGroup>
         <ComputeClangCompileCommandsDependsOn>
             $(ComputeClangCompileCommandsDependsOn);
-            ResolveClangTools;
+            ResolveLlvmToolset;
             ImportProjectReferenceItems;
             PrepareCompile;
         </ComputeClangCompileCommandsDependsOn>
@@ -451,7 +536,7 @@
             <_Args Include="-o" Value="$(_ObjectPath)" Separator=" " />
         </ItemGroup>
 
-        <ClangCompileCommand Source="$(_SourcePath)" Directory="$(MSBuildProjectDirectory)" Compiler="$(ClangCompilerPath)" Arguments="@(_Args)">
+        <ClangCompileCommand Source="$(_SourcePath)" Directory="$(MSBuildProjectDirectory)" Compiler="$(_ClangCommandCompiler)" Arguments="@(_Args)">
             <Output TaskParameter="Command" ItemName="_ClangCompileCommand" />
             <Output TaskParameter="ArgumentList" ItemName="_ClangCompileArgument" />
         </ClangCompileCommand>
@@ -462,6 +547,7 @@
                 <TargetIdentifier>$(TargetIdentifier)</TargetIdentifier>
                 <ArgumentList>@(_ClangCompileArgument)</ArgumentList>
                 <ResourceDirectory>$(ClangResourceDirectory)</ResourceDirectory>
+                <Language>$(_Language)</Language>
             </ClangCompileCommand>
             <_ClangCompileCommand Remove="@(_ClangCompileCommand)" />
             <_ClangCompileArgument Remove="@(_ClangCompileArgument)" />
@@ -493,6 +579,7 @@
             $(CoreCompileDependsOn);
             ResolveProjectReferences;
             ComputeClangCompileCommands;
+            _CheckClang;
         </CoreCompileDependsOn>
     </PropertyGroup>
 
@@ -504,7 +591,7 @@
             <_Args Include="%(ClangCompileCommand.ArgumentList)" />
         </ItemGroup>
 
-        <ClangExe ToolExe="$(ClangCompilerPath)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
+        <ClangExe ToolExe="$(ClangPath)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
 
         <ItemGroup>
             <FileWrites Include="%(ClangCompileCommand.ObjectPath)" />
@@ -524,13 +611,34 @@
     <PropertyGroup>
         <CoreLinkDependsOn>
             $(CoreLinkDependsOn);
-            ResolveClangTools;
+            ResolveLlvmToolset;
             Compile;
             ImportProjectReferenceItems;
         </CoreLinkDependsOn>
     </PropertyGroup>
 
-    <Target Name="CoreLinkExecutable" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(ExecutableIntermediateOutputPath);$(LibraryIntermediateOutputPath)" Condition=" '$(OutputType)' == 'exe' Or '$(OutputType)' == 'dll' ">
+    <!--
+    Picks the driver that links: clang++ when any source is C++ or Objective-C++, so that the C++ standard library is
+    linked, otherwise clang. Set LinkWithClangCxx to true or false to choose.
+    -->
+    <Target Name="_PrepareLinkDriver" DependsOnTargets="ResolveLlvmToolset;ComputeClangCompileCommands;_CheckLinker">
+        <ItemGroup>
+            <_ClangCxxSource Remove="@(_ClangCxxSource)" />
+            <_ClangCxxSource Include="@(ClangCompileCommand)" Condition=" '%(ClangCompileCommand.Language)' == 'c++' Or '%(ClangCompileCommand.Language)' == 'objective-c++' " />
+        </ItemGroup>
+
+        <PropertyGroup>
+            <_ClangLinkWithCxx>$(LinkWithClangCxx)</_ClangLinkWithCxx>
+            <_ClangLinkWithCxx Condition=" '$(_ClangLinkWithCxx)' == '' And '@(_ClangCxxSource)' != '' ">true</_ClangLinkWithCxx>
+            <_ClangLinkDriver Condition=" '$(_ClangLinkWithCxx)' == 'true' ">$(ClangCxxPath)</_ClangLinkDriver>
+            <_ClangLinkDriver Condition=" '$(_ClangLinkWithCxx)' != 'true' ">$(ClangPath)</_ClangLinkDriver>
+        </PropertyGroup>
+
+        <Error Condition=" '$(_ClangLinkWithCxx)' == 'true' And '$(ClangCxxPath)' == '' " Code="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'ClangCxx')->'%(Code)')" Text="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'ClangCxx')->'%(Message)') clang++ links projects with C++ or Objective-C++ sources; set LinkWithClangCxx to false to link with clang instead." />
+        <Error Condition=" '$(_ClangLinkWithCxx)' != 'true' And '$(ClangPath)' == '' " Code="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'Clang')->'%(Code)')" Text="@(LlvmToolsetProblem->WithMetadataValue('Identity', 'Clang')->'%(Message)')" />
+    </Target>
+
+    <Target Name="CoreLinkExecutable" DependsOnTargets="$(CoreLinkDependsOn);_PrepareLinkDriver" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(ExecutableIntermediateOutputPath);$(LibraryIntermediateOutputPath)" Condition=" '$(OutputType)' == 'exe' Or '$(OutputType)' == 'dll' ">
         <MakeDir Directories="$(IntermediateOutputPath)" />
 
         <ItemGroup>
@@ -539,6 +647,7 @@
             <_Args Include="-v" Condition=" '$(Verbose)' == 'true' " />
             <_Args Include="--target" Value="$(TargetTriple)" Separator="=" />
             <_Args Include="-fuse-ld" Value="$(UseLd)" Separator="=" Condition=" '$(UseLd)' != '' " />
+            <_Args Include="--ld-path" Value="$(LinkerPath)" Separator="=" Condition=" '$(LinkerPath)' != '' " />
             <_Args Include="-g" Condition=" '$(DebugSymbols)' == 'true' " />
 
             <_Args Include="-Wl,/subsystem:$(Subsystem)" Condition=" '$(Subsystem)' != '' " />
@@ -589,7 +698,7 @@
             <_Args Include="-o" Value="$(ExecutableIntermediateOutputPath)" Separator=" " />
         </ItemGroup>
 
-        <ClangExe ToolExe="$(ClangCompilerPath)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
+        <ClangExe ToolExe="$(_ClangLinkDriver)" Arguments="@(_Args)" EnvironmentVariables="@(LlvmEnvironmentVariables)" />
 
         <ItemGroup>
             <FileWrites Include="$(ExecutableIntermediateOutputPath)" />
@@ -600,7 +709,7 @@
         <CallTarget Targets="$(TargetsTriggeredByLinking)" Condition="'$(TargetsTriggeredByLinking)' != ''" />
     </Target>
 
-    <Target Name="CoreLinkLibrary" DependsOnTargets="$(CoreLinkDependsOn)" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(LibraryIntermediateOutputPath)" Condition=" '$(OutputType)' == 'lib' ">
+    <Target Name="CoreLinkLibrary" DependsOnTargets="$(CoreLinkDependsOn);_CheckLlvmAr" Inputs="@(Compile->'%(ObjectPath)')" Outputs="$(LibraryIntermediateOutputPath)" Condition=" '$(OutputType)' == 'lib' ">
         <MakeDir Directories="$(IntermediateOutputPath)" />
 
         <ItemGroup>

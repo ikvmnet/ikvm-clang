@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+The LLVM tools the project resolved, as returned by the GetLlvmToolset target. Including this rule in the project
+subscription service makes design-time builds run that target; the Visual Studio extension takes clangd from it and
+reports the tools that could not be found.
+-->
+<Rule
+    Name="LlvmToolset"
+    DisplayName="LLVM Toolset"
+    PageTemplate="generic"
+    Description="LLVM tools used by the project"
+    xmlns="http://schemas.microsoft.com/build/2009/properties">
+    <Rule.DataSource>
+        <DataSource
+            Persistence="ProjectFile"
+            ItemType="LlvmToolset"
+            MSBuildTarget="GetLlvmToolset"
+            SourceOfDefaultValue="AfterContext"
+            SourceType="TargetResults"
+            HasConfigurationCondition="False" />
+    </Rule.DataSource>
+
+    <StringProperty Name="TargetIdentifier" ReadOnly="True" Visible="False" />
+    <StringProperty Name="ClangPath" ReadOnly="True" Visible="False" />
+    <StringProperty Name="ClangCxxPath" ReadOnly="True" Visible="False" />
+    <StringProperty Name="LlvmArPath" ReadOnly="True" Visible="False" />
+    <StringProperty Name="ClangdPath" ReadOnly="True" Visible="False" />
+    <StringProperty Name="LinkerPath" ReadOnly="True" Visible="False" />
+    <StringProperty Name="LlvmToolsDirectory" ReadOnly="True" Visible="False" />
+    <StringProperty Name="ClangResourceDirectory" ReadOnly="True" Visible="False" />
+    <StringProperty Name="Problems" ReadOnly="True" Visible="False" />
+</Rule>

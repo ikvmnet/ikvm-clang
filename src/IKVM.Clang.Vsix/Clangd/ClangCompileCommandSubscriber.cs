@@ -26,6 +26,7 @@ namespace IKVM.Clang.Vsix.Clangd
     {
 
         const string RuleName = "ClangCompileCommand";
+        const string ToolsetRuleName = "LlvmToolset";
 
         readonly UnconfiguredProject _project;
         readonly IActiveConfigurationGroupService _activeConfigurationGroupService;
@@ -37,9 +38,14 @@ namespace IKVM.Clang.Vsix.Clangd
         /// <summary>
         /// Creates the subscriber for the given project.
         /// </summary>
+        /// <remarks>
+        /// The Error List reporter is imported so that toolset problems show as soon as a Clang project loads, rather
+        /// than only once a source file is opened.
+        /// </remarks>
         [ImportingConstructor]
-        public ClangCompileCommandSubscriber(UnconfiguredProject project, IActiveConfigurationGroupService activeConfigurationGroupService, ClangCompileDatabase database)
+        public ClangCompileCommandSubscriber(UnconfiguredProject project, IActiveConfigurationGroupService activeConfigurationGroupService, ClangCompileDatabase database, ClangToolsetErrorList errorList)
         {
+            _ = errorList ?? throw new ArgumentNullException(nameof(errorList));
             _project = project ?? throw new ArgumentNullException(nameof(project));
             _activeConfigurationGroupService = activeConfigurationGroupService ?? throw new ArgumentNullException(nameof(activeConfigurationGroupService));
             _database = database ?? throw new ArgumentNullException(nameof(database));
@@ -110,13 +116,24 @@ namespace IKVM.Clang.Vsix.Clangd
                         continue;
 
                     var context = contexts[i];
-                    var target = new ActionBlock<IProjectVersionedValue<IProjectSubscriptionUpdate>>(u => OnCompileCommandsChanged(context, u.Value));
-                    _links[configured[i]] = subscription.ProjectBuildRuleSource.SourceBlock.LinkTo(
-                        target,
-                        new DataflowLinkOptions() { PropagateCompletion = true },
-                        initialDataAsNew: true,
-                        suppressVersionOnlyUpdates: true,
-                        RuleName);
+                    var target = new ActionBlock<IProjectVersionedValue<IProjectSubscriptionUpdate>>(u => OnBuildDataChanged(context, u.Value));
+
+                    try
+                    {
+                        _links[configured[i]] = subscription.ProjectBuildRuleSource.SourceBlock.LinkTo(
+                            target,
+                            new DataflowLinkOptions() { PropagateCompletion = true },
+                            initialDataAsNew: true,
+                            suppressVersionOnlyUpdates: true,
+                            RuleName,
+                            ToolsetRuleName);
+                    }
+                    catch (Exception e)
+                    {
+                        // a project whose SDK does not define the rules: nothing to follow
+                        ClangdTrace.Write($"cannot follow {context.Label}: {e.Message}");
+                        _database.SetToolset(ClangToolset.NotReported(context));
+                    }
                 }
             }
 
@@ -134,10 +151,22 @@ namespace IKVM.Clang.Vsix.Clangd
         }
 
         /// <summary>
-        /// Stores the compile commands from a design-time build.
+        /// Stores the toolset and compile commands from a design-time build.
         /// </summary>
-        void OnCompileCommandsChanged(ClangCompileContext context, IProjectSubscriptionUpdate update)
+        void OnBuildDataChanged(ClangCompileContext context, IProjectSubscriptionUpdate update)
         {
+            // older versions of IKVM.Clang.Sdk do not report their toolset
+            if (update.CurrentState.TryGetValue(ToolsetRuleName, out var toolset) && toolset.Items.Count > 0)
+            {
+                var reported = ClangToolset.FromMetadata(context, toolset.Items.First().Value);
+                ClangdTrace.Write($"toolset of {context.Label}: clangd={reported.ClangdPath}; problems={string.Join(" | ", reported.Problems.Select(i => i.Message))}");
+                _database.SetToolset(reported);
+            }
+            else
+            {
+                _database.SetToolset(ClangToolset.NotReported(context));
+            }
+
             if (update.CurrentState.TryGetValue(RuleName, out var snapshot) == false)
                 return;
 

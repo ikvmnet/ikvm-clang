@@ -1,11 +1,11 @@
-using System;
-using System.Text;
-
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-
 namespace IKVM.Clang.Sdk.Tasks
 {
+
+    using System;
+    using System.Text;
+
+    using Microsoft.Build.Framework;
+    using Microsoft.Build.Utilities;
 
     /// <summary>
     /// Executes executable with a set of arguments.

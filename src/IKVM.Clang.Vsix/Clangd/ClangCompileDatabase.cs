@@ -141,12 +141,44 @@ namespace IKVM.Clang.Vsix.Clangd
 
         readonly object _sync = new();
         readonly Dictionary<ClangCompileContext, IReadOnlyList<ClangCompileCommandEntry>> _byContext = new();
+        readonly Dictionary<ClangCompileContext, ClangToolset> _toolsets = new();
         Dictionary<string, IReadOnlyList<ClangCompileCommandEntry>> _byFile = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Raised, on an arbitrary thread, after commands change.
         /// </summary>
         public event EventHandler<ClangCompileDatabaseChangedEventArgs>? Changed;
+
+        /// <summary>
+        /// Raised, on an arbitrary thread, after the toolset of a context is reported, changes or is removed.
+        /// </summary>
+        public event EventHandler? ToolsetsChanged;
+
+        /// <summary>
+        /// Records the LLVM toolset the SDK resolved for a context.
+        /// </summary>
+        public void SetToolset(ClangToolset toolset)
+        {
+            lock (_sync)
+            {
+                _toolsets.Remove(toolset.Context);
+                _toolsets[toolset.Context] = toolset;
+            }
+
+            ToolsetsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Gets the toolsets of every context, ordered by project and then default context first.
+        /// </summary>
+        public IReadOnlyList<ClangToolset> GetToolsets()
+        {
+            lock (_sync)
+                return _toolsets.Values
+                    .OrderBy(i => i.Context.ProjectPath, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(i => i.Context.Order)
+                    .ToList();
+        }
 
         /// <summary>
         /// Replaces the commands of one context.
@@ -176,9 +208,19 @@ namespace IKVM.Clang.Vsix.Clangd
         {
             var retain = new HashSet<ClangCompileContext>(keep ?? Enumerable.Empty<ClangCompileContext>());
             var changed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var toolsetsChanged = false;
 
             lock (_sync)
             {
+                foreach (var context in _toolsets.Keys.ToList())
+                {
+                    if (StringComparer.OrdinalIgnoreCase.Equals(context.ProjectPath, projectPath) && retain.Contains(context) == false)
+                    {
+                        _toolsets.Remove(context);
+                        toolsetsChanged = true;
+                    }
+                }
+
                 foreach (var context in _byContext.Keys.ToList())
                 {
                     if (StringComparer.OrdinalIgnoreCase.Equals(context.ProjectPath, projectPath) && retain.Contains(context) == false)
@@ -196,6 +238,9 @@ namespace IKVM.Clang.Vsix.Clangd
 
             if (changed.Count > 0)
                 Changed?.Invoke(this, new ClangCompileDatabaseChangedEventArgs(changed));
+
+            if (toolsetsChanged)
+                ToolsetsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
