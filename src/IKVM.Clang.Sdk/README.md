@@ -139,7 +139,7 @@ Common triples:
 | `Optimization` | `2` in Release | Optimization level, passed as `-O<level>`: `0`, `1`, `2`, `3`, `s`, `z` or `g` |
 | `Assertions` | `false` in Release | When `false`, define `NDEBUG`, which removes `assert` |
 | `LanguageStandard` | *(clang default)* | C/C++ language standard, e.g. `c17`, `c++20` |
-| `PositionIndependentCode` | `true` on ELF targets (Linux and other Unix) | Pass `-fPIC` to the compiler |
+| `PositionIndependentCode` | *(clang default for the target)* | `true` passes `-fPIC`, `false` passes `-fno-pic` |
 | `MsCompatibility` | *(false)* | Pass `-fms-compatibility` |
 | `UseLd` | `lld` | Linker driver for `exe`/`dll` targets |
 | `Subsystem` | *(linker default)* | Windows subsystem passed to the MSVC linker (`console` or `windows`) |
@@ -158,7 +158,7 @@ Common triples:
 | `LanguageStandard` | Per-file language standard override |
 | `DebugSymbols` | Per-file debug symbol override |
 | `Optimization` | Per-file optimization level override |
-| `PositionIndependentCode` | Per-file `-fPIC` override |
+| `PositionIndependentCode` | Per-file `-fPIC` / `-fno-pic` override |
 | `IncludeDirectories` | Semicolon-separated extra include search paths |
 | `PreprocessorDefinitions` | Semicolon-separated `NAME` or `NAME=VALUE` defines |
 | `AdditionalCompileOptions` | Extra flags for this file only |
