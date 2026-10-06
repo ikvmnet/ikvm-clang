@@ -46,6 +46,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.ProjectSystem.SDK" Version="17.9.380" ExcludeAssets="runtime" />
+		<PackageReference Include="Microsoft.VisualStudio.LanguageServer.Client" Version="17.14.60" ExcludeAssets="runtime" />
 		<PackageReference Include="Microsoft.VisualStudio.ProjectSystem.Sdk.Tools" Version="17.9.380">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -83,12 +84,7 @@
 			<IncludeInVSIX>true</IncludeInVSIX>
 			<VSIXSubPath>Grammars</VSIXSubPath>
 		</Content>
-		<Content Include="Grammars\objc.tmLanguage.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<IncludeInVSIX>true</IncludeInVSIX>
-			<VSIXSubPath>Grammars</VSIXSubPath>
-		</Content>
-		<Content Include="Grammars\objcpp.tmLanguage.json">
+		<Content Include="Grammars\cpp-extra.tmLanguage.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<IncludeInVSIX>true</IncludeInVSIX>
 			<VSIXSubPath>Grammars</VSIXSubPath>

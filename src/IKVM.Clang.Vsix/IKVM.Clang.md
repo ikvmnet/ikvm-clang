@@ -18,6 +18,13 @@ Visual Studio extension that provides IDE support for building C, C++, Objective
 - Output type and LLVM target triples
 - Per-file language and language standard overrides
 
+**Language Support (clangd)**
+- Completion, hover, go to definition, find references, rename and diagnostics from clangd
+- clangd gets each file's real compile command from the project: include directories, definitions, target
+- Projects with several `TargetIdentifiers` show each target as a context in the editor's project list; switching
+  it re-parses the file for that target, like switching target frameworks in a .NET project
+- Headers use the command of the nearest source file of their project
+
 **Project System**
 - Based on the Common Project System (CPS)
 - SDK-style `.clangproj` files
@@ -26,12 +33,15 @@ Visual Studio extension that provides IDE support for building C, C++, Objective
 - Source files opened from a Clang project use Clang content types; files in other projects are unaffected
 
 **Syntax Highlighting**
-- Objective-C / Objective-C++ (`.m`, `.mm`)
+- C, C++, Objective-C and Objective-C++ through Visual Studio's built-in grammars, including C++ module and
+  header extensions (`.cppm`, `.ixx`, `.hxx`, `.ipp`)
 - Assembly (`.s`, `.asm`)
 
 ## Requirements
 
 - LLVM/Clang installed and on PATH
+- clangd for language support: found on PATH, in the default LLVM installation, in Visual Studio's C++ Clang tools,
+  or at the path in the `IKVM_CLANG_CLANGD_PATH` environment variable
 - Visual Studio 2022 version 17.14 or later
 
 ## Example Project
