@@ -11,7 +11,8 @@ Visual Studio extension that provides IDE support for building C, C++, Objective
 
 **Build Integration**
 - Build, Rebuild, and Clean commands
-- Compiler output in the Output Window
+- Compiler errors and warnings in the Error List, with their file and line
+- Build output in the Output Window
 
 **Property Pages**
 - Output type and LLVM target triples
