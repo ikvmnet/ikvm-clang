@@ -6,8 +6,8 @@
 	<!--
     This file contains targets which invoke the jobs in 'NoTask' mode: the tasks are compiled from their sources in the
     IKVM.Clang.Sdk.Tasks directory next to this SDK's, rather than loaded from the built task assembly. Every task is
-    given all of the sources, since they share helpers; each task source keeps its using directives inside its
-    namespace so that the sources can be joined.
+    given all of the sources, since they share helpers. The sources are joined into one, in which each file-scoped
+    namespace becomes a namespace block; so each task source keeps its using directives after its namespace.
     -->
 
 	<PropertyGroup>
@@ -19,8 +19,12 @@
 		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ClangCompileCommand.cs'))</___IkvmClangTaskSources>
 		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ResolveLlvmToolset.cs'))</___IkvmClangTaskSources>
 		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ClangCompile.cs'))</___IkvmClangTaskSources>
+		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\DependencyFile.cs'))</___IkvmClangTaskSources>
+		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\JsonStrings.cs'))</___IkvmClangTaskSources>
 		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\AssignReferenceTargetIdentifier.cs'))</___IkvmClangTaskSources>
 		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ResolveClangTarget.cs'))</___IkvmClangTaskSources>
+		<!-- each 'namespace X;' closes the namespace before it and opens one; the first closes an empty one opened here -->
+		<___IkvmClangTaskSources>namespace IKVM.Clang.Sdk.Tasks.NoTasks { $([System.Text.RegularExpressions.Regex]::Replace('$(___IkvmClangTaskSources)', '(?m)^namespace ([\w.]+)\s*;', '} namespace $1 {')) }</___IkvmClangTaskSources>
 	</PropertyGroup>
 
 	<UsingTask TaskName="ClangExe" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
