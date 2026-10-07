@@ -18,6 +18,8 @@
 		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\LlvmArExe.cs'))</___IkvmClangTaskSources>
 		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ClangCompileCommand.cs'))</___IkvmClangTaskSources>
 		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ResolveLlvmToolset.cs'))</___IkvmClangTaskSources>
+		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\ClangCompile.cs'))</___IkvmClangTaskSources>
+		<___IkvmClangTaskSources>$(___IkvmClangTaskSources)$([System.IO.File]::ReadAllText('$(___IkvmClangTaskSourceDirectory)\AssignReferenceTargetIdentifier.cs'))</___IkvmClangTaskSources>
 	</PropertyGroup>
 
 	<UsingTask TaskName="ClangExe" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
@@ -42,6 +44,20 @@ $([MSBuild]::Unescape('$(___IkvmClangTaskSources)'))]]></Code>
 	</UsingTask>
 
 	<UsingTask TaskName="ResolveLlvmToolset" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<Task Evaluate="true">
+			<Code Type="Class" Language="cs"><![CDATA[#nullable enable
+$([MSBuild]::Unescape('$(___IkvmClangTaskSources)'))]]></Code>
+		</Task>
+	</UsingTask>
+
+	<UsingTask TaskName="ClangCompile" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<Task Evaluate="true">
+			<Code Type="Class" Language="cs"><![CDATA[#nullable enable
+$([MSBuild]::Unescape('$(___IkvmClangTaskSources)'))]]></Code>
+		</Task>
+	</UsingTask>
+
+	<UsingTask TaskName="AssignReferenceTargetIdentifier" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
 		<Task Evaluate="true">
 			<Code Type="Class" Language="cs"><![CDATA[#nullable enable
 $([MSBuild]::Unescape('$(___IkvmClangTaskSources)'))]]></Code>

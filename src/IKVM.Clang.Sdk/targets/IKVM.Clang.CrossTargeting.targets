@@ -53,5 +53,15 @@
     <Target Name="GetClangCompileCommands" Returns="@(ClangCompileCommand)" />
     <Target Name="GetLlvmToolset" Returns="@(LlvmToolset)" />
 
+    <!-- what this project builds, for projects that reference it to pick the matching target identifier -->
+    <Target Name="GetTargetIdentifiers" DependsOnTargets="_ComputeInnerBuildProjects" Returns="@(_TargetIdentifiersReport)">
+        <ItemGroup>
+            <_TargetIdentifiersReport Include="$(MSBuildProjectFullPath)">
+                <TargetIdentifiers>@(_TargetIdentifierNormalized)</TargetIdentifiers>
+                <TargetIdentifier></TargetIdentifier>
+            </_TargetIdentifiersReport>
+        </ItemGroup>
+    </Target>
+
     <Import Project="$(CustomAfterIkvmClangCrossTargetingTargets)" Condition="'$(CustomAfterIkvmClangCrossTargetingTargets)' != '' and Exists('$(CustomAfterIkvmClangCrossTargetingTargets)')"/>
 </Project>
