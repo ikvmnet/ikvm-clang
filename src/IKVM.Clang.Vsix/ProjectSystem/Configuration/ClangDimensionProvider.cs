@@ -67,6 +67,26 @@ internal abstract class ClangDimensionProvider : IProjectConfigurationDimensions
     }
 
     /// <summary>
+    /// Reads the values from the evaluation of the suggested configured project, so that a value set in an imported
+    /// file such as <c>Directory.Build.props</c> is honoured, as the .NET project system does for
+    /// <c>TargetFrameworks</c>. Falls back to the project file itself when no configured project is available yet.
+    /// </summary>
+    async Task<IReadOnlyList<string>> GetValuesAsync(UnconfiguredProject project)
+    {
+        var configuredProject = await project.GetSuggestedConfiguredProjectAsync();
+        if (configuredProject is null)
+            return await GetValuesFromXmlAsync(project);
+
+        var value = await project.ProjectService.Services.ProjectLockService.ReadLockAsync(async access =>
+        {
+            var evaluated = await access.GetProjectAsync(configuredProject);
+            return evaluated.GetPropertyValue(PropertyName);
+        });
+
+        return Parse(value);
+    }
+
+    /// <summary>
     /// Reads the values from the project file itself, for when no evaluation is available. Only an unconditioned
     /// literal value is understood; anything else falls back to the default values.
     /// </summary>
@@ -119,7 +139,7 @@ internal abstract class ClangDimensionProvider : IProjectConfigurationDimensions
     /// <inheritdoc />
     public async Task<IEnumerable<KeyValuePair<string, IEnumerable<string>>>> GetProjectConfigurationDimensionsAsync(UnconfiguredProject project)
     {
-        return ToDimensions(await GetValuesFromXmlAsync(project));
+        return ToDimensions(await GetValuesAsync(project));
     }
 
     /// <inheritdoc />
@@ -131,10 +151,13 @@ internal abstract class ClangDimensionProvider : IProjectConfigurationDimensions
     /// <inheritdoc />
     public async Task<IEnumerable<KeyValuePair<string, string>>> GetDefaultValuesForDimensionsAsync(UnconfiguredProject project)
     {
-        return ToDefaults(await GetValuesFromXmlAsync(project));
+        return ToDefaults(await GetValuesAsync(project));
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Called before any configured project exists, so like the .NET project system this reads only the project file.
+    /// </remarks>
     public async Task<IEnumerable<KeyValuePair<string, string>>> GetBestGuessDefaultValuesForDimensionsAsync(UnconfiguredProject project)
     {
         return ToDefaults(await GetValuesFromXmlAsync(project));
