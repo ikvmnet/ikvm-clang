@@ -41,6 +41,22 @@ namespace IKVM.Clang.Sdk.Tests
             return output;
         }
 
+        static void DllTool(string directory, string def, string lib)
+        {
+            var dlltool = new[] { Environment.GetEnvironmentVariable("PATH") ?? "" }
+                .SelectMany(i => i.Split(Path.PathSeparator))
+                .Append(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "LLVM", "bin"))
+                .Where(i => i.Trim().Length > 0)
+                .Select(i => Path.Combine(i.Trim(), OperatingSystem.IsWindows() ? "llvm-dlltool.exe" : "llvm-dlltool"))
+                .FirstOrDefault(File.Exists);
+            if (dlltool is null)
+                Assert.Inconclusive("llvm-dlltool was not found to make an import library.");
+
+            using var process = Process.Start(new ProcessStartInfo(dlltool, $"-m i386:x86-64 -d {def} -l {lib}") { UseShellExecute = false, WorkingDirectory = directory })!;
+            process.WaitForExit();
+            process.ExitCode.Should().Be(0);
+        }
+
         static string Reference(string name) => $"<ProjectReference Include=\"..\\{name}\\{name}.clangproj\" />";
 
         [TestMethod]
@@ -85,8 +101,12 @@ namespace IKVM.Clang.Sdk.Tests
             TestProjects.Create("middlelib", $"<OutputType>Lib</OutputType><TargetIdentifier>{Target}</TargetIdentifier>", Reference("deepdll"),
                 ("middle.c", "int middle(void) { return 1; }\n"));
 
-            var app = TestProjects.Create("app", $"<OutputType>Exe</OutputType><TargetIdentifier>{Target}</TargetIdentifier>{NoRuntime("-Wl,/entry:main")}", Reference("mathdll") + Reference("middlelib"),
-                ("main.c", "__declspec(dllimport) int add(int a, int b);\nint main(void) { return add(2, 3); }\n"));
+            // returning from the entry point would end only its thread, leaving the process to the loader's threads
+            // for a while, so it exits through kernel32, whose import library llvm-dlltool makes
+            var app = TestProjects.Create("app", $"<OutputType>Exe</OutputType><TargetIdentifier>{Target}</TargetIdentifier>{NoRuntime("-Wl,/entry:main")}<LibraryDirectories>$(MSBuildProjectDirectory)</LibraryDirectories><Dependencies>kernel32</Dependencies>", Reference("mathdll") + Reference("middlelib"),
+                ("main.c", "__declspec(dllimport) int add(int a, int b);\n__declspec(dllimport) void __stdcall ExitProcess(unsigned int code);\nint main(void) { ExitProcess(add(2, 3)); return 0; }\n"),
+                ("kernel32.def", "LIBRARY kernel32.dll\nEXPORTS\nExitProcess\n"));
+            DllTool(app, "kernel32.def", "kernel32.lib");
 
             Build(app, "-t:Build");
 

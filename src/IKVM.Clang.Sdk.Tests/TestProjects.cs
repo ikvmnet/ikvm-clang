@@ -117,7 +117,7 @@ namespace IKVM.Clang.Sdk.Tests
 
             return Directory.GetFiles(obj)
                 .Select(Path.GetFileName)
-                .Where(i => i!.EndsWith(".FileListAbsolute.txt") == false && i.EndsWith(".cmd") == false && i.EndsWith(".d") == false)
+                .Where(i => i!.EndsWith(".FileListAbsolute.txt") == false && i.EndsWith(".cmd") == false && i.EndsWith(".d") == false && i.EndsWith(".cache") == false)
                 .OrderBy(i => i)
                 .ToArray()!;
         }

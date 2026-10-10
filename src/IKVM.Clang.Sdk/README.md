@@ -79,17 +79,29 @@ The `GetLlvmToolset` target returns what was found, and `GetClangCompileCommands
 
 Set `<OutputType>` in your project to one of:
 
-| Value | Produces | Windows | Linux | macOS | WASM |
+| Value | Produces | COFF (Windows, UEFI) | ELF (Linux, BSD, bare metal) | Mach-O (Apple) | WebAssembly |
 |-------|----------|---------|-------|-------|------|
 | `exe` | Executable | `.exe` | *(none)* | *(none)* | `.wasm` |
-| `dll` | Shared library | `.dll` | `.so` | `.dylib` | `.so` |
-| `lib` | Static library | `.lib` | `.a` | `.a` | `.a` |
+| `dll` | Shared library | `.dll` (and `.lib` to link against) | `lib*.so` | `lib*.dylib` | `lib*.so` |
+| `lib` | Static library | `.lib` | `lib*.a` | `lib*.a` | `lib*.a` |
+
+The names follow the object file format clang produces for the target, which the SDK finds out by asking clang, not by
+reading the triple: see [Target Triples](#target-triples). Set `ExecutableExt`, `LibraryExt`, `ObjectExt` and the
+matching `*Prefix` and `*FileName` properties to name them differently.
 
 ---
 
 ## Target Triples
 
-`TargetIdentifiers` accepts one or more semicolon-separated LLVM target triples.
+`TargetIdentifiers` accepts one or more semicolon-separated LLVM target triples. Each is passed to clang's
+`--target` as it is (or set `TargetTriple` to pass something other than the identifier), so any triple clang
+understands works, and means what clang takes it to mean.
+
+Before building, the SDK asks clang about the triple: how it normalizes it (`ClangTargetTriple`), which object file
+format it produces for it (`ClangObjectFormat`: `elf`, `coff`, `macho`, `wasm`, `xcoff` or `goff`), and whether it is
+the MSVC environment (`ClangTargetIsMsvc`, when the linker writes a separate `.pdb`). Output names follow from these.
+Set either of the last two in the project to override what clang says. A triple clang cannot build for fails the
+build with `ICLANG3001` and what clang reported.
 
 ```xml
 <!-- Single target -->
