@@ -5,117 +5,81 @@ using System.Linq;
 
 using Newtonsoft.Json.Linq;
 
-namespace IKVM.Clang.Vsix.Clangd
+namespace IKVM.Clang.Vsix.Clangd;
+
+/// <summary>
+/// The LLVM tools the SDK resolved for one context of a project, as reported by its <c>GetLlvmToolset</c> target.
+/// </summary>
+internal sealed class ClangToolset
 {
 
     /// <summary>
-    /// A tool the SDK could not resolve for a project, with the SDK's explanation of how to correct it.
+    /// Creates the toolset.
     /// </summary>
-    internal sealed class ClangToolsetProblem
+    ClangToolset(ClangCompileContext context, bool isReported, string clangdPath, IReadOnlyList<ClangToolsetProblem> problems)
     {
-
-        /// <summary>
-        /// Creates the problem.
-        /// </summary>
-        public ClangToolsetProblem(string tool, string code, string message)
-        {
-            Tool = tool;
-            Code = code;
-            Message = message;
-        }
-
-        /// <summary>
-        /// The tool: <c>Clang</c>, <c>ClangCxx</c>, <c>LlvmAr</c>, <c>Clangd</c> or <c>Linker</c>.
-        /// </summary>
-        public string Tool { get; }
-
-        /// <summary>
-        /// The SDK's diagnostic code, such as <c>ICLANG1001</c>.
-        /// </summary>
-        public string Code { get; }
-
-        /// <summary>
-        /// What is wrong and how to correct it.
-        /// </summary>
-        public string Message { get; }
-
+        Context = context;
+        IsReported = isReported;
+        ClangdPath = clangdPath;
+        Problems = problems;
     }
 
     /// <summary>
-    /// The LLVM tools the SDK resolved for one context of a project, as reported by its <c>GetLlvmToolset</c> target.
+    /// The project and target identifier.
     /// </summary>
-    internal sealed class ClangToolset
+    public ClangCompileContext Context { get; }
+
+    /// <summary>
+    /// Whether the project's SDK reports its toolset at all; older versions of IKVM.Clang.Sdk do not.
+    /// </summary>
+    public bool IsReported { get; }
+
+    /// <summary>
+    /// Full path of clangd, or an empty string if the SDK did not find it.
+    /// </summary>
+    public string ClangdPath { get; }
+
+    /// <summary>
+    /// The tools the SDK could not resolve.
+    /// </summary>
+    public IReadOnlyList<ClangToolsetProblem> Problems { get; }
+
+    /// <summary>
+    /// Whether clangd can be run: the SDK found it and it is still there.
+    /// </summary>
+    public bool HasClangd => ClangdPath.Length > 0 && File.Exists(ClangdPath);
+
+    /// <summary>
+    /// Gets the toolset of a project whose SDK does not report one.
+    /// </summary>
+    public static ClangToolset NotReported(ClangCompileContext context)
     {
+        return new ClangToolset(context, false, "", Array.Empty<ClangToolsetProblem>());
+    }
 
-        /// <summary>
-        /// Creates the toolset.
-        /// </summary>
-        ClangToolset(ClangCompileContext context, bool isReported, string clangdPath, IReadOnlyList<ClangToolsetProblem> problems)
+    /// <summary>
+    /// Reads the toolset from the metadata of the <c>LlvmToolset</c> item.
+    /// </summary>
+    public static ClangToolset FromMetadata(ClangCompileContext context, IReadOnlyDictionary<string, string> metadata)
+    {
+        metadata.TryGetValue("ClangdPath", out var clangdPath);
+        metadata.TryGetValue("Problems", out var problemsJson);
+
+        var problems = new List<ClangToolsetProblem>();
+        if (string.IsNullOrWhiteSpace(problemsJson) == false)
         {
-            Context = context;
-            IsReported = isReported;
-            ClangdPath = clangdPath;
-            Problems = problems;
-        }
-
-        /// <summary>
-        /// The project and target identifier.
-        /// </summary>
-        public ClangCompileContext Context { get; }
-
-        /// <summary>
-        /// Whether the project's SDK reports its toolset at all; older versions of IKVM.Clang.Sdk do not.
-        /// </summary>
-        public bool IsReported { get; }
-
-        /// <summary>
-        /// Full path of clangd, or an empty string if the SDK did not find it.
-        /// </summary>
-        public string ClangdPath { get; }
-
-        /// <summary>
-        /// The tools the SDK could not resolve.
-        /// </summary>
-        public IReadOnlyList<ClangToolsetProblem> Problems { get; }
-
-        /// <summary>
-        /// Whether clangd can be run: the SDK found it and it is still there.
-        /// </summary>
-        public bool HasClangd => ClangdPath.Length > 0 && File.Exists(ClangdPath);
-
-        /// <summary>
-        /// Gets the toolset of a project whose SDK does not report one.
-        /// </summary>
-        public static ClangToolset NotReported(ClangCompileContext context)
-        {
-            return new ClangToolset(context, false, "", Array.Empty<ClangToolsetProblem>());
-        }
-
-        /// <summary>
-        /// Reads the toolset from the metadata of the <c>LlvmToolset</c> item.
-        /// </summary>
-        public static ClangToolset FromMetadata(ClangCompileContext context, IReadOnlyDictionary<string, string> metadata)
-        {
-            metadata.TryGetValue("ClangdPath", out var clangdPath);
-            metadata.TryGetValue("Problems", out var problemsJson);
-
-            var problems = new List<ClangToolsetProblem>();
-            if (string.IsNullOrWhiteSpace(problemsJson) == false)
+            try
             {
-                try
-                {
-                    foreach (var problem in JArray.Parse(problemsJson).OfType<JObject>())
-                        problems.Add(new ClangToolsetProblem((string?)problem["tool"] ?? "", (string?)problem["code"] ?? "", (string?)problem["message"] ?? ""));
-                }
-                catch (Exception)
-                {
-                    problems.Add(new ClangToolsetProblem("", "", "The LLVM tools reported by IKVM.Clang.Sdk could not be read."));
-                }
+                foreach (var problem in JArray.Parse(problemsJson).OfType<JObject>())
+                    problems.Add(new ClangToolsetProblem((string?)problem["tool"] ?? "", (string?)problem["code"] ?? "", (string?)problem["message"] ?? ""));
             }
-
-            return new ClangToolset(context, true, clangdPath ?? "", problems);
+            catch (Exception)
+            {
+                problems.Add(new ClangToolsetProblem("", "", "The LLVM tools reported by IKVM.Clang.Sdk could not be read."));
+            }
         }
 
+        return new ClangToolset(context, true, clangdPath ?? "", problems);
     }
 
 }
