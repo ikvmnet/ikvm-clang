@@ -139,8 +139,9 @@ internal sealed class ClangdLanguageClient : ILanguageClient
         var reported = toolsets.FirstOrDefault(i => i.IsReported);
         if (reported is null)
         {
+            var project = toolsets.Where(i => StringComparer.OrdinalIgnoreCase.Equals(i.Context.ProjectPath, toolsets[0].Context.ProjectPath)).ToList();
             var name = Path.GetFileNameWithoutExtension(toolsets[0].Context.ProjectPath);
-            return Off + $"{name} uses a version of IKVM.Clang.Sdk that does not report the LLVM tools it uses; update IKVM.Clang.Sdk to a newer version.";
+            return Off + $"{name}: {ClangToolset.ExplainNotReported(project)}";
         }
 
         var problem = reported.Problems.FirstOrDefault(i => i.Tool == "Clangd");

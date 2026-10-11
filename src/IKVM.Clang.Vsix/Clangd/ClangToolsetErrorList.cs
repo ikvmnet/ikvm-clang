@@ -62,7 +62,7 @@ internal sealed class ClangToolsetErrorList
 
                 if (project.All(i => i.IsReported == false))
                 {
-                    Add(project.Key, $"{name}: this version of IKVM.Clang.Sdk does not report the LLVM tools it uses, so Visual Studio cannot start clangd for it. Update IKVM.Clang.Sdk to a newer version for code completion, navigation and diagnostics.");
+                    Add(project.Key, $"{name}: {ClangToolset.ExplainNotReported(project.ToList())}");
                     continue;
                 }
 

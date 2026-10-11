@@ -94,6 +94,11 @@ internal sealed class ClangCompileCommandSubscriber : IProjectDynamicLoadCompone
 
         var contexts = configured.Select((i, n) => GetContext(i, n)).ToList();
 
+        // an outer build has no toolset or compile commands of its own; say so rather than blame the SDK
+        var crossTargeting = new List<bool>();
+        foreach (var i in configured)
+            crossTargeting.Add(await IsCrossTargetingBuildAsync(i));
+
         lock (_sync)
         {
             if (_groupLink is null)
@@ -115,7 +120,8 @@ internal sealed class ClangCompileCommandSubscriber : IProjectDynamicLoadCompone
                     continue;
 
                 var context = contexts[i];
-                var target = new ActionBlock<IProjectVersionedValue<IProjectSubscriptionUpdate>>(u => OnBuildDataChanged(context, u.Value));
+                var isCrossTargeting = crossTargeting[i];
+                var target = new ActionBlock<IProjectVersionedValue<IProjectSubscriptionUpdate>>(u => OnBuildDataChanged(context, isCrossTargeting, u.Value));
 
                 try
                 {
@@ -131,7 +137,7 @@ internal sealed class ClangCompileCommandSubscriber : IProjectDynamicLoadCompone
                 {
                     // a project whose SDK does not define the rules: nothing to follow
                     ClangdTrace.Write($"cannot follow {context.Label}: {e.Message}");
-                    _database.SetToolset(ClangToolset.NotReported(context));
+                    _database.SetToolset(ClangToolset.NotReported(context, ClangToolsetStatus.NotSupported));
                 }
             }
         }
@@ -150,11 +156,31 @@ internal sealed class ClangCompileCommandSubscriber : IProjectDynamicLoadCompone
     }
 
     /// <summary>
+    /// Whether the configured project is the outer build of a project with several target identifiers, as when the
+    /// TargetIdentifier dimension is missing.
+    /// </summary>
+    async Task<bool> IsCrossTargetingBuildAsync(ConfiguredProject configured)
+    {
+        try
+        {
+            return await _project.ProjectService.Services.ProjectLockService.ReadLockAsync(async access =>
+            {
+                var evaluated = await access.GetProjectAsync(configured);
+                return string.Equals(evaluated.GetPropertyValue("IsCrossTargetingBuild"), "true", StringComparison.OrdinalIgnoreCase);
+            });
+        }
+        catch (Exception e)
+        {
+            ClangdTrace.Write($"cannot evaluate {configured.ProjectConfiguration.Name} of {_project.FullPath}: {e.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Stores the toolset and compile commands from a design-time build.
     /// </summary>
-    void OnBuildDataChanged(ClangCompileContext context, IProjectSubscriptionUpdate update)
+    void OnBuildDataChanged(ClangCompileContext context, bool isCrossTargeting, IProjectSubscriptionUpdate update)
     {
-        // older versions of IKVM.Clang.Sdk do not report their toolset
         if (update.CurrentState.TryGetValue(ToolsetRuleName, out var toolset) && toolset.Items.Count > 0)
         {
             var reported = ClangToolset.FromMetadata(context, toolset.Items.First().Value);
@@ -163,7 +189,10 @@ internal sealed class ClangCompileCommandSubscriber : IProjectDynamicLoadCompone
         }
         else
         {
-            _database.SetToolset(ClangToolset.NotReported(context));
+            // older versions of IKVM.Clang.Sdk do not define the rule at all
+            var status = isCrossTargeting ? ClangToolsetStatus.CrossTargeting : toolset is null ? ClangToolsetStatus.NotSupported : ClangToolsetStatus.NotReturned;
+            ClangdTrace.Write($"no toolset for {context.Label}: {status}");
+            _database.SetToolset(ClangToolset.NotReported(context, status));
         }
 
         if (update.CurrentState.TryGetValue(RuleName, out var snapshot) == false)
